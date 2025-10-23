@@ -60,19 +60,24 @@ The database is configured to connect to PostgreSQL at `localhost:5435` (as spec
 ## Scripts
 
 ### `schema.ts`
+
 Defines all database tables using Drizzle ORM syntax.
 
 ### `index.ts`
+
 Database connection configuration. Exports `db` instance for queries.
 
 ### `seed.ts`
+
 Seeds the database with sample product data:
+
 - 8 products (panels, connectors, controls, kits)
 - 3 Founder Edition variants (500 BLACK, 300 WHITE, 200 RED)
 - Product dependencies and specifications
 - Sample portfolio item
 
 ### `test-connection.ts`
+
 Tests database connectivity and runs sample queries to verify setup.
 
 ## Configuration
@@ -93,11 +98,13 @@ DB_PASSWORD=imajin_dev
 Drizzle Kit is configured via `drizzle.config.ts` in the root directory.
 
 To generate migrations (when schema changes):
+
 ```bash
 npm run db:generate
 ```
 
 To apply migrations:
+
 ```bash
 npm run db:migrate
 ```
@@ -107,6 +114,7 @@ For local development, `npm run db:push` is simpler (directly syncs schema witho
 ## Drizzle Studio
 
 Open a web-based database GUI:
+
 ```bash
 npm run db:studio
 ```

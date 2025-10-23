@@ -5,9 +5,11 @@
 The project uses a cascading configuration system with three environments and one base configuration template:
 
 ### Configuration Template
+
 - **Default** - Base configuration template (version controlled, no secrets)
 
 ### Environments
+
 1. **Local** - Developer workstation (Windows environment)
 2. **Dev** - QA/Testing environment (TBD - future deployment)
 3. **Live** - Production environment (Linux server, Docker deployment)
@@ -35,6 +37,7 @@ live.json (production overrides - .gitignored, secrets separate)
 **Purpose**: Version-controlled baseline template with NO secrets or environment-specific values
 
 **Contains**:
+
 - Feature flags (defaults)
 - Pagination limits
 - Timeout values
@@ -49,6 +52,7 @@ live.json (production overrides - .gitignored, secrets separate)
 **Location**: `/config/default.json` or `/config/default.ts`
 
 **Example Structure**:
+
 ```json
 {
   "app": {
@@ -82,6 +86,7 @@ live.json (production overrides - .gitignored, secrets separate)
 **Purpose**: Developer workstation setup (Windows environment only)
 
 **Characteristics**:
+
 - Docker Desktop for Windows running all services
 - Local PostgreSQL database with seed data
 - Stripe test mode
@@ -92,6 +97,7 @@ live.json (production overrides - .gitignored, secrets separate)
 - Local DNS resolution for `www-local.imajin.ai`
 
 **Environment Variables** (`.env.local`):
+
 ```env
 # Environment
 NODE_ENV=development
@@ -132,10 +138,12 @@ ADMIN_PASSWORD=local_admin_pass
 ```
 
 **Docker Compose Services** (`docker/docker-compose.local.yml`):
+
 - Next.js app (port 3000)
 - PostgreSQL (`imajin-db-local`, port 5435)
 
 **Notes**:
+
 - Seed database with sample products and test data
 - Use Stripe CLI for webhook testing (`stripe listen --forward-to localhost:3000/api/webhooks/stripe`)
 - All emails/notifications logged to console (no actual sending)
@@ -149,6 +157,7 @@ ADMIN_PASSWORD=local_admin_pass
 **Purpose**: Shared testing environment for QA, staging, client review (when needed)
 
 **Planned Characteristics**:
+
 - Self-hosted server deployment (separate from production)
 - Docker Compose configuration
 - Separate database from production
@@ -156,6 +165,7 @@ ADMIN_PASSWORD=local_admin_pass
 - Accessible via `www-dev.imajin.ai`
 
 **Environment Variables** (`.env.dev`):
+
 ```env
 # Environment
 NODE_ENV=production
@@ -201,6 +211,7 @@ EMAIL_PROVIDER=console # or test service like Mailtrap
 ```
 
 **Notes**:
+
 - Configuration to be finalized when dev server is provisioned
 - Will use similar Docker Compose setup as production
 - Database: `imajin-db-dev` (port 5433)
@@ -214,6 +225,7 @@ EMAIL_PROVIDER=console # or test service like Mailtrap
 **Purpose**: Public-facing production site serving real customers
 
 **Planned Characteristics**:
+
 - Self-hosted Linux server (hardware to be provisioned)
 - Docker Compose deployment
 - Production PostgreSQL database with backups
@@ -224,6 +236,7 @@ EMAIL_PROVIDER=console # or test service like Mailtrap
 - Security hardening
 
 **Environment Variables** (`.env.production` or `.env`):
+
 ```env
 # Environment
 NODE_ENV=production
@@ -278,6 +291,7 @@ ANALYTICS_ID=...
 ```
 
 **Notes**:
+
 - Server hardware to be configured in coming days
 - Will deploy old server as Linux host
 - Production configuration to be finalized during server setup
@@ -310,25 +324,25 @@ ANALYTICS_ID=...
 
 ```typescript
 // lib/config.ts
-import defaultConfig from '@/config/default.json'
-import localConfig from '@/config/local.json'
-import devConfig from '@/config/dev.json'
-import liveConfig from '@/config/live.json'
+import defaultConfig from "@/config/default.json";
+import localConfig from "@/config/local.json";
+import devConfig from "@/config/dev.json";
+import liveConfig from "@/config/live.json";
 
 const configs = {
   local: localConfig,
   dev: devConfig,
   live: liveConfig,
-}
+};
 
-const env = process.env.NEXT_PUBLIC_ENV || 'local'
-const envConfig = configs[env] || {}
+const env = process.env.NEXT_PUBLIC_ENV || "local";
+const envConfig = configs[env] || {};
 
 export const config = {
   ...defaultConfig,
   ...envConfig,
   env,
-}
+};
 ```
 
 ---
@@ -337,33 +351,34 @@ export const config = {
 
 ### Feature Flags by Environment
 
-| Feature | Local | Dev | Live |
-|---------|-------|-----|------|
-| Solana Checkout | ❌ | ❌ | ❌ (future) |
-| Visual Configurator | ❌ | ❌ | ❌ (future) |
-| Customer Accounts | ❌ | ✅ (testing) | ❌ (future) |
-| Rate Limiting | ❌ | ✅ | ✅ |
-| Error Tracking | ❌ | ✅ | ✅ |
-| Analytics | ❌ | ❌ | ✅ |
-| Email Sending | ❌ (console) | ✅ (test service) | ✅ (production) |
-| Database Seeding | ✅ | ✅ | ❌ |
+| Feature             | Local        | Dev               | Live            |
+| ------------------- | ------------ | ----------------- | --------------- |
+| Solana Checkout     | ❌           | ❌                | ❌ (future)     |
+| Visual Configurator | ❌           | ❌                | ❌ (future)     |
+| Customer Accounts   | ❌           | ✅ (testing)      | ❌ (future)     |
+| Rate Limiting       | ❌           | ✅                | ✅              |
+| Error Tracking      | ❌           | ✅                | ✅              |
+| Analytics           | ❌           | ❌                | ✅              |
+| Email Sending       | ❌ (console) | ✅ (test service) | ✅ (production) |
+| Database Seeding    | ✅           | ✅                | ❌              |
 
 ### Debug/Development Tools
 
-| Tool | Local | Dev | Live |
-|------|-------|-----|------|
-| Hot Reload | ✅ | ❌ | ❌ |
-| Source Maps | ✅ | ✅ | ❌ |
-| Query Logging | ✅ | ❌ | ❌ |
-| React DevTools | ✅ | ✅ | ❌ |
-| Pretty Logs | ✅ | ❌ | ❌ |
-| pgAdmin Access | ✅ | ✅ | ❌ |
+| Tool           | Local | Dev | Live |
+| -------------- | ----- | --- | ---- |
+| Hot Reload     | ✅    | ❌  | ❌   |
+| Source Maps    | ✅    | ✅  | ❌   |
+| Query Logging  | ✅    | ❌  | ❌   |
+| React DevTools | ✅    | ✅  | ❌   |
+| Pretty Logs    | ✅    | ❌  | ❌   |
+| pgAdmin Access | ✅    | ✅  | ❌   |
 
 ---
 
 ## Deployment Process
 
 ### Local → Dev
+
 1. Commit and push changes to git repository
 2. SSH into dev server
 3. Pull latest changes
@@ -373,6 +388,7 @@ export const config = {
 7. Run smoke tests
 
 ### Dev → Live
+
 1. Verify all features working in dev environment
 2. Create git tag for release (e.g., `v1.0.0`)
 3. SSH into production server
@@ -389,17 +405,20 @@ export const config = {
 ## Environment Variable Security
 
 ### Never Commit:
+
 - `.env.local`
 - `.env.dev`
 - `.env.production`
 - Any file containing real API keys or passwords
 
 ### Version Control:
+
 - `.env.example` (template with placeholder values)
 - `config/default.json` (no secrets)
 - `config/dev.json` (no secrets, only non-sensitive overrides)
 
 ### Secure Storage:
+
 - Production secrets stored in password manager
 - Backup of `.env.production` stored encrypted on NAS
 - Team members only get access to environments they need
@@ -409,6 +428,7 @@ export const config = {
 ## Configuration Decisions
 
 ### 1. Domain Structure
+
 - **Local**: `www-local.imajin.ai` (local DNS resolution)
 - **Dev**: `www-dev.imajin.ai` (TBD)
 - **Live**: `www.imajin.ai` (production)
@@ -416,7 +436,9 @@ export const config = {
 All environments use consistent subdomain naming convention under `imajin.ai` domain.
 
 ### 2. Database Strategy
+
 Separate PostgreSQL containers per environment using naming convention:
+
 - `imajin-db-local` → Local development (`www-local.imajin.ai`, port 5435)
 - `imajin-db-dev` → Dev environment (TBD, port 5433)
 - `imajin-db-prod` → Production (`www.imajin.ai`, port 5432)
@@ -424,8 +446,10 @@ Separate PostgreSQL containers per environment using naming convention:
 Each container runs on different ports to avoid conflicts and enable running multiple environments simultaneously if needed.
 
 ### 3. Cloudflare Setup
+
 **Status**: To be configured during implementation (first-time setup)
 **Approach**:
+
 - Single Cloudflare zone for `imajin.ai` domain
 - All subdomains managed within same zone
 - DNS records for each environment subdomain
@@ -435,15 +459,19 @@ Each container runs on different ports to avoid conflicts and enable running mul
 **Note**: Cloudflare configuration documentation will be created during setup process.
 
 ### 4. CI/CD Pipeline
+
 **Status**: TBD - To be configured post-server setup
 
 **Planned Strategy**:
+
 - Git repository hosted on GitHub
 - Manual deployment initially
 - Automated CI/CD workflows to be added later
 
 ### 5. Secrets Management
+
 **Current Approach**:
+
 - `.env` files stored in plaintext on servers (outside web root)
 - Located in `/opt/imajin/config/` or similar secure directory
 - File permissions set to `600` (owner read/write only)
@@ -451,6 +479,7 @@ Each container runs on different ports to avoid conflicts and enable running mul
 - Backed up encrypted to NAS
 
 **Future Enhancement** (TODO):
+
 - [ ] Migrate to secrets vault solution (HashiCorp Vault, Doppler, or similar)
 - [ ] Rotate all secrets after migration
 - [ ] Implement automated secret rotation

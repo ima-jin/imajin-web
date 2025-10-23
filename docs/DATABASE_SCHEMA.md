@@ -3,12 +3,14 @@
 ## Design Principles
 
 **Keep it lean:**
+
 - Only store what Stripe doesn't handle
 - Avoid premature optimization
 - Extend as needed, not in advance
 - Leverage Stripe as source of truth for payment data
 
 **What we store:**
+
 - Product metadata (dev status, dependencies, specifications)
 - Variant information (colors, limited edition tracking)
 - Inventory/quantity limits
@@ -16,6 +18,7 @@
 - Portfolio content
 
 **What Stripe handles:**
+
 - Product names and descriptions
 - Pricing
 - Payment processing
@@ -70,6 +73,7 @@ CREATE INDEX idx_products_active ON products(is_active);
 ```
 
 **Example rows:**
+
 ```sql
 INSERT INTO products (id, name, category, dev_status, base_price, has_variants) VALUES
 ('Material-8x8-V', '8x8 Void Panel', 'material', 5, 3500, false),
@@ -110,6 +114,7 @@ CREATE UNIQUE INDEX idx_variants_stripe ON variants(stripe_product_id);
 ```
 
 **Example rows:**
+
 ```sql
 INSERT INTO variants (id, product_id, stripe_product_id, variant_type, variant_value, is_limited_edition, max_quantity) VALUES
 ('Unit-8x8x8-Founder-Black', 'Unit-8x8x8-Founder', 'prod_stripe_founder_black', 'color', 'BLACK', true, 500),
@@ -118,6 +123,7 @@ INSERT INTO variants (id, product_id, stripe_product_id, variant_type, variant_v
 ```
 
 **Notes:**
+
 - `available_quantity` and `is_available` are computed columns (automatic)
 - Decrement `sold_quantity` on successful order
 - For future: Can add color variants to Material-8x8-V using same table structure
@@ -147,6 +153,7 @@ CREATE INDEX idx_dependencies_type ON product_dependencies(dependency_type);
 ```
 
 **Example rows:**
+
 ```sql
 -- Spine connectors require Material-8x8-V panels
 INSERT INTO product_dependencies (product_id, depends_on_product_id, dependency_type, message) VALUES
@@ -159,6 +166,7 @@ INSERT INTO product_dependencies (product_id, depends_on_product_id, dependency_
 ```
 
 **Dependency Types:**
+
 - `requires` - Hard requirement (show warning if missing)
 - `suggests` - Soft suggestion (show recommendation)
 - `incompatible` - Cannot be used together (show error)
@@ -188,6 +196,7 @@ CREATE UNIQUE INDEX idx_specs_key ON product_specs(product_id, spec_key);
 ```
 
 **Example rows:**
+
 ```sql
 INSERT INTO product_specs (product_id, spec_key, spec_value, spec_unit, display_order) VALUES
 ('Material-8x8-V', 'dimensions', '240 x 240', 'mm', 1),
@@ -200,6 +209,7 @@ INSERT INTO product_specs (product_id, spec_key, spec_value, spec_unit, display_
 
 **Alternative Approach:**
 Could store specs as JSONB on `products` table instead:
+
 ```sql
 ALTER TABLE products ADD COLUMN specs JSONB;
 
@@ -296,6 +306,7 @@ CREATE INDEX idx_order_items_variant ON order_items(variant_id);
 ```
 
 **Notes:**
+
 - We snapshot `product_name` and `variant_name` so order history remains accurate even if products change
 - `metadata` can store assembly preferences, custom requests, etc.
 
@@ -341,6 +352,7 @@ CREATE INDEX idx_nft_minted ON nft_tokens(minted_at);
 ```
 
 **Workflow:**
+
 1. Customer orders Founder Edition
 2. Order created → `nft_tokens` row created with generated `token_hash`
 3. Unit manufactured → `serial_number` added, hash printed on unit
@@ -409,22 +421,26 @@ CREATE INDEX idx_portfolio_images_item ON portfolio_images(portfolio_item_id);
 ## Data Flow
 
 ### Product Display
+
 1. Query `products` WHERE `dev_status = 5` AND `is_active = true`
 2. If `has_variants = true`, join with `variants` to show color options
 3. Load `product_specs` for technical details
 4. Load `product_dependencies` to show warnings/suggestions
 
 ### Add to Cart
+
 1. Validate product/variant exists and is available
 2. Check `variants.is_available` for limited editions
 3. Store in session/localStorage (no DB write yet)
 
 ### Checkout
+
 1. Create Stripe Checkout Session with products from cart
 2. Redirect to Stripe embedded checkout
 3. User completes payment on Stripe
 
 ### Webhook: `checkout.session.completed`
+
 1. Receive webhook from Stripe
 2. Create `orders` record
 3. Create `order_items` records
@@ -434,6 +450,7 @@ CREATE INDEX idx_portfolio_images_item ON portfolio_images(portfolio_item_id);
 5. Send confirmation email (future)
 
 ### Order Fulfillment
+
 1. Admin views orders with `status = 'paid'`
 2. Assemble/package units
 3. For Founder Edition: Print token hash on unit, update `nft_tokens.serial_number`
@@ -447,6 +464,7 @@ CREATE INDEX idx_portfolio_images_item ON portfolio_images(portfolio_item_id);
 All tables described in this schema are part of the core system and should be implemented together. The database design is intentionally lean - we only store what's necessary and can extend later as needs evolve.
 
 **Migration Approach:**
+
 - Initial migration creates all tables
 - Seed script populates products from JSON configs
 - Schema supports future extensions via JSONB metadata fields
@@ -461,9 +479,9 @@ All tables described in this schema are part of the core system and should be im
 // seed-data.ts
 export const products = [
   {
-    id: 'Material-8x8-V',
-    name: '8x8 Void Panel',
-    category: 'material',
+    id: "Material-8x8-V",
+    name: "8x8 Void Panel",
+    category: "material",
     dev_status: 5,
     base_price: 3500,
     has_variants: false,
@@ -474,11 +492,11 @@ export const products = [
 
 export const variants = [
   {
-    id: 'Unit-8x8x8-Founder-Black',
-    product_id: 'Unit-8x8x8-Founder',
-    stripe_product_id: 'prod_XXXXX', // Real Stripe ID
-    variant_type: 'color',
-    variant_value: 'BLACK',
+    id: "Unit-8x8x8-Founder-Black",
+    product_id: "Unit-8x8x8-Founder",
+    stripe_product_id: "prod_XXXXX", // Real Stripe ID
+    variant_type: "color",
+    variant_value: "BLACK",
     is_limited_edition: true,
     max_quantity: 500,
   },
@@ -487,10 +505,10 @@ export const variants = [
 
 export const dependencies = [
   {
-    product_id: 'Connect-4x31.6-5v',
-    depends_on_product_id: 'Material-8x8-V',
-    dependency_type: 'requires',
-    message: 'Requires Material-8x8-V panels to connect',
+    product_id: "Connect-4x31.6-5v",
+    depends_on_product_id: "Material-8x8-V",
+    dependency_type: "requires",
+    message: "Requires Material-8x8-V panels to connect",
   },
   // ... more dependencies
 ];

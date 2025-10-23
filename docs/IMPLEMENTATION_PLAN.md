@@ -3,6 +3,7 @@
 ## Phase 1: Foundation & Infrastructure Setup
 
 ### 1.1 Docker Environment
+
 - [x] Create Docker compose files for each environment:
   - `docker/docker-compose.local.yml` (local development)
   - `docker/docker-compose.dev.yml` (QA/testing)
@@ -20,6 +21,7 @@
 - [ ] Test Docker composition startup for local environment
 
 ### 1.2 Next.js Project Initialization
+
 - [x] Initialize Next.js 14+ with App Router
 - [x] Configure TypeScript (`tsconfig.json`)
 - [x] Install and configure Tailwind CSS
@@ -37,6 +39,7 @@
 - [ ] Configure Cloudflare integration (headers, caching)
 
 ### 1.3 Database Setup
+
 - [x] Install Drizzle ORM and dependencies
 - [x] Create database schema file (`/db/schema.ts`)
 - [x] Define initial tables:
@@ -54,6 +57,7 @@
 - [x] Test database connection from Next.js app
 
 ### 1.4 Development Tooling
+
 - [ ] Configure ESLint and Prettier
 - [ ] Set up Git repository and `.gitignore`
 - [ ] Create development scripts in `package.json`:
@@ -66,6 +70,7 @@
   - `docker:down` - Stop Docker containers
 
 ### 1.5 Testing Setup
+
 - [ ] Install testing dependencies:
   - Vitest + React Testing Library
   - Playwright
@@ -84,17 +89,21 @@
   - `test:coverage` - Generate coverage report
 
 ### 1.6 CI/CD Setup (TBD - Future)
+
 - [ ] Create GitHub Actions workflows when servers are ready
 - [ ] Configure automated testing in CI
 - [ ] Set up deployment automation
 
 ### 1.7 Phase 1 Testing Requirements
+
 **Write These Tests:**
+
 - [ ] `tests/integration/db/connection.test.ts` - Database connection
 - [ ] `tests/integration/api/health.test.ts` - Health check endpoint
 - [ ] `tests/smoke/phase1-foundation.spec.ts` - Foundation smoke tests
 
 **Phase 1 Gate Criteria (Must Pass):**
+
 - [ ] ✅ Database connection test passes
 - [ ] ✅ Docker containers start successfully
 - [ ] ✅ Health check endpoint returns 200
@@ -103,6 +112,7 @@
 - [ ] ✅ All Phase 1 smoke tests pass
 
 **Run before proceeding to Phase 2:**
+
 ```bash
 npm run test:smoke -- phase1
 ```
@@ -112,12 +122,14 @@ npm run test:smoke -- phase1
 ## Phase 2: E-commerce Core
 
 ### 2.1 Product Data Management
+
 - [ ] Create JSON config file structure for products (`/config/products.json`)
 - [ ] Define product data model (align with Stripe Product IDs)
 - [ ] Create script to sync JSON → Database
 - [ ] Build product management utilities (CRUD operations)
 
 ### 2.2 Product Catalog Pages
+
 - [ ] Homepage with featured products
 - [ ] Product listing page (all products)
 - [ ] Product detail page (individual product)
@@ -129,6 +141,7 @@ npm run test:smoke -- phase1
 - [ ] Dependency warnings UI (for components)
 
 ### 2.3 Shopping Cart
+
 - [ ] Cart state management (React Context or Zustand)
 - [ ] Cart storage (localStorage + server sync)
 - [ ] Add/remove/update cart items
@@ -137,6 +150,7 @@ npm run test:smoke -- phase1
 - [ ] Cart total calculation
 
 ### 2.4 Checkout Flow
+
 - [ ] Checkout page/form
 - [ ] Customer information collection
 - [ ] Shipping address form
@@ -154,13 +168,16 @@ npm run test:smoke -- phase1
 - [ ] Order tracking lookup (by email or order ID)
 
 ### 2.5 Inventory Management
+
 - [ ] Limited edition quantity tracking
 - [ ] Real-time quantity updates
 - [ ] "Sold out" UI states
 - [ ] Low stock warnings
 
 ### 2.6 Phase 2 Testing Requirements
+
 **Write These Tests:**
+
 - [ ] `tests/integration/api/products.test.ts` - Products API endpoint
 - [ ] `tests/unit/lib/cart-calculations.test.ts` - Cart math logic
 - [ ] `tests/unit/lib/validation.test.ts` - Product dependency validation
@@ -171,6 +188,7 @@ npm run test:smoke -- phase1
 - [ ] `tests/smoke/phase2-ecommerce.spec.ts` - E-commerce smoke tests
 
 **Phase 2 Gate Criteria (Must Pass):**
+
 - [ ] ✅ Phase 1 smoke tests still pass (no regressions)
 - [ ] ✅ Products API returns expected data
 - [ ] ✅ Product listing page renders products correctly
@@ -182,6 +200,7 @@ npm run test:smoke -- phase1
 - [ ] ✅ All Phase 2 smoke tests pass
 
 **Run before proceeding to Phase 3:**
+
 ```bash
 npm run test:smoke -- phase1 phase2
 ```
@@ -191,6 +210,7 @@ npm run test:smoke -- phase1 phase2
 ## Phase 3: Content Pages
 
 ### 3.1 Homepage
+
 - [ ] Hero section with brand messaging
 - [ ] Featured products showcase
 - [ ] Installation portfolio preview (3-4 featured projects)
@@ -198,12 +218,14 @@ npm run test:smoke -- phase1 phase2
 - [ ] Newsletter signup (optional)
 
 ### 3.2 About/Company Info
+
 - [ ] Company story page
 - [ ] Team information
 - [ ] Mission/values
 - [ ] Contact information
 
 ### 3.3 Portfolio/Installations
+
 - [ ] Portfolio listing page (grid/masonry layout)
 - [ ] Portfolio detail pages (individual installations)
 - [ ] Cloudinary integration for image galleries
@@ -212,6 +234,7 @@ npm run test:smoke -- phase1 phase2
 - [ ] First case study implementation
 
 ### 3.4 Supporting Pages
+
 - [ ] Contact page (form or email link)
 - [ ] FAQ page
 - [ ] Shipping/Returns policy
@@ -220,7 +243,9 @@ npm run test:smoke -- phase1 phase2
 - [ ] Privacy policy
 
 ### 3.5 Phase 3 Testing Requirements
+
 **Write These Tests:**
+
 - [ ] `tests/integration/api/portfolio.test.ts` - Portfolio API endpoint
 - [ ] `tests/unit/components/PortfolioCard.test.tsx` - Portfolio card
 - [ ] `tests/e2e/checkout.spec.ts` - Complete checkout flow E2E
@@ -230,6 +255,7 @@ npm run test:smoke -- phase1 phase2
 - [ ] `tests/smoke/phase3-checkout.spec.ts` - Checkout smoke tests
 
 **Phase 3 Gate Criteria (Must Pass):**
+
 - [ ] ✅ Phase 1 & 2 smoke tests still pass
 - [ ] ✅ Stripe checkout session creates successfully
 - [ ] ✅ Webhook handler processes payment correctly
@@ -241,6 +267,7 @@ npm run test:smoke -- phase1 phase2
 - [ ] ✅ All Phase 3 smoke tests pass
 
 **Run before proceeding to Phase 4:**
+
 ```bash
 npm run test:smoke -- phase1 phase2 phase3
 npm run test:e2e
@@ -251,6 +278,7 @@ npm run test:e2e
 ## Phase 4: Polish & Optimization
 
 ### 4.1 Performance
+
 - [ ] Image optimization (Next.js Image component + Cloudinary)
 - [ ] Code splitting and lazy loading
 - [ ] Cloudflare caching configuration
@@ -258,6 +286,7 @@ npm run test:e2e
 - [ ] Lighthouse audit and fixes
 
 ### 4.2 SEO
+
 - [ ] Meta tags for all pages
 - [ ] OpenGraph images
 - [ ] Sitemap generation
@@ -265,6 +294,7 @@ npm run test:e2e
 - [ ] Structured data markup (products, organization)
 
 ### 4.3 UX Enhancements
+
 - [ ] Loading states and skeletons
 - [ ] Error boundaries and user-friendly error pages
 - [ ] 404 page
@@ -273,6 +303,7 @@ npm run test:e2e
 - [ ] Cross-browser testing
 
 ### 4.4 Admin Tools
+
 - [ ] Simple admin interface for:
   - [ ] Viewing orders
   - [ ] Managing limited edition quantities
@@ -280,7 +311,9 @@ npm run test:e2e
 - [ ] Basic authentication for admin routes
 
 ### 4.5 Phase 4 Testing Requirements
+
 **Write These Tests:**
+
 - [ ] `tests/integration/api/admin/orders.test.ts` - Admin orders API
 - [ ] `tests/unit/components/admin/OrdersList.test.tsx` - Orders list component
 - [ ] `tests/e2e/admin-order-management.spec.ts` - Admin workflow E2E
@@ -288,6 +321,7 @@ npm run test:e2e
 - [ ] `tests/smoke/phase4-polish.spec.ts` - Polish smoke tests
 
 **Phase 4 Gate Criteria (Must Pass):**
+
 - [ ] ✅ All previous phase smoke tests still pass
 - [ ] ✅ Admin authentication works
 - [ ] ✅ Order management CRUD operations functional
@@ -297,6 +331,7 @@ npm run test:e2e
 - [ ] ✅ All Phase 4 smoke tests pass
 
 **Run before launch:**
+
 ```bash
 npm run test:smoke
 npm run test:e2e
@@ -308,6 +343,7 @@ npm run test:coverage
 ## Phase 5: Future Enhancements (Post-Launch)
 
 ### 5.1 Solana/Web3 Integration
+
 - [ ] Research Solana Pay integration
 - [ ] Set up MJN token smart contract
 - [ ] Solflare wallet connection
@@ -317,6 +353,7 @@ npm run test:coverage
 - [ ] Customer NFT delivery system
 
 ### 5.2 Visual Configurator
+
 - [ ] 3D model or 2D representation of fixture
 - [ ] Interactive component selection
 - [ ] Real-time visual updates
@@ -324,6 +361,7 @@ npm run test:coverage
 - [ ] Export/save configurations
 
 ### 5.3 Fixture Scoping Tool
+
 - [ ] Input fixture dimensions/configuration
 - [ ] Calculate voltage requirements
 - [ ] Calculate power consumption
@@ -332,6 +370,7 @@ npm run test:coverage
 - [ ] Export specifications as PDF
 
 ### 5.4 Additional Features
+
 - [ ] Customer accounts (order history, saved configurations)
 - [ ] Bulk ordering for commercial clients
 - [ ] Quote request system for custom installations
@@ -346,6 +385,7 @@ npm run test:coverage
 ### Testing-First Approach
 
 **For Each Feature:**
+
 1. **Write Failing Test** - Start with a test that defines expected behavior
 2. **Implement Feature** - Write code to make the test pass
 3. **Verify Tests Pass** - Run unit/integration tests
@@ -354,6 +394,7 @@ npm run test:coverage
 6. **Commit** - Only commit when all tests pass
 
 ### Daily Process
+
 1. Pick next task from plan
 2. Create todo list for multi-step tasks (TodoWrite tool)
 3. **Write test(s) first** for the feature
@@ -368,6 +409,7 @@ npm run test:coverage
 8. Update this plan (mark completed checkboxes)
 
 ### Test Command Reference
+
 ```bash
 # During development (fast feedback)
 npm run test:watch              # Watch mode for unit tests
@@ -388,6 +430,7 @@ npm run test:e2e                # All E2E tests
 ```
 
 ### Testing Strategy
+
 - **Unit tests** for all business logic and utilities
 - **Integration tests** for API routes and database operations
 - **Component tests** for complex UI components
@@ -398,6 +441,7 @@ npm run test:e2e                # All E2E tests
 - **See TESTING_STRATEGY.md** for detailed patterns and examples
 
 ### Deployment Strategy
+
 - Self-hosted on Linux server
 - Docker Compose for each environment (local, dev, prod)
 - Separate database containers per environment
@@ -416,6 +460,7 @@ npm run test:e2e                # All E2E tests
 ## Dependencies & Tools
 
 ### Core Dependencies
+
 ```json
 {
   "next": "^14.x",
@@ -431,6 +476,7 @@ npm run test:e2e                # All E2E tests
 ```
 
 ### Dev Dependencies
+
 ```json
 {
   "eslint": "latest",
@@ -440,6 +486,7 @@ npm run test:e2e                # All E2E tests
 ```
 
 ### Docker Services
+
 - `node:20-alpine` (Next.js)
 - `postgres:16-alpine` (Database)
 - `redis:alpine` (Optional - caching)
@@ -449,6 +496,7 @@ npm run test:e2e                # All E2E tests
 ## Environment Variables Needed
 
 ### Local Environment (.env.local)
+
 ```env
 # Environment
 NODE_ENV=development
@@ -485,6 +533,7 @@ ADMIN_PASSWORD=local_admin_pass
 ```
 
 ### Dev Environment (.env.dev)
+
 ```env
 # Environment
 NODE_ENV=production
@@ -508,6 +557,7 @@ CF_API_TOKEN=...
 ```
 
 ### Production Environment (.env.production)
+
 ```env
 # Environment
 NODE_ENV=production
@@ -539,6 +589,7 @@ See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for complete configuration details.
 ## Success Criteria
 
 ### Phase 1 Complete When:
+
 - Docker environment runs successfully (local)
 - Next.js app loads at `https://www-local.imajin.ai`
 - Database connection established to `imajin-db-local`
@@ -547,6 +598,7 @@ See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for complete configuration details.
 - Seed script populates test data
 
 ### Phase 2 Complete When:
+
 - Products display on catalog page
 - Cart adds/removes items correctly
 - Checkout creates Stripe session
@@ -554,12 +606,14 @@ See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for complete configuration details.
 - Limited edition quantities decrement
 
 ### Phase 3 Complete When:
+
 - All main pages exist and are navigable
 - Portfolio items display from JSON config
 - Case study page is live
 - Site is fully responsive
 
 ### MVP Launch Criteria:
+
 - All Phase 1-3 tasks complete
 - Stripe test mode working end-to-end
 - All critical pages functional

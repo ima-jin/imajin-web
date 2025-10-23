@@ -3,6 +3,7 @@
 ## Overview
 
 Product and portfolio data is managed through JSON configuration files in the `/config` directory. This approach provides:
+
 - Version control for content changes
 - Easy bulk updates via JSON editing
 - Type-safe imports in TypeScript
@@ -45,39 +46,39 @@ Each product category file follows this structure:
 ```typescript
 // types/config.ts
 export interface ProductConfig {
-  id: string                    // Product ID (matches Stripe)
-  name: string                  // Display name
-  description: string           // Short description
-  long_description?: string     // Full product description (markdown)
-  category: 'material' | 'connector' | 'control' | 'diffuser' | 'kit' | 'interface'
-  dev_status: 0 | 1 | 2 | 3 | 4 | 5
-  base_price: number            // Price in cents
-  stripe_product_id: string     // Stripe Product ID
-  has_variants: boolean
-  requires_assembly?: boolean
-  images: string[]              // Cloudinary URLs
-  specs: ProductSpec[]
-  metadata?: Record<string, any>
+  id: string; // Product ID (matches Stripe)
+  name: string; // Display name
+  description: string; // Short description
+  long_description?: string; // Full product description (markdown)
+  category: "material" | "connector" | "control" | "diffuser" | "kit" | "interface";
+  dev_status: 0 | 1 | 2 | 3 | 4 | 5;
+  base_price: number; // Price in cents
+  stripe_product_id: string; // Stripe Product ID
+  has_variants: boolean;
+  requires_assembly?: boolean;
+  images: string[]; // Cloudinary URLs
+  specs: ProductSpec[];
+  metadata?: Record<string, any>;
 }
 
 export interface ProductSpec {
-  key: string                   // e.g., "voltage", "dimensions"
-  value: string                 // e.g., "5v", "240 x 240"
-  unit?: string                 // e.g., "v", "mm"
-  display_order: number
+  key: string; // e.g., "voltage", "dimensions"
+  value: string; // e.g., "5v", "240 x 240"
+  unit?: string; // e.g., "v", "mm"
+  display_order: number;
 }
 
 export interface VariantConfig {
-  id: string                    // Variant ID
-  product_id: string            // Parent product ID
-  stripe_product_id: string     // Stripe Product ID for this variant
-  variant_type: string          // "color", "voltage", "size"
-  variant_value: string         // "BLACK", "WHITE", "RED", "5v", "24v"
-  price_modifier?: number       // Price difference from base (cents)
-  is_limited_edition: boolean
-  max_quantity?: number         // NULL = unlimited
-  images?: string[]             // Variant-specific images (if different from base)
-  metadata?: Record<string, any>
+  id: string; // Variant ID
+  product_id: string; // Parent product ID
+  stripe_product_id: string; // Stripe Product ID for this variant
+  variant_type: string; // "color", "voltage", "size"
+  variant_value: string; // "BLACK", "WHITE", "RED", "5v", "24v"
+  price_modifier?: number; // Price difference from base (cents)
+  is_limited_edition: boolean;
+  max_quantity?: number; // NULL = unlimited
+  images?: string[]; // Variant-specific images (if different from base)
+  metadata?: Record<string, any>;
 }
 ```
 
@@ -99,10 +100,7 @@ export interface VariantConfig {
       "base_price": 1600,
       "stripe_product_id": "prod_stripe_material_5x5_o",
       "has_variants": false,
-      "images": [
-        "cloudinary-url-1.jpg",
-        "cloudinary-url-2.jpg"
-      ],
+      "images": ["cloudinary-url-1.jpg", "cloudinary-url-2.jpg"],
       "specs": [
         {
           "key": "dimensions",
@@ -368,10 +366,7 @@ export interface VariantConfig {
       "variant_value": "BLACK",
       "is_limited_edition": true,
       "max_quantity": 500,
-      "images": [
-        "cloudinary-url-black-hero.jpg",
-        "cloudinary-url-black-detail.jpg"
-      ]
+      "images": ["cloudinary-url-black-hero.jpg", "cloudinary-url-black-detail.jpg"]
     },
     {
       "id": "Unit-8x8x8-Founder-White",
@@ -381,10 +376,7 @@ export interface VariantConfig {
       "variant_value": "WHITE",
       "is_limited_edition": true,
       "max_quantity": 300,
-      "images": [
-        "cloudinary-url-white-hero.jpg",
-        "cloudinary-url-white-detail.jpg"
-      ]
+      "images": ["cloudinary-url-white-hero.jpg", "cloudinary-url-white-detail.jpg"]
     },
     {
       "id": "Unit-8x8x8-Founder-Red",
@@ -394,10 +386,7 @@ export interface VariantConfig {
       "variant_value": "RED",
       "is_limited_edition": true,
       "max_quantity": 200,
-      "images": [
-        "cloudinary-url-red-hero.jpg",
-        "cloudinary-url-red-detail.jpg"
-      ]
+      "images": ["cloudinary-url-red-hero.jpg", "cloudinary-url-red-detail.jpg"]
     }
   ]
 }
@@ -465,6 +454,7 @@ export interface VariantConfig {
 ```
 
 **Dependency Types:**
+
 - `requires` - Hard requirement (user should not proceed without this)
 - `voltage_match` - Voltage compatibility requirement
 - `suggests` - Soft recommendation (helpful but not required)
@@ -513,11 +503,7 @@ export interface VariantConfig {
       "metadata": {
         "client": "Venue Name (anonymized)",
         "project_duration_months": 3,
-        "products_used": [
-          "Material-8x8-V",
-          "Control-16-24v",
-          "Connect-5x31.6-24v"
-        ],
+        "products_used": ["Material-8x8-V", "Control-16-24v", "Connect-5x31.6-24v"],
         "panel_count": 120,
         "total_leds": 7680,
         "integration": "DMX512",
@@ -640,24 +626,25 @@ Script to sync JSON configs to database:
 
 ```typescript
 // scripts/sync-config.ts
-import { db } from '@/lib/db'
-import { products, variants, productSpecs, productDependencies } from '@/db/schema'
-import materialsConfig from '@/config/products/materials.json'
-import connectorsConfig from '@/config/products/connectors.json'
+import { db } from "@/lib/db";
+import { products, variants, productSpecs, productDependencies } from "@/db/schema";
+import materialsConfig from "@/config/products/materials.json";
+import connectorsConfig from "@/config/products/connectors.json";
 // ... other imports
 
 async function syncProducts() {
-  console.log('Syncing products to database...')
+  console.log("Syncing products to database...");
 
   const allProducts = [
     ...materialsConfig.products,
     ...connectorsConfig.products,
     // ... other product files
-  ]
+  ];
 
   for (const product of allProducts) {
     // Upsert product
-    await db.insert(products)
+    await db
+      .insert(products)
       .values({
         id: product.id,
         name: product.name,
@@ -674,12 +661,13 @@ async function syncProducts() {
           name: product.name,
           description: product.description,
           // ... update fields
-        }
-      })
+        },
+      });
 
     // Insert specs
     for (const spec of product.specs) {
-      await db.insert(productSpecs)
+      await db
+        .insert(productSpecs)
         .values({
           product_id: product.id,
           spec_key: spec.key,
@@ -689,12 +677,12 @@ async function syncProducts() {
         })
         .onConflictDoUpdate({
           target: [productSpecs.product_id, productSpecs.spec_key],
-          set: { spec_value: spec.value }
-        })
+          set: { spec_value: spec.value },
+        });
     }
   }
 
-  console.log(`Synced ${allProducts.length} products`)
+  console.log(`Synced ${allProducts.length} products`);
 }
 
 async function syncVariants() {
@@ -706,16 +694,17 @@ async function syncDependencies() {
 }
 
 async function main() {
-  await syncProducts()
-  await syncVariants()
-  await syncDependencies()
-  console.log('Sync complete!')
+  await syncProducts();
+  await syncVariants();
+  await syncDependencies();
+  console.log("Sync complete!");
 }
 
-main()
+main();
 ```
 
 **Usage:**
+
 ```bash
 npm run sync:config
 ```
@@ -728,29 +717,31 @@ TypeScript types ensure config files are valid:
 
 ```typescript
 // lib/config/validate.ts
-import { z } from 'zod'
+import { z } from "zod";
 
 const ProductConfigSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
-  category: z.enum(['material', 'connector', 'control', 'diffuser', 'kit', 'interface']),
+  category: z.enum(["material", "connector", "control", "diffuser", "kit", "interface"]),
   dev_status: z.number().min(0).max(5),
   base_price: z.number().positive(),
   stripe_product_id: z.string(),
   has_variants: z.boolean(),
   images: z.array(z.string().url()),
-  specs: z.array(z.object({
-    key: z.string(),
-    value: z.string(),
-    unit: z.string().optional(),
-    display_order: z.number(),
-  })),
+  specs: z.array(
+    z.object({
+      key: z.string(),
+      value: z.string(),
+      unit: z.string().optional(),
+      display_order: z.number(),
+    })
+  ),
   metadata: z.record(z.any()).optional(),
-})
+});
 
 export function validateProductConfig(config: unknown) {
-  return ProductConfigSchema.parse(config)
+  return ProductConfigSchema.parse(config);
 }
 ```
 
@@ -769,11 +760,13 @@ export function validateProductConfig(config: unknown) {
 ## Future Enhancements
 
 ### CMS Integration (Optional)
+
 - Use JSON files as "database of record"
 - Add GUI editor that writes to JSON files
 - Commit changes via git from CMS
 
 ### Content Localization
+
 ```
 /config/products/
   ├── en/

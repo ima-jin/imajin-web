@@ -11,6 +11,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 **Status:** Establishing foundation - NO code written yet
 
 ### What We've Completed
+
 ✅ Project overview and business context documented
 ✅ Environment strategy defined (local, dev, live)
 ✅ Repository structure established (monorepo within multi-repo)
@@ -21,6 +22,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 ✅ JSON config structure finalized with validation
 
 ### What's Next
+
 - [ ] Design user flows and wireframes (optional)
 - [ ] Begin development (Phase 1: Foundation)
   - [ ] Initialize Next.js project
@@ -33,6 +35,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 ## Important Context
 
 ### Business Background
+
 - **Company:** Imajin - LED fixture design, manufacturing, and installation
 - **Product:** Modular LED fixture system (working prototype complete)
 - **Goal:** Transform from portfolio site to e-commerce platform
@@ -40,6 +43,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 - **Founder:** Experienced dev lead (web dev since 90s, recently led 7 teams)
 
 ### Key Product Details
+
 - Selling DIY kits, fully assembled units, and individual components
 - **Founder Edition:** Limited run (1,000 units total) with 10-year warranty and MJN NFT tokens
   - BLACK: 500 units
@@ -49,6 +53,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 - Only showing products with dev_status = 5 (ready to sell)
 
 ### Technical Philosophy
+
 - **AI-first development** - Framework agnostic, optimize for AI tooling
 - **No subscriptions** - One-time purchases only (strong philosophical stance)
 - **Self-hosted** - Full control, no vendor lock-in
@@ -60,6 +65,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 ## Tech Stack
 
 ### Core
+
 - **Framework:** Next.js 14+ (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
@@ -68,12 +74,14 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 - **Containerization:** Docker
 
 ### Services
+
 - **Payments:** Stripe (embedded checkout, webhooks) - **Products already configured**
 - **Images:** Cloudinary (existing account)
 - **CDN:** Cloudflare (to be configured during setup)
 - **Hosting:** Self-hosted Linux server (hardware in progress)
 
 ### Future Integrations
+
 - Solana Pay (MJN token checkout)
 - NFT minting for Founder Edition units
 - Visual configurator (Fusion 360 Python-style scripting)
@@ -83,6 +91,7 @@ This file provides context for AI assistants (Claude Code, Cursor, etc.) working
 ## Repository Structure
 
 ### Multi-repo Organization
+
 ```
 imajin-ai/                  # Root folder (NOT a git repo)
 ├── web/                    # This repo - E-commerce platform
@@ -90,7 +99,9 @@ imajin-ai/                  # Root folder (NOT a git repo)
 ```
 
 ### Monorepo Within web/
+
 The `web/` folder is a **monorepo** containing:
+
 - Frontend (React/Next.js)
 - Backend (API routes)
 - Database (schema/migrations)
@@ -98,12 +109,14 @@ The `web/` folder is a **monorepo** containing:
 - Docker (deployment configs)
 
 **Why monorepo for web:**
+
 - Next.js App Router is inherently full-stack
 - Shared types across client/server
 - Atomic commits spanning frontend/backend/database
 - Single deployment artifact
 
 **Why NOT microservices:**
+
 - Overkill for e-commerce site of this scale
 - Unnecessary coordination complexity
 - Type duplication across repos
@@ -113,24 +126,29 @@ The `web/` folder is a **monorepo** containing:
 ## Environments
 
 ### Configuration Template
+
 - **Default:** `default.json` - Version-controlled base config (no secrets, committed to git)
 
 ### Domain Structure (Environments)
+
 - **Local:** `www-local.imajin.ai` - Development workstation (Windows)
 - **Dev:** `www-dev.imajin.ai` - QA/Testing (TBD)
 - **Live:** `www.imajin.ai` - Production (Linux server, planned)
 
 ### Database Containers
+
 - `imajin-db-local` (port 5435) - Local development
 - `imajin-db-dev` (port 5433) - Dev environment (TBD)
 - `imajin-db-prod` (port 5432) - Production
 
 ### CI/CD Strategy
+
 - **Status:** TBD - To be configured after server setup
 - **Planned:** GitHub Actions for automated deployment
 - Manual deployment initially
 
 ### Secrets Management
+
 - **Current:** `.env` files in plaintext on servers (outside web root, 600 permissions)
 - **Future TODO:** Migrate to secrets vault (HashiCorp Vault, Doppler, etc.)
 
@@ -139,12 +157,14 @@ The `web/` folder is a **monorepo** containing:
 ## Database Design Philosophy
 
 ### What We Store
+
 - Product metadata (dev status, dependencies, specs)
 - Variant information (colors, limited edition quantities)
 - Order records (fulfillment, NFT tracking)
 - Portfolio content (installations, case studies)
 
 ### What Stripe Handles
+
 - Product names/descriptions
 - Pricing
 - Payment processing
@@ -152,6 +172,7 @@ The `web/` folder is a **monorepo** containing:
 - Invoices/receipts
 
 ### Key Tables
+
 1. **products** - Core product info
 2. **variants** - Color options with auto-calculated availability
 3. **product_dependencies** - Compatibility rules (requires/suggests/incompatible/voltage_match)
@@ -163,6 +184,7 @@ The `web/` folder is a **monorepo** containing:
 9. **portfolio_images** - Gallery images
 
 ### Schema Principles
+
 - **Lean:** Only store what's necessary
 - **Snapshot pattern:** Preserve historical data (product names in orders)
 - **Flexible:** JSONB metadata fields for future needs
@@ -174,12 +196,14 @@ The `web/` folder is a **monorepo** containing:
 ## Design Direction
 
 ### Visual Style
+
 - **Content/Info pages:** Black backgrounds
 - **Product/Ordering pages:** White backgrounds
 - **Aesthetic:** Clean, modern, product-focused
 - **Approach:** No designs yet - build iteratively, keep it simple
 
 ### Brand Assets
+
 - New logo exists (not yet incorporated)
 - Portfolio of installation work (not yet showcased)
 - One case study ready to publish
@@ -189,12 +213,14 @@ The `web/` folder is a **monorepo** containing:
 ## Development Workflow
 
 ### Current Session Rules
+
 1. **Documentation first** - We are NOT rushing into code
 2. **Get it perfect** - Foundation is paramount
 3. **Ask questions** - Clarify before documenting
 4. **Be thorough** - Cover all edge cases and future considerations
 
 ### When Development Starts
+
 1. **Write tests first** - TDD approach (see TESTING_STRATEGY.md)
 2. Use TodoWrite tool for multi-step tasks
 3. Mark tasks completed immediately when done
@@ -204,6 +230,7 @@ The `web/` folder is a **monorepo** containing:
 7. Update implementation plan checkboxes
 
 ### Tools to Use
+
 - **TodoWrite** - Track progress on complex tasks
 - **Parallel tool calls** - Run independent operations simultaneously
 - **Read before Write/Edit** - Always read files before modifying
@@ -213,27 +240,32 @@ The `web/` folder is a **monorepo** containing:
 ## Key Decisions & Rationale
 
 ### Why Next.js App Router?
+
 - Best documented for AI code generation
 - Server components = simpler data fetching
 - Built-in API routes (no separate backend needed)
 - Vercel deployment option (though we're self-hosting)
 
 ### Why Drizzle over Prisma?
+
 - Lighter weight
 - More AI-friendly
 - Less magic, more explicit SQL
 
 ### Why not using Turborepo/Nx?
+
 - Overkill for single Next.js application
 - Adds unnecessary complexity
 - Not needed without multiple packages
 
 ### Why separate databases per environment?
+
 - Complete isolation (no accidental prod data access)
 - Can reset dev/local without affecting others
 - Easier to manage backups and retention policies
 
 ### Why Cloudinary over custom image service?
+
 - Already familiar with it
 - Works great with Next.js
 - Not worth building custom solution right now
@@ -244,28 +276,33 @@ The `web/` folder is a **monorepo** containing:
 ## Product Specifics
 
 ### Variants Strategy
+
 - **Current:** Only Founder Edition has color variants (BLACK/WHITE/RED)
 - **Future:** Can add color variants to Material-8x8-V and spine connectors
 - **Schema:** Built to support adding variants later without changes
 
 ### Limited Edition Tracking
+
 - Quantities tracked in `variants` table
 - Auto-calculated `available_quantity` and `is_available` columns
 - Decrement on successful payment (webhook), not cart addition
 - Display "X remaining" or "Sold Out" on product pages
 
 ### Voltage Systems
+
 - **5v system:** Material-8x8-V + 5v connectors + Control-2-5v (max 8-10 panels)
 - **24v system:** Material-8x8-V + 24v connectors + Control-8/16-24v (scalable to 64-80 panels)
 - **Rule:** Cannot mix 5v and 24v components in same fixture
 - **Implementation:** `product_dependencies` table with `voltage_match` type
 
 ### Kit Contents
+
 - Both DIY and Founder kits include round diffusion caps
 - Founder Edition includes Control-8-24v (arrives with 2 of 8 outputs used)
 - Founder Edition is designed to be expanded later
 
 ### Warranty
+
 - Warranty terms are stored as product properties in the database
 - Different products/variants can have different warranty terms
 - Schema supports warranty_years field and warranty-related metadata
@@ -275,18 +312,21 @@ The `web/` folder is a **monorepo** containing:
 ## Open Questions (Track Here)
 
 ### Product Questions
+
 - [ ] Exact contents of DIY kit (how many spine connectors, caps, etc.?)
 - [ ] Return/refund policy for individual components
 - [ ] Shipping cost calculation strategy
 - [ ] International shipping support?
 
 ### Technical Questions
+
 - [ ] Cloudflare configuration approach (first-time setup)
 - [ ] Image storage: Cloudinary URLs in DB or separate table?
 - [ ] Session management for cart (localStorage + server sync?)
 - [ ] Error tracking service? (Sentry, LogRocket, custom?)
 
 ### Business Questions
+
 - [ ] Tax calculation (Stripe Tax or manual?)
 - [ ] Email service for confirmations (SendGrid, Resend, other?)
 - [ ] Customer support system (email, ticket system, chat?)
@@ -299,6 +339,7 @@ The `web/` folder is a **monorepo** containing:
 ### When Working with This Project
 
 **DO:**
+
 - Ask clarifying questions before making assumptions
 - Document decisions and rationale
 - Keep solutions lean and practical
@@ -307,6 +348,7 @@ The `web/` folder is a **monorepo** containing:
 - Update this file when context changes
 
 **DON'T:**
+
 - Rush into code without understanding requirements
 - Over-engineer solutions
 - Create documentation files proactively (only when explicitly requested)
@@ -315,6 +357,7 @@ The `web/` folder is a **monorepo** containing:
 - Create subscription-based features (philosophical no-go)
 
 ### Tone & Style
+
 - Concise and direct
 - Technical accuracy over validation
 - Professional objectivity
@@ -326,6 +369,7 @@ The `web/` folder is a **monorepo** containing:
 ## File References
 
 ### Core Documentation
+
 - [PROJECT_OVERVIEW.md](./docs/PROJECT_OVERVIEW.md) - Business context, architecture, philosophy
 - [IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md) - Detailed roadmap with checkboxes
 - [TESTING_STRATEGY.md](./docs/TESTING_STRATEGY.md) - Comprehensive testing approach and patterns
@@ -337,6 +381,7 @@ The `web/` folder is a **monorepo** containing:
 - [JSON_CONFIG_STRUCTURE.md](./docs/JSON_CONFIG_STRUCTURE.md) - Product/portfolio config format
 
 ### Repository Files
+
 - [../README.md](../README.md) - Multi-repo structure explanation
 - [README.md](./README.md) - Web platform monorepo overview
 
@@ -345,6 +390,7 @@ The `web/` folder is a **monorepo** containing:
 ## Future Repositories
 
 As platform grows, may add:
+
 - `admin/` - Administrative dashboard
 - `portal/` - Customer account portal
 - `configurator/` - Visual fixture builder (Fusion 360 Python-style)
@@ -353,13 +399,16 @@ As platform grows, may add:
 - `design-system/` - Shared component library
 
 ### Guidelines for New Repos
+
 Create new repo when:
+
 - Distinct deployment lifecycle
 - Different technology stack
 - Potential for reuse across apps
 - Large enough for independent versioning
 
 Keep in existing repo when:
+
 - Tightly coupled to main app
 - Shares core business logic
 - Requires frequent coordinated changes
@@ -370,6 +419,7 @@ Keep in existing repo when:
 ## Configurator Vision (Future)
 
 Inspired by Fusion 360 Python scripting:
+
 - Script-driven fixture generation
 - Real-time electrical requirement calculations
 - Component compatibility validation
@@ -377,6 +427,7 @@ Inspired by Fusion 360 Python scripting:
 - Integration with manufacturing/ordering
 
 **Implementation TBD:**
+
 - Web-based (Three.js/Babylon.js)?
 - Desktop application?
 - Hybrid (server computation + browser visualization)?
@@ -387,18 +438,21 @@ Inspired by Fusion 360 Python scripting:
 ## NFT/Blockchain Integration (Future)
 
 ### MJN Token
+
 - Solana-based token (MJN coin)
 - Founder Edition units include NFT (RWA token)
 - Token hash printed on physical unit
 - 10-year warranty tied to NFT
 
 ### Workflow
+
 1. Order placed → `nft_tokens` record created with `token_hash`
 2. Unit manufactured → `serial_number` added, hash printed on unit
 3. Unit shipped → NFT minted on Solana
 4. Customer receives physical unit + NFT in wallet (future feature)
 
 ### Future Checkout Options
+
 - Solana Pay integration
 - Solflare wallet (+ others later)
 - Pay with MJN tokens
@@ -408,12 +462,14 @@ Inspired by Fusion 360 Python scripting:
 ## Notes for Future AI Sessions
 
 ### If Continuing Documentation Phase
+
 - Keep asking clarifying questions
 - Maintain lean, practical approach
 - Document decisions with rationale
 - Don't start coding until explicitly instructed
 
 ### If Starting Development Phase
+
 - Review all docs in `/docs` folder first
 - Use TodoWrite for complex tasks
 - Follow implementation plan phases
@@ -421,6 +477,7 @@ Inspired by Fusion 360 Python scripting:
 - Commit frequently with clear messages
 
 ### If Debugging/Maintenance Phase
+
 - Check DATABASE_SCHEMA.md for table structures
 - Check PRODUCT_CATALOG.md for business rules
 - Check ENVIRONMENTS.md for config

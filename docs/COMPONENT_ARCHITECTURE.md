@@ -5,6 +5,7 @@
 Next.js 14 App Router uses a mix of Server Components (default) and Client Components (marked with `'use client'`). This architecture leverages React Server Components for performance while using Client Components only where interactivity is needed.
 
 **Key Principles:**
+
 - Server Components by default (better performance, smaller bundles)
 - Client Components only when needed (interactivity, browser APIs, state)
 - Shared components are framework-agnostic when possible
@@ -145,21 +146,23 @@ Next.js 14 App Router uses a mix of Server Components (default) and Client Compo
 ### Server Components (Default)
 
 **When to use:**
+
 - Static content rendering
 - Data fetching from database
 - SEO-critical content
 - No client-side interactivity needed
 
 **Example:**
+
 ```tsx
 // components/products/ProductCard.tsx
-import { Product } from '@/types'
-import Image from 'next/image'
-import Link from 'next/link'
-import { formatCurrency } from '@/lib/components/format'
+import { Product } from "@/types";
+import Image from "next/image";
+import Link from "next/link";
+import { formatCurrency } from "@/lib/components/format";
 
 interface ProductCardProps {
-  product: Product
+  product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -171,13 +174,13 @@ export function ProductCard({ product }: ProductCardProps) {
           alt={product.name}
           width={400}
           height={400}
-          className="group-hover:scale-105 transition"
+          className="transition group-hover:scale-105"
         />
         <h3>{product.name}</h3>
         <p>{formatCurrency(product.base_price)}</p>
       </div>
     </Link>
-  )
+  );
 }
 ```
 
@@ -186,41 +189,43 @@ export function ProductCard({ product }: ProductCardProps) {
 ### Client Components
 
 **When to use:**
+
 - useState, useEffect, other React hooks
 - Event handlers (onClick, onChange, etc.)
 - Browser APIs (localStorage, geolocation, etc.)
 - Third-party libraries requiring window object
 
 **Example:**
+
 ```tsx
 // components/products/AddToCartButton.tsx
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useCart } from '@/components/cart/CartProvider'
-import { Button } from '@/components/ui/Button'
+import { useState } from "react";
+import { useCart } from "@/components/cart/CartProvider";
+import { Button } from "@/components/ui/Button";
 
 interface AddToCartButtonProps {
-  productId: string
-  variantId?: string
-  quantity: number
+  productId: string;
+  variantId?: string;
+  quantity: number;
 }
 
 export function AddToCartButton({ productId, variantId, quantity }: AddToCartButtonProps) {
-  const [loading, setLoading] = useState(false)
-  const { addItem } = useCart()
+  const [loading, setLoading] = useState(false);
+  const { addItem } = useCart();
 
   const handleClick = async () => {
-    setLoading(true)
-    await addItem({ productId, variantId, quantity })
-    setLoading(false)
-  }
+    setLoading(true);
+    await addItem({ productId, variantId, quantity });
+    setLoading(false);
+  };
 
   return (
     <Button onClick={handleClick} loading={loading}>
       Add to Cart
     </Button>
-  )
+  );
 }
 ```
 
@@ -232,13 +237,13 @@ export function AddToCartButton({ productId, variantId, quantity }: AddToCartBut
 
 ```tsx
 // app/(shop)/products/[id]/page.tsx (Server Component)
-import { getProduct } from '@/lib/db/products'
-import { ProductDetail } from '@/components/products/ProductDetail'
-import { AddToCartButton } from '@/components/products/AddToCartButton'
-import { ProductImages } from '@/components/products/ProductImages'
+import { getProduct } from "@/lib/db/products";
+import { ProductDetail } from "@/components/products/ProductDetail";
+import { AddToCartButton } from "@/components/products/AddToCartButton";
+import { ProductImages } from "@/components/products/ProductImages";
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id) // Server-side DB query
+  const product = await getProduct(params.id); // Server-side DB query
 
   return (
     <div>
@@ -249,12 +254,9 @@ export default async function ProductPage({ params }: { params: { id: string } }
       <ProductImages images={product.images} />
 
       {/* Client Component */}
-      <AddToCartButton
-        productId={product.id}
-        quantity={1}
-      />
+      <AddToCartButton productId={product.id} quantity={1} />
     </div>
-  )
+  );
 }
 ```
 
@@ -265,18 +267,19 @@ export default async function ProductPage({ params }: { params: { id: string } }
 ### Layout Components
 
 #### Header
+
 ```tsx
 // components/layout/Header.tsx
-'use client'
+"use client";
 
-import { Navigation } from './Navigation'
-import { CartButton } from '@/components/cart/CartButton'
-import { MobileMenu } from './MobileMenu'
+import { Navigation } from "./Navigation";
+import { CartButton } from "@/components/cart/CartButton";
+import { MobileMenu } from "./MobileMenu";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
-      <div className="container flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 border-b bg-white">
+      <div className="container flex h-16 items-center justify-between">
         <Logo />
         <Navigation />
         <div className="flex items-center gap-4">
@@ -285,7 +288,7 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 ```
 
@@ -294,24 +297,29 @@ export function Header() {
 ---
 
 #### Footer
+
 ```tsx
 // components/layout/Footer.tsx (Server Component)
 
 export function Footer() {
   return (
-    <footer className="bg-black text-white py-12">
+    <footer className="bg-black py-12 text-white">
       <div className="container grid grid-cols-4 gap-8">
         <div>
           <h4>Products</h4>
           <ul>
-            <li><Link href="/products">All Products</Link></li>
-            <li><Link href="/products?category=kit">Kits</Link></li>
+            <li>
+              <Link href="/products">All Products</Link>
+            </li>
+            <li>
+              <Link href="/products?category=kit">Kits</Link>
+            </li>
           </ul>
         </div>
         {/* More columns */}
       </div>
     </footer>
-  )
+  );
 }
 ```
 
@@ -322,71 +330,71 @@ export function Footer() {
 ### Product Components
 
 #### ProductGrid
+
 ```tsx
 // components/products/ProductGrid.tsx (Server Component)
-import { Product } from '@/types'
-import { ProductCard } from './ProductCard'
+import { Product } from "@/types";
+import { ProductCard } from "./ProductCard";
 
 interface ProductGridProps {
-  products: Product[]
+  products: Product[];
 }
 
 export function ProductGrid({ products }: ProductGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {products.map(product => (
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
-  )
+  );
 }
 ```
 
 ---
 
 #### VariantSelector
+
 ```tsx
 // components/products/VariantSelector.tsx
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Variant } from '@/types'
+import { useState } from "react";
+import { Variant } from "@/types";
 
 interface VariantSelectorProps {
-  variants: Variant[]
-  onSelect: (variantId: string) => void
+  variants: Variant[];
+  onSelect: (variantId: string) => void;
 }
 
 export function VariantSelector({ variants, onSelect }: VariantSelectorProps) {
-  const [selected, setSelected] = useState<string>(variants[0].id)
+  const [selected, setSelected] = useState<string>(variants[0].id);
 
   const handleSelect = (variantId: string) => {
-    setSelected(variantId)
-    onSelect(variantId)
-  }
+    setSelected(variantId);
+    onSelect(variantId);
+  };
 
   return (
     <div className="flex gap-2">
-      {variants.map(variant => (
+      {variants.map((variant) => (
         <button
           key={variant.id}
           onClick={() => handleSelect(variant.id)}
           className={cn(
-            'px-4 py-2 border rounded',
-            selected === variant.id ? 'border-black bg-black text-white' : 'border-gray-300'
+            "rounded border px-4 py-2",
+            selected === variant.id ? "border-black bg-black text-white" : "border-gray-300"
           )}
           disabled={!variant.is_available}
         >
           {variant.variant_value}
           {variant.is_limited_edition && (
-            <span className="ml-2 text-xs">
-              ({variant.available_quantity} left)
-            </span>
+            <span className="ml-2 text-xs">({variant.available_quantity} left)</span>
           )}
         </button>
       ))}
     </div>
-  )
+  );
 }
 ```
 
@@ -397,126 +405,129 @@ export function VariantSelector({ variants, onSelect }: VariantSelectorProps) {
 ### Cart Components
 
 #### CartProvider (Context)
+
 ```tsx
 // components/cart/CartProvider.tsx
-'use client'
+"use client";
 
-import { createContext, useContext, useState, useEffect } from 'react'
-import { CartItem } from '@/types'
+import { createContext, useContext, useState, useEffect } from "react";
+import { CartItem } from "@/types";
 
 interface CartContextValue {
-  items: CartItem[]
-  addItem: (item: CartItem) => void
-  removeItem: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
-  clearCart: () => void
-  total: number
+  items: CartItem[];
+  addItem: (item: CartItem) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
+  total: number;
 }
 
-const CartContext = createContext<CartContextValue | undefined>(undefined)
+const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([])
+  const [items, setItems] = useState<CartItem[]>([]);
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('cart')
-    if (stored) setItems(JSON.parse(stored))
-  }, [])
+    const stored = localStorage.getItem("cart");
+    if (stored) setItems(JSON.parse(stored));
+  }, []);
 
   // Save cart to localStorage on change
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items))
-  }, [items])
+    localStorage.setItem("cart", JSON.stringify(items));
+  }, [items]);
 
   const addItem = (item: CartItem) => {
-    setItems(prev => {
-      const existing = prev.find(i => i.productId === item.productId && i.variantId === item.variantId)
+    setItems((prev) => {
+      const existing = prev.find(
+        (i) => i.productId === item.productId && i.variantId === item.variantId
+      );
       if (existing) {
-        return prev.map(i =>
+        return prev.map((i) =>
           i.productId === item.productId && i.variantId === item.variantId
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
-        )
+        );
       }
-      return [...prev, item]
-    })
-  }
+      return [...prev, item];
+    });
+  };
 
   const removeItem = (productId: string) => {
-    setItems(prev => prev.filter(i => i.productId !== productId))
-  }
+    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    setItems(prev => prev.map(i => i.productId === productId ? { ...i, quantity } : i))
-  }
+    setItems((prev) => prev.map((i) => (i.productId === productId ? { ...i, quantity } : i)));
+  };
 
-  const clearCart = () => setItems([])
+  const clearCart = () => setItems([]);
 
-  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total }}>
       {children}
     </CartContext.Provider>
-  )
+  );
 }
 
 export function useCart() {
-  const context = useContext(CartContext)
-  if (!context) throw new Error('useCart must be used within CartProvider')
-  return context
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within CartProvider");
+  return context;
 }
 ```
 
 **Usage in layout:**
+
 ```tsx
 // app/layout.tsx
-import { CartProvider } from '@/components/cart/CartProvider'
+import { CartProvider } from "@/components/cart/CartProvider";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <body>
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
-  )
+  );
 }
 ```
 
 ---
 
 #### CartDrawer
+
 ```tsx
 // components/cart/CartDrawer.tsx
-'use client'
+"use client";
 
-import { useCart } from './CartProvider'
-import { CartItem } from './CartItem'
-import { Button } from '@/components/ui/Button'
-import Link from 'next/link'
+import { useCart } from "./CartProvider";
+import { CartItem } from "./CartItem";
+import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 
 interface CartDrawerProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 export function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, total } = useCart()
+  const { items, total } = useCart();
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-96 bg-white z-50 shadow-xl flex flex-col">
-        <div className="p-4 border-b flex items-center justify-between">
+      <div className="fixed top-0 right-0 z-50 flex h-full w-96 flex-col bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-lg font-bold">Cart ({items.length})</h2>
           <button onClick={onClose}>×</button>
         </div>
@@ -525,12 +536,12 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           {items.length === 0 ? (
             <p className="text-gray-500">Your cart is empty</p>
           ) : (
-            items.map(item => <CartItem key={item.productId} item={item} />)
+            items.map((item) => <CartItem key={item.productId} item={item} />)
           )}
         </div>
 
-        <div className="p-4 border-t">
-          <div className="flex justify-between mb-4">
+        <div className="border-t p-4">
+          <div className="mb-4 flex justify-between">
             <span>Total:</span>
             <span className="font-bold">${(total / 100).toFixed(2)}</span>
           </div>
@@ -540,7 +551,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         </div>
       </div>
     </>
-  )
+  );
 }
 ```
 
@@ -549,20 +560,21 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 ### UI Components (Primitives)
 
 #### Button
+
 ```tsx
 // components/ui/Button.tsx
-import { cn } from '@/lib/components/cn'
-import { Spinner } from './Spinner'
+import { cn } from "@/lib/components/cn";
+import { Spinner } from "./Spinner";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
-  loading?: boolean
+  variant?: "primary" | "secondary" | "outline";
+  size?: "sm" | "md" | "lg";
+  loading?: boolean;
 }
 
 export function Button({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   loading,
   children,
   className,
@@ -572,15 +584,15 @@ export function Button({
   return (
     <button
       className={cn(
-        'rounded font-medium transition',
+        "rounded font-medium transition",
         {
-          'bg-black text-white hover:bg-gray-800': variant === 'primary',
-          'bg-gray-200 text-black hover:bg-gray-300': variant === 'secondary',
-          'border border-black text-black hover:bg-black hover:text-white': variant === 'outline',
-          'px-3 py-1.5 text-sm': size === 'sm',
-          'px-4 py-2': size === 'md',
-          'px-6 py-3 text-lg': size === 'lg',
-          'opacity-50 cursor-not-allowed': disabled || loading,
+          "bg-black text-white hover:bg-gray-800": variant === "primary",
+          "bg-gray-200 text-black hover:bg-gray-300": variant === "secondary",
+          "border border-black text-black hover:bg-black hover:text-white": variant === "outline",
+          "px-3 py-1.5 text-sm": size === "sm",
+          "px-4 py-2": size === "md",
+          "px-6 py-3 text-lg": size === "lg",
+          "cursor-not-allowed opacity-50": disabled || loading,
         },
         className
       )}
@@ -589,7 +601,7 @@ export function Button({
     >
       {loading ? <Spinner /> : children}
     </button>
-  )
+  );
 }
 ```
 
@@ -598,21 +610,25 @@ export function Button({
 ## State Management Strategy
 
 ### Local State (useState)
+
 - Component-specific UI state
 - Form inputs
 - Toggle states (open/closed, expanded/collapsed)
 
 ### Context (useContext)
+
 - Cart state (CartProvider)
 - Auth state (future - AuthProvider)
 - Theme state (future - ThemeProvider)
 
 ### Server State
+
 - Product data (fetched in Server Components)
 - Order data (fetched in Server Components)
 - Portfolio data (fetched in Server Components)
 
 ### No Global State Library
+
 - **Why:** Next.js Server Components eliminate need for Redux/Zustand for most cases
 - **When we might add one:** Complex admin dashboard with heavy client-side state
 - **Decision:** Re-evaluate after MVP
@@ -622,42 +638,45 @@ export function Button({
 ## Styling Strategy
 
 ### Tailwind CSS
+
 - Utility-first approach
 - Use `cn()` helper to merge classes conditionally
 - Custom colors in `tailwind.config.ts` for brand
 
 ### Component Variants
+
 - Use `clsx` or `cva` (class-variance-authority) for variant styling
 - Keep variant logic in component, not scattered in JSX
 
 **Example with CVA:**
+
 ```tsx
-import { cva } from 'class-variance-authority'
+import { cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  'rounded font-medium transition', // base styles
+  "rounded font-medium transition", // base styles
   {
     variants: {
       variant: {
-        primary: 'bg-black text-white hover:bg-gray-800',
-        secondary: 'bg-gray-200 text-black hover:bg-gray-300',
-        outline: 'border border-black hover:bg-black hover:text-white',
+        primary: "bg-black text-white hover:bg-gray-800",
+        secondary: "bg-gray-200 text-black hover:bg-gray-300",
+        outline: "border border-black hover:bg-black hover:text-white",
       },
       size: {
-        sm: 'px-3 py-1.5 text-sm',
-        md: 'px-4 py-2',
-        lg: 'px-6 py-3 text-lg',
+        sm: "px-3 py-1.5 text-sm",
+        md: "px-4 py-2",
+        lg: "px-6 py-3 text-lg",
       },
     },
     defaultVariants: {
-      variant: 'primary',
-      size: 'md',
+      variant: "primary",
+      size: "md",
     },
   }
-)
+);
 
 export function Button({ variant, size, ...props }) {
-  return <button className={buttonVariants({ variant, size })} {...props} />
+  return <button className={buttonVariants({ variant, size })} {...props} />;
 }
 ```
 
@@ -666,46 +685,48 @@ export function Button({ variant, size, ...props }) {
 ## Data Fetching Patterns
 
 ### Server Components (Recommended)
+
 ```tsx
 // app/(shop)/products/page.tsx
-import { db } from '@/lib/db'
-import { ProductGrid } from '@/components/products/ProductGrid'
+import { db } from "@/lib/db";
+import { ProductGrid } from "@/components/products/ProductGrid";
 
 export default async function ProductsPage() {
   // Direct DB query in Server Component
   const products = await db.query.products.findMany({
-    where: eq(products.dev_status, 5)
-  })
+    where: eq(products.dev_status, 5),
+  });
 
-  return <ProductGrid products={products} />
+  return <ProductGrid products={products} />;
 }
 ```
 
 ---
 
 ### Client Components (when needed)
+
 ```tsx
 // components/admin/OrdersList.tsx
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 export function OrdersList() {
-  const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/admin/orders')
-      .then(res => res.json())
-      .then(data => {
-        setOrders(data.orders)
-        setLoading(false)
-      })
-  }, [])
+    fetch("/api/admin/orders")
+      .then((res) => res.json())
+      .then((data) => {
+        setOrders(data.orders);
+        setLoading(false);
+      });
+  }, []);
 
-  if (loading) return <Spinner />
+  if (loading) return <Spinner />;
 
-  return <div>{/* render orders */}</div>
+  return <div>{/* render orders */}</div>;
 }
 ```
 
@@ -716,24 +737,22 @@ export function OrdersList() {
 ## Form Handling
 
 ### Server Actions (Preferred)
+
 ```tsx
 // app/orders/lookup/page.tsx
-import { db } from '@/lib/db'
+import { db } from "@/lib/db";
 
 async function lookupOrder(formData: FormData) {
-  'use server'
+  "use server";
 
-  const email = formData.get('email')
-  const orderId = formData.get('orderId')
+  const email = formData.get("email");
+  const orderId = formData.get("orderId");
 
   const order = await db.query.orders.findFirst({
-    where: and(
-      eq(orders.id, orderId),
-      eq(orders.customer_email, email)
-    )
-  })
+    where: and(eq(orders.id, orderId), eq(orders.customer_email, email)),
+  });
 
-  return order
+  return order;
 }
 
 export default function OrderLookupPage() {
@@ -743,36 +762,39 @@ export default function OrderLookupPage() {
       <input name="orderId" type="text" required />
       <button type="submit">Lookup Order</button>
     </form>
-  )
+  );
 }
 ```
 
 ### Client-side Forms (when needed)
+
 ```tsx
 // components/checkout/CheckoutForm.tsx
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function CheckoutForm() {
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-    const res = await fetch('/api/checkout/session', {
-      method: 'POST',
-      body: JSON.stringify({ /* cart items */ })
-    })
+    const res = await fetch("/api/checkout/session", {
+      method: "POST",
+      body: JSON.stringify({
+        /* cart items */
+      }),
+    });
 
-    const { url } = await res.json()
-    router.push(url)
-  }
+    const { url } = await res.json();
+    router.push(url);
+  };
 
-  return <form onSubmit={handleSubmit}>{/* form fields */}</form>
+  return <form onSubmit={handleSubmit}>{/* form fields */}</form>;
 }
 ```
 
@@ -781,59 +803,61 @@ export function CheckoutForm() {
 ## Error Handling
 
 ### Error Boundaries
+
 ```tsx
 // app/error.tsx (Global error boundary)
-'use client'
+"use client";
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   return (
     <div className="container py-12 text-center">
-      <h2 className="text-2xl font-bold mb-4">Something went wrong!</h2>
-      <p className="text-gray-600 mb-6">{error.message}</p>
+      <h2 className="mb-4 text-2xl font-bold">Something went wrong!</h2>
+      <p className="mb-6 text-gray-600">{error.message}</p>
       <button onClick={reset}>Try again</button>
     </div>
-  )
+  );
 }
 ```
 
 ### Component-level Error Handling
+
 ```tsx
 // components/shared/ErrorBoundary.tsx
-'use client'
+"use client";
 
-import { Component, ReactNode } from 'react'
+import { Component, ReactNode } from "react";
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
+  hasError: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+    super(props);
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError() {
-    return { hasError: true }
+    return { hasError: true };
   }
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || <div>Something went wrong</div>
+      return this.props.fallback || <div>Something went wrong</div>;
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
 ```
@@ -843,37 +867,39 @@ export class ErrorBoundary extends Component<Props, State> {
 ## Loading States
 
 ### Suspense Boundaries
+
 ```tsx
 // app/(shop)/products/page.tsx
-import { Suspense } from 'react'
-import { ProductGrid } from '@/components/products/ProductGrid'
-import { ProductGridSkeleton } from '@/components/products/ProductGridSkeleton'
+import { Suspense } from "react";
+import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 
 export default function ProductsPage() {
   return (
     <Suspense fallback={<ProductGridSkeleton />}>
       <ProductsLoader />
     </Suspense>
-  )
+  );
 }
 
 async function ProductsLoader() {
-  const products = await getProducts() // async data fetch
-  return <ProductGrid products={products} />
+  const products = await getProducts(); // async data fetch
+  return <ProductGrid products={products} />;
 }
 ```
 
 ### Loading.tsx Files
+
 ```tsx
 // app/(shop)/products/loading.tsx
-import { Spinner } from '@/components/ui/Spinner'
+import { Spinner } from "@/components/ui/Spinner";
 
 export default function Loading() {
   return (
     <div className="flex items-center justify-center py-12">
       <Spinner size="lg" />
     </div>
-  )
+  );
 }
 ```
 
@@ -882,15 +908,18 @@ export default function Loading() {
 ## Testing Strategy
 
 ### Component Testing (Future)
+
 - Vitest + React Testing Library
 - Test UI components in isolation
 - Test user interactions (clicks, form submissions)
 
 ### Visual Regression Testing (Future)
+
 - Chromatic or Percy
 - Catch unintended style changes
 
 ### E2E Testing (Future)
+
 - Playwright
 - Test critical flows (checkout, order lookup)
 
@@ -899,28 +928,31 @@ export default function Loading() {
 ## Performance Optimization
 
 ### Image Optimization
+
 - Always use Next.js `<Image>` component
 - Cloudinary for transformations (resize, format, quality)
 - Lazy load images below the fold
 
 ### Code Splitting
+
 - Automatic with Next.js App Router
 - Dynamic imports for heavy components:
   ```tsx
-  const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
-    loading: () => <Spinner />
-  })
+  const HeavyComponent = dynamic(() => import("./HeavyComponent"), {
+    loading: () => <Spinner />,
+  });
   ```
 
 ### Memoization (when needed)
+
 ```tsx
-'use client'
-import { memo } from 'react'
+"use client";
+import { memo } from "react";
 
 export const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
   // Heavy computation or rendering
-  return <div>{/* ... */}</div>
-})
+  return <div>{/* ... */}</div>;
+});
 ```
 
 ---
@@ -928,46 +960,48 @@ export const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
 ## Accessibility
 
 ### Semantic HTML
+
 - Use proper heading hierarchy (h1 → h2 → h3)
 - Use `<button>` for actions, `<a>` for navigation
 - Use `<label>` for form inputs
 
 ### ARIA Attributes
+
 ```tsx
-<button
-  aria-label="Add to cart"
-  aria-describedby="price-info"
-  aria-disabled={loading}
->
+<button aria-label="Add to cart" aria-describedby="price-info" aria-disabled={loading}>
   Add to Cart
 </button>
 ```
 
 ### Keyboard Navigation
+
 - Ensure all interactive elements are keyboard accessible
 - Use `tabIndex` appropriately
 - Test with keyboard only (Tab, Enter, Escape)
 
 ### Focus Management
+
 ```tsx
-'use client'
-import { useEffect, useRef } from 'react'
+"use client";
+import { useEffect, useRef } from "react";
 
 export function Modal({ open, onClose }) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (open) {
-      closeButtonRef.current?.focus()
+      closeButtonRef.current?.focus();
     }
-  }, [open])
+  }, [open]);
 
   return (
     <div role="dialog" aria-modal="true">
-      <button ref={closeButtonRef} onClick={onClose}>Close</button>
+      <button ref={closeButtonRef} onClick={onClose}>
+        Close
+      </button>
       {/* modal content */}
     </div>
-  )
+  );
 }
 ```
 
@@ -989,16 +1023,19 @@ export function Modal({ open, onClose }) {
 ## Future Considerations
 
 ### Component Library (Future)
+
 - Extract UI components to separate package
 - Publish to npm for reuse in `admin/`, `portal/`, `mobile/` repos
 - Use Storybook for documentation
 
 ### Design System (Future)
+
 - Formalize color palette, typography, spacing
 - Create design tokens
 - Generate Tailwind config from tokens
 
 ### Animation Library (Future)
+
 - Framer Motion for complex animations
 - Keep simple transitions in Tailwind
 

@@ -5,6 +5,7 @@
 Next.js App Router API routes live in `/app/api/` directory. Each route is a `route.ts` file that exports HTTP method handlers (GET, POST, PUT, DELETE, etc.).
 
 **Key Principles:**
+
 - RESTful design where appropriate
 - Secure by default (validate all inputs)
 - Return consistent JSON responses
@@ -80,14 +81,17 @@ Next.js App Router API routes live in `/app/api/` directory. Each route is a `ro
 ### Products
 
 #### `GET /api/products`
+
 List all active products (dev_status = 5).
 
 **Query Parameters:**
+
 - `category` (optional) - Filter by category (material, connector, control, diffuser, kit)
 - `limit` (optional) - Number of results (default: 50)
 - `offset` (optional) - Pagination offset (default: 0)
 
 **Response:**
+
 ```json
 {
   "products": [
@@ -115,12 +119,15 @@ List all active products (dev_status = 5).
 ---
 
 #### `GET /api/products/:id`
+
 Get single product with full details.
 
 **Path Parameters:**
+
 - `id` - Product ID (e.g., "Material-8x8-V")
 
 **Response:**
+
 ```json
 {
   "product": {
@@ -148,18 +155,22 @@ Get single product with full details.
 ```
 
 **Status Codes:**
+
 - `200` - Success
 - `404` - Product not found or not active
 
 ---
 
 #### `GET /api/products/variants/:id`
+
 Get variant details (for products with variants).
 
 **Path Parameters:**
+
 - `id` - Variant ID (e.g., "Unit-8x8x8-Founder-Black")
 
 **Response:**
+
 ```json
 {
   "variant": {
@@ -182,9 +193,11 @@ Get variant details (for products with variants).
 ### Cart Validation
 
 #### `POST /api/cart/validate`
+
 Validate cart items (check availability, quantities).
 
 **Request Body:**
+
 ```json
 {
   "items": [
@@ -203,6 +216,7 @@ Validate cart items (check availability, quantities).
 ```
 
 **Response:**
+
 ```json
 {
   "valid": true,
@@ -227,6 +241,7 @@ Validate cart items (check availability, quantities).
 ```
 
 **Error Response:**
+
 ```json
 {
   "valid": false,
@@ -243,9 +258,11 @@ Validate cart items (check availability, quantities).
 ---
 
 #### `POST /api/cart/dependencies`
+
 Check for dependency warnings/issues in cart.
 
 **Request Body:**
+
 ```json
 {
   "items": [
@@ -262,6 +279,7 @@ Check for dependency warnings/issues in cart.
 ```
 
 **Response:**
+
 ```json
 {
   "warnings": [
@@ -286,9 +304,11 @@ Check for dependency warnings/issues in cart.
 ### Checkout
 
 #### `POST /api/checkout/session`
+
 Create Stripe Checkout Session.
 
 **Request Body:**
+
 ```json
 {
   "items": [
@@ -302,6 +322,7 @@ Create Stripe Checkout Session.
 ```
 
 **Response:**
+
 ```json
 {
   "session_id": "cs_test_...",
@@ -310,11 +331,13 @@ Create Stripe Checkout Session.
 ```
 
 **Status Codes:**
+
 - `200` - Session created
 - `400` - Invalid items or sold out
 - `500` - Stripe error
 
 **Notes:**
+
 - Validates all items are available before creating session
 - For limited editions, checks available_quantity
 - Session expires after 24 hours
@@ -322,9 +345,11 @@ Create Stripe Checkout Session.
 ---
 
 #### `GET /api/checkout/success`
+
 Handle successful checkout redirect.
 
 **Query Parameters:**
+
 - `session_id` - Stripe session ID
 
 **Response:**
@@ -335,9 +360,11 @@ Redirects to `/order/confirmation?order_id=...`
 ### Orders
 
 #### `POST /api/orders/lookup`
+
 Look up order by email and order ID.
 
 **Request Body:**
+
 ```json
 {
   "email": "customer@example.com",
@@ -346,6 +373,7 @@ Look up order by email and order ID.
 ```
 
 **Response:**
+
 ```json
 {
   "order": {
@@ -377,6 +405,7 @@ Look up order by email and order ID.
 ```
 
 **Status Codes:**
+
 - `200` - Order found
 - `404` - Order not found or email doesn't match
 
@@ -385,14 +414,17 @@ Look up order by email and order ID.
 ### Portfolio
 
 #### `GET /api/portfolio`
+
 List published portfolio items.
 
 **Query Parameters:**
+
 - `category` (optional) - Filter by category
 - `featured` (optional) - Only featured items (boolean)
 - `limit` (optional) - Number of results (default: 20)
 
 **Response:**
+
 ```json
 {
   "items": [
@@ -415,9 +447,11 @@ List published portfolio items.
 ---
 
 #### `GET /api/portfolio/:slug`
+
 Get single portfolio item with full details and image gallery.
 
 **Response:**
+
 ```json
 {
   "item": {
@@ -451,9 +485,11 @@ Get single portfolio item with full details and image gallery.
 ## Webhook Routes
 
 ### `POST /api/webhooks/stripe`
+
 Handle Stripe webhooks.
 
 **Events Handled:**
+
 - `checkout.session.completed` - Create order, decrement inventory
 - `charge.refunded` - Update order status (future)
 - `payment_intent.payment_failed` - Log failure (future)
@@ -462,6 +498,7 @@ Handle Stripe webhooks.
 Stripe sends signed webhook payload.
 
 **Response:**
+
 ```json
 {
   "received": true
@@ -469,6 +506,7 @@ Stripe sends signed webhook payload.
 ```
 
 **Implementation Notes:**
+
 - Verify webhook signature using `STRIPE_WEBHOOK_SECRET`
 - Idempotent (can process same event multiple times safely)
 - For `checkout.session.completed`:
@@ -479,6 +517,7 @@ Stripe sends signed webhook payload.
   5. Send confirmation email (future)
 
 **Status Codes:**
+
 - `200` - Event processed
 - `400` - Invalid signature
 - `500` - Processing error
@@ -486,11 +525,13 @@ Stripe sends signed webhook payload.
 ---
 
 ### `POST /api/webhooks/test`
+
 Test webhook handler (dev/local environment only).
 
 **Purpose:** Simulate Stripe webhooks without Stripe CLI.
 
 **Request Body:**
+
 ```json
 {
   "type": "checkout.session.completed",
@@ -516,9 +557,11 @@ All admin routes require authentication (Basic Auth or session-based).
 ### Authentication
 
 #### `POST /api/admin/auth`
+
 Admin login.
 
 **Request Body:**
+
 ```json
 {
   "password": "admin_password"
@@ -526,6 +569,7 @@ Admin login.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -534,6 +578,7 @@ Admin login.
 ```
 
 **Notes:**
+
 - For MVP: Simple password-based auth (compare with `ADMIN_PASSWORD` env var)
 - Future: Proper user accounts with roles
 
@@ -542,9 +587,11 @@ Admin login.
 ### Products Management
 
 #### `GET /api/admin/products`
+
 List all products (including dev_status < 5).
 
 **Query Parameters:**
+
 - `dev_status` (optional) - Filter by dev status
 - `category` (optional) - Filter by category
 
@@ -553,11 +600,13 @@ List all products (including dev_status < 5).
 ---
 
 #### `POST /api/admin/products`
+
 Create new product (future - for now products come from seed data).
 
 ---
 
 #### `PUT /api/admin/products/:id`
+
 Update product (e.g., change dev_status, price, etc.).
 
 ---
@@ -565,14 +614,17 @@ Update product (e.g., change dev_status, price, etc.).
 ### Orders Management
 
 #### `GET /api/admin/orders`
+
 List all orders.
 
 **Query Parameters:**
+
 - `status` (optional) - Filter by status
 - `limit` (optional) - Pagination
 - `offset` (optional) - Pagination
 
 **Response:**
+
 ```json
 {
   "orders": [
@@ -596,10 +648,12 @@ List all orders.
 ---
 
 #### `GET /api/admin/orders/:id`
+
 Get full order details (including fulfillment info).
 
 **Response:**
 Same as public order lookup, plus:
+
 ```json
 {
   "order": {
@@ -620,9 +674,11 @@ Same as public order lookup, plus:
 ---
 
 #### `PUT /api/admin/orders/:id`
+
 Update order (status, notes, etc.).
 
 **Request Body:**
+
 ```json
 {
   "status": "shipped",
@@ -634,9 +690,11 @@ Update order (status, notes, etc.).
 ---
 
 #### `POST /api/admin/orders/:id/fulfill`
+
 Mark order as fulfilled and update inventory/NFT tracking.
 
 **Request Body:**
+
 ```json
 {
   "tracking_number": "1Z999AA...",
@@ -650,6 +708,7 @@ Mark order as fulfilled and update inventory/NFT tracking.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -666,9 +725,11 @@ Mark order as fulfilled and update inventory/NFT tracking.
 ### Inventory Management
 
 #### `GET /api/admin/inventory`
+
 Get inventory levels for limited editions.
 
 **Response:**
+
 ```json
 {
   "inventory": [
@@ -695,6 +756,7 @@ Get inventory levels for limited editions.
 ```
 
 **Notes:**
+
 - `reserved_quantity` = items in active checkout sessions (future feature)
 
 ---
@@ -702,9 +764,11 @@ Get inventory levels for limited editions.
 ## Utility Routes
 
 ### `GET /api/health`
+
 Health check endpoint.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -715,10 +779,12 @@ Health check endpoint.
 ```
 
 **Status Codes:**
+
 - `200` - All systems operational
 - `503` - Service unavailable (DB connection failed, etc.)
 
 **Use Cases:**
+
 - Uptime monitoring
 - Load balancer health checks
 - Deployment verification
@@ -742,6 +808,7 @@ All API routes return errors in consistent format:
 ```
 
 **Common HTTP Status Codes:**
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request (validation error)
@@ -757,10 +824,12 @@ All API routes return errors in consistent format:
 ## Rate Limiting
 
 **Strategy:**
+
 - Production: Cloudflare rate limiting (configured per route)
 - Dev/Local: No rate limiting
 
 **Limits (Production):**
+
 - Public routes: 100 requests/minute per IP
 - Admin routes: 20 requests/minute per IP
 - Webhooks: No limit (verified by signature)
@@ -770,11 +839,13 @@ All API routes return errors in consistent format:
 ## Authentication & Security
 
 ### Public Routes
+
 - No authentication required
 - Input validation on all parameters
 - CORS configured for `imajin.ai` domains only
 
 ### Admin Routes
+
 - **MVP:** Basic password authentication
   - Check password against `ADMIN_PASSWORD` env var
   - Return session token (JWT or signed cookie)
@@ -782,6 +853,7 @@ All API routes return errors in consistent format:
 - **Future:** Full auth system with roles
 
 ### Webhook Routes
+
 - Verify Stripe webhook signatures
 - Reject requests without valid signature
 - Log all webhook events
@@ -791,17 +863,20 @@ All API routes return errors in consistent format:
 ## Future Routes (Post-MVP)
 
 ### Solana/NFT Integration
+
 - `POST /api/nft/mint` - Mint NFT for Founder Edition
 - `GET /api/nft/:token_hash` - Get NFT details
 - `POST /api/checkout/solana` - Solana Pay checkout
 
 ### Customer Accounts
+
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/account/orders`
 - `GET /api/account/configurations` - Saved fixture configs
 
 ### Configurator
+
 - `POST /api/configurator/calculate` - Calculate power/voltage
 - `POST /api/configurator/validate` - Validate configuration
 - `POST /api/configurator/export` - Export BOM/wiring diagram
@@ -813,24 +888,28 @@ All API routes return errors in consistent format:
 ### Server Actions vs API Routes
 
 Next.js App Router supports both:
+
 - **Server Actions** - Direct server functions called from components
 - **API Routes** - Traditional HTTP endpoints
 
 **When to use each:**
 
 **API Routes (this document):**
+
 - External integrations (Stripe webhooks)
 - Mobile app endpoints (future)
 - Third-party API consumers (future)
 - Endpoints requiring specific HTTP behavior
 
 **Server Actions:**
+
 - Form submissions
 - Data mutations from components
 - When you don't need a public endpoint
 - Simpler type safety with TypeScript
 
 **Decision for MVP:**
+
 - Use API routes for everything documented here
 - Consider Server Actions for internal forms (admin updates, etc.)
 - Re-evaluate as Next.js best practices evolve
@@ -840,11 +919,13 @@ Next.js App Router supports both:
 ## Testing Strategy
 
 ### Development
+
 - Use Stripe CLI for webhook testing: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
 - Test endpoint: `/api/webhooks/test` for simulating webhooks
 - Manual testing with Postman/Thunder Client/curl
 
 ### Automated Testing (Future)
+
 - Unit tests for route handlers
 - Integration tests for checkout flow
 - Webhook replay tests

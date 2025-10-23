@@ -27,18 +27,21 @@ This document defines a comprehensive testing approach for the Imajin web platfo
 ### Layer Breakdown
 
 **Unit Tests** (~60% of tests)
+
 - Pure functions, utilities
 - React components in isolation
 - Business logic (cart calculations, validation)
 - Fast, no external dependencies
 
 **Integration Tests** (~30% of tests)
+
 - API route handlers
 - Database operations
 - Stripe integration (mocked)
 - Webhook processing
 
 **E2E Tests** (~10% of tests)
+
 - Critical user journeys
 - Checkout flow
 - Order creation
@@ -68,30 +71,36 @@ This document defines a comprehensive testing approach for the Imajin web platfo
 ### Tool Descriptions
 
 **Vitest**
+
 - Unit and integration test runner
 - Fast, ESM-native, Vite-powered
 - Drop-in replacement for Jest with better DX
 
 **React Testing Library (RTL)**
+
 - Test React components
 - User-centric approach (test behavior, not implementation)
 - Works with Vitest
 
 **Playwright**
+
 - E2E testing across browsers
 - Reliable, fast, great debugging
 - Headless or headed mode
 
 **MSW (Mock Service Worker)**
+
 - Mock API responses in tests
 - Intercept network requests
 - Realistic integration testing without hitting real APIs
 
 **Faker**
+
 - Generate realistic test data
 - Consistent fixtures
 
 **Testcontainers** (optional)
+
 - Spin up real PostgreSQL for integration tests
 - Alternative to mocking database
 
@@ -156,16 +165,16 @@ This document defines a comprehensive testing approach for the Imajin web platfo
 // lib/cart.ts
 export function calculateCartTotal(items: CartItem[]): number {
   return items.reduce((total, item) => {
-    return total + (item.price * item.quantity)
-  }, 0)
+    return total + item.price * item.quantity;
+  }, 0);
 }
 
 export function validateCartItem(item: CartItem): string[] {
-  const errors: string[] = []
-  if (item.quantity < 1) errors.push('Quantity must be at least 1')
-  if (item.quantity > 50) errors.push('Quantity cannot exceed 50')
-  if (item.price < 0) errors.push('Invalid price')
-  return errors
+  const errors: string[] = [];
+  if (item.quantity < 1) errors.push("Quantity must be at least 1");
+  if (item.quantity > 50) errors.push("Quantity cannot exceed 50");
+  if (item.price < 0) errors.push("Invalid price");
+  return errors;
 }
 ```
 
@@ -173,40 +182,40 @@ export function validateCartItem(item: CartItem): string[] {
 
 ```typescript
 // tests/unit/lib/cart.test.ts
-import { describe, it, expect } from 'vitest'
-import { calculateCartTotal, validateCartItem } from '@/lib/cart'
+import { describe, it, expect } from "vitest";
+import { calculateCartTotal, validateCartItem } from "@/lib/cart";
 
-describe('calculateCartTotal', () => {
-  it('calculates total for multiple items', () => {
+describe("calculateCartTotal", () => {
+  it("calculates total for multiple items", () => {
     const items = [
-      { productId: 'A', price: 1000, quantity: 2 }, // $10.00 x 2
-      { productId: 'B', price: 500, quantity: 3 },  // $5.00 x 3
-    ]
+      { productId: "A", price: 1000, quantity: 2 }, // $10.00 x 2
+      { productId: "B", price: 500, quantity: 3 }, // $5.00 x 3
+    ];
 
-    expect(calculateCartTotal(items)).toBe(3500) // $35.00
-  })
+    expect(calculateCartTotal(items)).toBe(3500); // $35.00
+  });
 
-  it('returns 0 for empty cart', () => {
-    expect(calculateCartTotal([])).toBe(0)
-  })
-})
+  it("returns 0 for empty cart", () => {
+    expect(calculateCartTotal([])).toBe(0);
+  });
+});
 
-describe('validateCartItem', () => {
-  it('returns no errors for valid item', () => {
-    const item = { productId: 'A', price: 1000, quantity: 5 }
-    expect(validateCartItem(item)).toEqual([])
-  })
+describe("validateCartItem", () => {
+  it("returns no errors for valid item", () => {
+    const item = { productId: "A", price: 1000, quantity: 5 };
+    expect(validateCartItem(item)).toEqual([]);
+  });
 
-  it('returns error for quantity too low', () => {
-    const item = { productId: 'A', price: 1000, quantity: 0 }
-    expect(validateCartItem(item)).toContain('Quantity must be at least 1')
-  })
+  it("returns error for quantity too low", () => {
+    const item = { productId: "A", price: 1000, quantity: 0 };
+    expect(validateCartItem(item)).toContain("Quantity must be at least 1");
+  });
 
-  it('returns error for quantity too high', () => {
-    const item = { productId: 'A', price: 1000, quantity: 100 }
-    expect(validateCartItem(item)).toContain('Quantity cannot exceed 50')
-  })
-})
+  it("returns error for quantity too high", () => {
+    const item = { productId: "A", price: 1000, quantity: 100 };
+    expect(validateCartItem(item)).toContain("Quantity cannot exceed 50");
+  });
+});
 ```
 
 ---
@@ -285,18 +294,18 @@ describe('ProductCard', () => {
 
 ```typescript
 // app/api/products/route.ts
-import { db } from '@/lib/db'
-import { products } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { db } from "@/lib/db";
+import { products } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET() {
   const allProducts = await db
     .select()
     .from(products)
     .where(eq(products.dev_status, 5))
-    .orderBy(products.category)
+    .orderBy(products.category);
 
-  return Response.json({ products: allProducts })
+  return Response.json({ products: allProducts });
 }
 ```
 
@@ -304,39 +313,39 @@ export async function GET() {
 
 ```typescript
 // tests/integration/api/products.test.ts
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { db } from '@/lib/db'
-import { products } from '@/db/schema'
-import { GET } from '@/app/api/products/route'
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { db } from "@/lib/db";
+import { products } from "@/db/schema";
+import { GET } from "@/app/api/products/route";
 
-describe('GET /api/products', () => {
+describe("GET /api/products", () => {
   beforeEach(async () => {
     // Seed test data
     await db.insert(products).values([
-      { id: 'prod-1', name: 'Product 1', dev_status: 5, price: 1000 },
-      { id: 'prod-2', name: 'Product 2', dev_status: 3, price: 2000 }, // Not ready
-      { id: 'prod-3', name: 'Product 3', dev_status: 5, price: 3000 },
-    ])
-  })
+      { id: "prod-1", name: "Product 1", dev_status: 5, price: 1000 },
+      { id: "prod-2", name: "Product 2", dev_status: 3, price: 2000 }, // Not ready
+      { id: "prod-3", name: "Product 3", dev_status: 5, price: 3000 },
+    ]);
+  });
 
   afterEach(async () => {
     // Clean up
-    await db.delete(products)
-  })
+    await db.delete(products);
+  });
 
-  it('returns only products with dev_status = 5', async () => {
-    const response = await GET()
-    const data = await response.json()
+  it("returns only products with dev_status = 5", async () => {
+    const response = await GET();
+    const data = await response.json();
 
-    expect(data.products).toHaveLength(2)
-    expect(data.products.map(p => p.id)).toEqual(['prod-1', 'prod-3'])
-  })
+    expect(data.products).toHaveLength(2);
+    expect(data.products.map((p) => p.id)).toEqual(["prod-1", "prod-3"]);
+  });
 
-  it('returns 200 status', async () => {
-    const response = await GET()
-    expect(response.status).toBe(200)
-  })
-})
+  it("returns 200 status", async () => {
+    const response = await GET();
+    expect(response.status).toBe(200);
+  });
+});
 ```
 
 ---
@@ -347,72 +356,72 @@ describe('GET /api/products', () => {
 
 ```typescript
 // tests/e2e/checkout.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('Checkout Flow', () => {
-  test('user can complete purchase', async ({ page }) => {
+test.describe("Checkout Flow", () => {
+  test("user can complete purchase", async ({ page }) => {
     // 1. Browse products
-    await page.goto('/')
-    await page.click('[data-testid="product-Material-8x8-V"]')
+    await page.goto("/");
+    await page.click('[data-testid="product-Material-8x8-V"]');
 
     // 2. Add to cart
-    await expect(page.getByRole('heading', { name: '8x8 Void Panel' })).toBeVisible()
-    await page.click('button:has-text("Add to Cart")')
-    await expect(page.getByText('Added to cart')).toBeVisible()
+    await expect(page.getByRole("heading", { name: "8x8 Void Panel" })).toBeVisible();
+    await page.click('button:has-text("Add to Cart")');
+    await expect(page.getByText("Added to cart")).toBeVisible();
 
     // 3. View cart
-    await page.click('[data-testid="cart-button"]')
-    await expect(page.getByText('8x8 Void Panel')).toBeVisible()
-    await expect(page.getByText('$35.00')).toBeVisible()
+    await page.click('[data-testid="cart-button"]');
+    await expect(page.getByText("8x8 Void Panel")).toBeVisible();
+    await expect(page.getByText("$35.00")).toBeVisible();
 
     // 4. Proceed to checkout
-    await page.click('button:has-text("Checkout")')
+    await page.click('button:has-text("Checkout")');
 
     // 5. Fill shipping info
-    await page.fill('[name="email"]', 'test@example.com')
-    await page.fill('[name="name"]', 'Test User')
-    await page.fill('[name="address"]', '123 Test St')
-    await page.fill('[name="city"]', 'Toronto')
-    await page.fill('[name="postal_code"]', 'M5H 2N2')
+    await page.fill('[name="email"]', "test@example.com");
+    await page.fill('[name="name"]', "Test User");
+    await page.fill('[name="address"]', "123 Test St");
+    await page.fill('[name="city"]', "Toronto");
+    await page.fill('[name="postal_code"]', "M5H 2N2");
 
     // 6. Complete Stripe checkout (test mode)
-    await page.click('button:has-text("Continue to Payment")')
+    await page.click('button:has-text("Continue to Payment")');
 
     // Fill Stripe test card
-    const stripeFrame = page.frameLocator('iframe[name*="stripe"]')
-    await stripeFrame.fill('[name="cardnumber"]', '4242424242424242')
-    await stripeFrame.fill('[name="exp-date"]', '1230')
-    await stripeFrame.fill('[name="cvc"]', '123')
-    await stripeFrame.fill('[name="postal"]', 'M5H 2N2')
+    const stripeFrame = page.frameLocator('iframe[name*="stripe"]');
+    await stripeFrame.fill('[name="cardnumber"]', "4242424242424242");
+    await stripeFrame.fill('[name="exp-date"]', "1230");
+    await stripeFrame.fill('[name="cvc"]', "123");
+    await stripeFrame.fill('[name="postal"]', "M5H 2N2");
 
     // 7. Submit payment
-    await page.click('button:has-text("Pay")')
+    await page.click('button:has-text("Pay")');
 
     // 8. Verify success
-    await expect(page).toHaveURL(/\/checkout\/success/)
-    await expect(page.getByText('Order confirmed')).toBeVisible()
-  })
+    await expect(page).toHaveURL(/\/checkout\/success/);
+    await expect(page.getByText("Order confirmed")).toBeVisible();
+  });
 
-  test('shows error for invalid card', async ({ page }) => {
+  test("shows error for invalid card", async ({ page }) => {
     // Navigate to checkout with item in cart
-    await page.goto('/checkout?test-cart=true')
+    await page.goto("/checkout?test-cart=true");
 
     // Fill form
-    await page.fill('[name="email"]', 'test@example.com')
+    await page.fill('[name="email"]', "test@example.com");
     // ... fill other fields
 
     // Use Stripe test card that will be declined
-    const stripeFrame = page.frameLocator('iframe[name*="stripe"]')
-    await stripeFrame.fill('[name="cardnumber"]', '4000000000000002')
-    await stripeFrame.fill('[name="exp-date"]', '1230')
-    await stripeFrame.fill('[name="cvc"]', '123')
+    const stripeFrame = page.frameLocator('iframe[name*="stripe"]');
+    await stripeFrame.fill('[name="cardnumber"]', "4000000000000002");
+    await stripeFrame.fill('[name="exp-date"]', "1230");
+    await stripeFrame.fill('[name="cvc"]', "123");
 
-    await page.click('button:has-text("Pay")')
+    await page.click('button:has-text("Pay")');
 
     // Verify error message
-    await expect(page.getByText(/card was declined/i)).toBeVisible()
-  })
-})
+    await expect(page.getByText(/card was declined/i)).toBeVisible();
+  });
+});
 ```
 
 ---
@@ -425,73 +434,73 @@ The smoke test suite grows with each phase, validating that all previous functio
 
 ```typescript
 // tests/smoke/phase1-foundation.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('Phase 1: Foundation Smoke Tests', () => {
-  test('database connection works', async ({ request }) => {
-    const response = await request.get('/api/health')
-    expect(response.status()).toBe(200)
+test.describe("Phase 1: Foundation Smoke Tests", () => {
+  test("database connection works", async ({ request }) => {
+    const response = await request.get("/api/health");
+    expect(response.status()).toBe(200);
 
-    const data = await response.json()
-    expect(data.database).toBe('connected')
-  })
+    const data = await response.json();
+    expect(data.database).toBe("connected");
+  });
 
-  test('app serves homepage', async ({ page }) => {
-    await page.goto('/')
-    await expect(page).toHaveTitle(/Imajin/i)
-  })
+  test("app serves homepage", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveTitle(/Imajin/i);
+  });
 
-  test('docker containers are healthy', async ({ request }) => {
-    const response = await request.get('/api/health')
-    const data = await response.json()
+  test("docker containers are healthy", async ({ request }) => {
+    const response = await request.get("/api/health");
+    const data = await response.json();
 
-    expect(data.status).toBe('ok')
-    expect(data.database).toBe('connected')
-  })
-})
+    expect(data.status).toBe("ok");
+    expect(data.database).toBe("connected");
+  });
+});
 ```
 
 ### Phase 2: E-commerce Core Smoke Tests
 
 ```typescript
 // tests/smoke/phase2-ecommerce.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('Phase 2: E-commerce Core Smoke Tests', () => {
+test.describe("Phase 2: E-commerce Core Smoke Tests", () => {
   // Re-run Phase 1 tests
-  test('Phase 1: foundation still works', async ({ request }) => {
-    const response = await request.get('/api/health')
-    expect(response.status()).toBe(200)
-  })
+  test("Phase 1: foundation still works", async ({ request }) => {
+    const response = await request.get("/api/health");
+    expect(response.status()).toBe(200);
+  });
 
   // New Phase 2 validation
-  test('products API returns data', async ({ request }) => {
-    const response = await request.get('/api/products')
-    expect(response.status()).toBe(200)
+  test("products API returns data", async ({ request }) => {
+    const response = await request.get("/api/products");
+    expect(response.status()).toBe(200);
 
-    const data = await response.json()
-    expect(data.products).toBeDefined()
-    expect(Array.isArray(data.products)).toBe(true)
-  })
+    const data = await response.json();
+    expect(data.products).toBeDefined();
+    expect(Array.isArray(data.products)).toBe(true);
+  });
 
-  test('product listing page renders', async ({ page }) => {
-    await page.goto('/products')
-    await expect(page.getByTestId('product-grid')).toBeVisible()
-  })
+  test("product listing page renders", async ({ page }) => {
+    await page.goto("/products");
+    await expect(page.getByTestId("product-grid")).toBeVisible();
+  });
 
-  test('product detail page loads', async ({ page }) => {
-    await page.goto('/products/Material-8x8-V')
-    await expect(page.getByRole('heading', { name: /8x8 void panel/i })).toBeVisible()
-  })
+  test("product detail page loads", async ({ page }) => {
+    await page.goto("/products/Material-8x8-V");
+    await expect(page.getByRole("heading", { name: /8x8 void panel/i })).toBeVisible();
+  });
 
-  test('cart functionality works', async ({ page }) => {
-    await page.goto('/products/Material-8x8-V')
-    await page.click('button:has-text("Add to Cart")')
+  test("cart functionality works", async ({ page }) => {
+    await page.goto("/products/Material-8x8-V");
+    await page.click('button:has-text("Add to Cart")');
 
-    await page.click('[data-testid="cart-button"]')
-    await expect(page.getByText('8x8 Void Panel')).toBeVisible()
-  })
-})
+    await page.click('[data-testid="cart-button"]');
+    await expect(page.getByText("8x8 Void Panel")).toBeVisible();
+  });
+});
 ```
 
 ### Running Smoke Tests
@@ -515,6 +524,7 @@ npm run test:smoke:ci
 ### Phase 1: Foundation & Infrastructure
 
 **Must Have Before Proceeding:**
+
 - ✅ Database connection test passes
 - ✅ Docker containers start successfully
 - ✅ Health check endpoint returns 200
@@ -522,6 +532,7 @@ npm run test:smoke:ci
 - ✅ Can seed database with sample data
 
 **Tests to Write:**
+
 ```
 tests/integration/db/connection.test.ts
 tests/integration/api/health.test.ts
@@ -533,6 +544,7 @@ tests/smoke/phase1-foundation.spec.ts
 ### Phase 2: E-commerce Core
 
 **Must Have Before Proceeding:**
+
 - ✅ Phase 1 smoke tests still pass
 - ✅ Products API returns expected data
 - ✅ Product listing page renders products
@@ -542,6 +554,7 @@ tests/smoke/phase1-foundation.spec.ts
 - ✅ Variant selector works
 
 **Tests to Write:**
+
 ```
 tests/integration/api/products.test.ts
 tests/unit/lib/cart-calculations.test.ts
@@ -555,6 +568,7 @@ tests/smoke/phase2-ecommerce.spec.ts
 ### Phase 3: Checkout & Payments
 
 **Must Have Before Proceeding:**
+
 - ✅ Phase 1 & 2 smoke tests still pass
 - ✅ Stripe checkout session creates successfully
 - ✅ Webhook handler processes payment
@@ -565,6 +579,7 @@ tests/smoke/phase2-ecommerce.spec.ts
 - ✅ Email sent (if implemented)
 
 **Tests to Write:**
+
 ```
 tests/integration/api/checkout.test.ts
 tests/integration/stripe/webhook.test.ts
@@ -578,6 +593,7 @@ tests/smoke/phase3-checkout.spec.ts
 ### Phase 4: Portfolio & Admin
 
 **Must Have Before Proceeding:**
+
 - ✅ Phase 1, 2, 3 smoke tests still pass
 - ✅ Portfolio items display correctly
 - ✅ Admin auth works
@@ -585,6 +601,7 @@ tests/smoke/phase3-checkout.spec.ts
 - ✅ NFT tracking functional
 
 **Tests to Write:**
+
 ```
 tests/integration/api/portfolio.test.ts
 tests/integration/api/admin/orders.test.ts
@@ -601,95 +618,90 @@ tests/smoke/phase4-portfolio.spec.ts
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./tests/setup/vitest.setup.ts'],
+    environment: "jsdom",
+    setupFiles: ["./tests/setup/vitest.setup.ts"],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html'],
-      exclude: [
-        'node_modules/',
-        'tests/',
-        '.next/',
-        '**/*.config.*',
-      ],
+      provider: "v8",
+      reporter: ["text", "html"],
+      exclude: ["node_modules/", "tests/", ".next/", "**/*.config.*"],
     },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './'),
+      "@": path.resolve(__dirname, "./"),
     },
   },
-})
+});
 ```
 
 ### Vitest Setup File
 
 ```typescript
 // tests/setup/vitest.setup.ts
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach, beforeAll, afterAll } from 'vitest'
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, afterAll } from "vitest";
 
 // Cleanup after each test
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // Setup test database
 beforeAll(async () => {
   // Connect to test database
   // Run migrations
   // Seed test data if needed
-})
+});
 
 // Teardown
 afterAll(async () => {
   // Close database connections
   // Clean up resources
-})
+});
 ```
 
 ### Playwright Config
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: "html",
 
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
   },
 
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
     // Add more browsers as needed
   ],
 
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: "npm run dev",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
   },
-})
+});
 ```
 
 ---
@@ -780,8 +792,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - run: npm ci
 
@@ -843,6 +855,7 @@ jobs:
 
 **Problem:** Tests take too long to run
 **Solutions:**
+
 - Run unit tests in watch mode (`npm run test:watch`)
 - Use `test.concurrent` for independent tests
 - Mock slow operations (database, network)
@@ -852,6 +865,7 @@ jobs:
 
 **Problem:** Tests pass sometimes, fail other times
 **Solutions:**
+
 - Add explicit waits in E2E tests (`await expect(...).toBeVisible()`)
 - Ensure tests are isolated (clean up database between tests)
 - Avoid time-dependent assertions
@@ -861,6 +875,7 @@ jobs:
 
 **Problem:** Vitest mock not working
 **Solutions:**
+
 - Use `vi.mock()` at top of file
 - Check module path is correct
 - Use `vi.mocked()` for typed mocks
@@ -870,6 +885,7 @@ jobs:
 
 **Problem:** Environment differences
 **Solutions:**
+
 - Check baseURL in config
 - Ensure database is seeded consistently
 - Use `--headed` mode to debug visually
@@ -881,14 +897,14 @@ jobs:
 
 ```typescript
 // tests/fixtures/products.ts
-import { faker } from '@faker-js/faker'
+import { faker } from "@faker-js/faker";
 
 export function createProduct(overrides = {}) {
   return {
     id: faker.string.uuid(),
     name: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
-    category: 'material',
+    category: "material",
     dev_status: 5,
     base_price: faker.number.int({ min: 1000, max: 10000 }),
     is_active: true,
@@ -896,7 +912,7 @@ export function createProduct(overrides = {}) {
     created_at: faker.date.past(),
     updated_at: faker.date.recent(),
     ...overrides,
-  }
+  };
 }
 
 export function createCartItem(overrides = {}) {
@@ -906,7 +922,7 @@ export function createCartItem(overrides = {}) {
     quantity: faker.number.int({ min: 1, max: 5 }),
     price: faker.number.int({ min: 1000, max: 10000 }),
     ...overrides,
-  }
+  };
 }
 ```
 
@@ -927,12 +943,14 @@ Track these to measure testing effectiveness:
 ## Resources
 
 ### Documentation
+
 - [Vitest Docs](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/react)
 - [Playwright Docs](https://playwright.dev/)
 - [MSW Docs](https://mswjs.io/)
 
 ### Learning
+
 - [Testing JavaScript](https://testingjavascript.com/) - Kent C. Dodds
 - [Playwright Tutorial](https://playwright.dev/docs/intro)
 - [Common Testing Mistakes](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)

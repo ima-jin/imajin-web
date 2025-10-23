@@ -5,6 +5,7 @@ Full-stack e-commerce platform for modular LED fixtures built with Next.js 14+.
 ## Overview
 
 This is a monorepo containing the complete web application including:
+
 - 🎨 Frontend (React/Next.js App Router)
 - 🔌 Backend API routes
 - 🗄️ Database schema and migrations (Drizzle ORM)
@@ -92,12 +93,14 @@ This repository follows monorepo best practices:
 ### Why Monorepo for Web?
 
 Next.js App Router is **inherently full-stack**:
+
 - Frontend (React components) and backend (API routes) in same codebase
 - Server components blur the line between frontend/backend
 - Database calls can happen directly in server components
 - Type sharing between client and server is trivial
 
 Splitting these into separate repos would create unnecessary complexity with:
+
 - Syncing types across repos
 - Coordinating deployments
 - Managing dependencies
@@ -106,6 +109,7 @@ Splitting these into separate repos would create unnecessary complexity with:
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - Docker & Docker Compose
 - Git
@@ -113,37 +117,44 @@ Splitting these into separate repos would create unnecessary complexity with:
 ### Development Setup
 
 1. **Clone the repository**
+
    ```bash
    cd D:\Projects\imajin\imajin-ai\web
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your values
    ```
 
 4. **Start Docker services**
+
    ```bash
    docker-compose -f docker/docker-compose.local.yml up -d
    ```
 
 5. **Run database migrations**
+
    ```bash
    npm run db:push
    ```
 
 6. **Seed the database** (optional)
+
    ```bash
    npm run db:seed
    ```
 
 7. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -179,9 +190,11 @@ npm run docker:down  # Stop all containers
 The application uses a configuration template plus three environments:
 
 ### Configuration Template
+
 - **default.json** - Base configuration (version controlled, no secrets)
 
 ### Environments
+
 - **Local** (`www-local.imajin.ai`) - Development workstation (Windows)
 - **Dev** (`www-dev.imajin.ai`) - QA/Testing (TBD)
 - **Live** (`www.imajin.ai`) - Production (Linux server, planned)
@@ -200,6 +213,7 @@ See [docs/ENVIRONMENTS.md](./docs/ENVIRONMENTS.md) for detailed configuration.
 **Status**: TBD - To be configured after server setup
 
 **Planned approach**:
+
 - Manual deployment initially
 - Automated CI/CD (GitHub Actions) to be added later
 - Self-hosted Linux server (hardware in progress)

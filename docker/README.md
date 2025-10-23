@@ -45,10 +45,12 @@ docker logs imajin-db-local
 ### Connecting to the Database
 
 **From the Next.js application:**
+
 - Use `DATABASE_URL` from `.env.local`
 - Connection: `postgresql://imajin:imajin_dev@localhost:5435/imajin_local`
 
 **From database client (DBeaver, pgAdmin, psql):**
+
 - Host: `localhost`
 - Port: `5435`
 - Database: `imajin_local`
@@ -56,6 +58,7 @@ docker logs imajin-db-local
 - Password: `imajin_dev`
 
 **From psql command line:**
+
 ```bash
 psql -h localhost -p 5435 -U imajin -d imajin_local
 # Password: imajin_dev
@@ -105,6 +108,7 @@ If port 5435 is already in use, change `DB_PORT` in `.env.local` and update the 
 ### Database Won't Start
 
 Check logs:
+
 ```bash
 docker logs imajin-db-local
 ```
@@ -118,6 +122,7 @@ docker logs imajin-db-local
 ### Health Check Failing
 
 Wait 30 seconds after startup for health check to stabilize. Check with:
+
 ```bash
 docker compose -f docker/docker-compose.local.yml ps
 ```
