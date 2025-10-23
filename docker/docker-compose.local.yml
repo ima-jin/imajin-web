@@ -1,0 +1,57 @@
+services:
+  # PostgreSQL Database - Local Development
+  imajin-db-local:
+    image: postgres:16-alpine
+    container_name: imajin-db-local
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-imajin_local}
+      POSTGRES_USER: ${DB_USER:-imajin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-imajin_dev}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${DB_PORT:-5435}:5432"
+    volumes:
+      - imajin-db-local-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - imajin-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-imajin} -d ${DB_NAME:-imajin_local}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Optional: pgAdmin for database management GUI
+  # Uncomment to enable
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: imajin-pgadmin-local
+  #   restart: unless-stopped
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@imajin.local}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #     PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+  #   ports:
+  #     - "5050:80"
+  #   volumes:
+  #     - imajin-pgadmin-local-data:/var/lib/pgadmin
+  #   networks:
+  #     - imajin-local
+  #   depends_on:
+  #     - imajin-db-local
+
+volumes:
+  imajin-db-local-data:
+    name: imajin-db-local-data
+    driver: local
+  # imajin-pgadmin-local-data:
+  #   name: imajin-pgadmin-local-data
+  #   driver: local
+
+networks:
+  imajin-local:
+    name: imajin-local
+    driver: bridge
