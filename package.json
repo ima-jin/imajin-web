@@ -19,7 +19,16 @@
     "docker:dev": "docker compose -f docker/docker-compose.local.yml up -d",
     "docker:down": "docker compose -f docker/docker-compose.local.yml down",
     "docker:logs": "docker compose -f docker/docker-compose.local.yml logs -f",
-    "docker:restart": "docker compose -f docker/docker-compose.local.yml restart"
+    "docker:restart": "docker compose -f docker/docker-compose.local.yml restart",
+    "test": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "playwright test tests/e2e",
+    "test:smoke": "playwright test tests/smoke",
+    "test:smoke:ci": "playwright test tests/smoke --reporter=line",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.7",
@@ -29,19 +38,29 @@
     "react-dom": "19.2.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.0.4",
+    "@vitest/coverage-v8": "^4.0.2",
     "drizzle-kit": "^0.31.5",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "jsdom": "^27.0.1",
+    "msw": "^2.11.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

@@ -58,9 +58,9 @@
 
 ### 1.4 Development Tooling
 
-- [ ] Configure ESLint and Prettier
-- [ ] Set up Git repository and `.gitignore`
-- [ ] Create development scripts in `package.json`:
+- [x] Configure ESLint and Prettier
+- [x] Set up Git repository and `.gitignore`
+- [x] Create development scripts in `package.json`:
   - `dev` - Start development server
   - `build` - Production build
   - `db:push` - Push schema changes
@@ -71,16 +71,16 @@
 
 ### 1.5 Testing Setup
 
-- [ ] Install testing dependencies:
+- [x] Install testing dependencies:
   - Vitest + React Testing Library
   - Playwright
   - MSW (Mock Service Worker)
   - @faker-js/faker
-- [ ] Create test directory structure (`/tests/unit`, `/tests/integration`, `/tests/e2e`, `/tests/smoke`)
-- [ ] Configure Vitest (`vitest.config.ts`)
-- [ ] Configure Playwright (`playwright.config.ts`)
-- [ ] Create test setup files and helpers
-- [ ] Add test scripts to `package.json`:
+- [x] Create test directory structure (`/tests/unit`, `/tests/integration`, `/tests/e2e`, `/tests/smoke`)
+- [x] Configure Vitest (`vitest.config.ts`)
+- [x] Configure Playwright (`playwright.config.ts`)
+- [x] Create test setup files and helpers
+- [x] Add test scripts to `package.json`:
   - `test` - Run unit + integration tests
   - `test:unit` - Unit tests only
   - `test:integration` - Integration tests only
@@ -98,18 +98,18 @@
 
 **Write These Tests:**
 
-- [ ] `tests/integration/db/connection.test.ts` - Database connection
-- [ ] `tests/integration/api/health.test.ts` - Health check endpoint
-- [ ] `tests/smoke/phase1-foundation.spec.ts` - Foundation smoke tests
+- [x] `tests/integration/db/connection.test.ts` - Database connection
+- [x] `tests/integration/api/health.test.ts` - Health check endpoint
+- [x] `tests/smoke/phase1-foundation.spec.ts` - Foundation smoke tests
 
 **Phase 1 Gate Criteria (Must Pass):**
 
-- [ ] ✅ Database connection test passes
-- [ ] ✅ Docker containers start successfully
-- [ ] ✅ Health check endpoint returns 200
-- [ ] ✅ Environment variables load correctly
-- [ ] ✅ Can seed database with sample data
-- [ ] ✅ All Phase 1 smoke tests pass
+- [x] ✅ Database connection test passes
+- [x] ✅ Docker containers start successfully
+- [x] ✅ Health check endpoint returns 200
+- [x] ✅ Environment variables load correctly
+- [x] ✅ Can seed database with sample data
+- [x] ✅ All Phase 1 smoke tests pass
 
 **Run before proceeding to Phase 2:**
 
