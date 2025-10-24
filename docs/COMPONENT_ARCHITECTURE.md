@@ -2,14 +2,13 @@
 
 ## Overview
 
-Next.js 14 App Router uses a mix of Server Components (default) and Client Components (marked with `'use client'`). This architecture leverages React Server Components for performance while using Client Components only where interactivity is needed.
+Next.js 14 App Router uses Server Components (default) + Client Components (`'use client'`) for optimal performance.
 
 **Key Principles:**
-
 - Server Components by default (better performance, smaller bundles)
 - Client Components only when needed (interactivity, browser APIs, state)
-- Shared components are framework-agnostic when possible
-- Composition over complex prop drilling
+- Shared components are framework-agnostic
+- Composition over prop drilling
 - Co-locate related components
 
 ---
@@ -19,124 +18,80 @@ Next.js 14 App Router uses a mix of Server Components (default) and Client Compo
 ```
 /app
 ├── (marketing)/              # Route group - marketing pages
-│   ├── layout.tsx           # Marketing layout (server component)
+│   ├── layout.tsx
 │   ├── page.tsx             # Homepage
-│   ├── about/
-│   │   └── page.tsx
-│   └── contact/
-│       └── page.tsx
-│
-├── (shop)/                  # Route group - e-commerce pages
-│   ├── layout.tsx           # Shop layout
+│   ├── about/page.tsx
+│   └── contact/page.tsx
+├── (shop)/                  # Route group - e-commerce
 │   ├── products/
 │   │   ├── page.tsx         # Product listing
-│   │   └── [id]/
-│   │       └── page.tsx     # Product detail
-│   ├── cart/
-│   │   └── page.tsx         # Cart page
+│   │   └── [id]/page.tsx    # Product detail
+│   ├── cart/page.tsx
 │   └── checkout/
-│       ├── page.tsx         # Checkout page
-│       └── success/
-│           └── page.tsx     # Order confirmation
-│
+│       ├── page.tsx
+│       └── success/page.tsx
 ├── portfolio/
-│   ├── page.tsx             # Portfolio listing
-│   └── [slug]/
-│       └── page.tsx         # Portfolio detail
-│
+│   ├── page.tsx
+│   └── [slug]/page.tsx
 ├── orders/
-│   ├── lookup/
-│   │   └── page.tsx         # Order lookup form
-│   └── [id]/
-│       └── page.tsx         # Order details
-│
+│   ├── lookup/page.tsx
+│   └── [id]/page.tsx
 ├── admin/
 │   ├── layout.tsx           # Admin layout (auth required)
-│   ├── page.tsx             # Admin dashboard
-│   ├── orders/
-│   │   ├── page.tsx
-│   │   └── [id]/
-│   │       └── page.tsx
-│   └── inventory/
-│       └── page.tsx
-│
-├── api/                     # API routes (see API_ROUTES.md)
+│   ├── orders/page.tsx
+│   └── inventory/page.tsx
+├── api/                     # API routes
 ├── layout.tsx               # Root layout
-├── error.tsx                # Global error boundary
-├── not-found.tsx            # 404 page
-└── globals.css              # Global styles
+├── error.tsx
+├── not-found.tsx
+└── globals.css
 
 /components
 ├── layout/                  # Layout components
-│   ├── Header.tsx           # Site header (client)
-│   ├── Footer.tsx           # Site footer (server)
-│   ├── Navigation.tsx       # Main nav (client)
-│   └── MobileMenu.tsx       # Mobile menu (client)
-│
+│   ├── Header.tsx           # (client)
+│   ├── Footer.tsx           # (server)
+│   ├── Navigation.tsx       # (client)
+│   └── MobileMenu.tsx       # (client)
 ├── ui/                      # Primitive UI components
-│   ├── Button.tsx           # Button component
-│   ├── Input.tsx            # Input field
-│   ├── Card.tsx             # Card container
-│   ├── Badge.tsx            # Badge/tag
-│   ├── Modal.tsx            # Modal dialog (client)
-│   ├── Toast.tsx            # Toast notifications (client)
-│   ├── Spinner.tsx          # Loading spinner
-│   ├── Skeleton.tsx         # Loading skeleton
-│   └── Icon.tsx             # Icon wrapper (client)
-│
-├── products/                # Product-related components
-│   ├── ProductCard.tsx      # Product card (server)
-│   ├── ProductGrid.tsx      # Product grid (server)
-│   ├── ProductDetail.tsx    # Product detail view (server)
-│   ├── ProductSpecs.tsx     # Specs table (server)
-│   ├── ProductImages.tsx    # Image gallery (client)
-│   ├── VariantSelector.tsx  # Color/option selector (client)
-│   ├── AddToCartButton.tsx  # Add to cart (client)
-│   ├── QuantityInput.tsx    # Quantity selector (client)
-│   ├── LimitedEditionBadge.tsx  # Limited edition indicator
-│   └── DependencyWarning.tsx    # Dependency alert
-│
-├── cart/                    # Shopping cart components
-│   ├── CartProvider.tsx     # Cart context provider (client)
-│   ├── CartButton.tsx       # Cart icon in header (client)
-│   ├── CartDrawer.tsx       # Slide-out cart (client)
-│   ├── CartItem.tsx         # Single cart item (client)
-│   ├── CartSummary.tsx      # Cart totals (client)
-│   └── CartValidation.tsx   # Validation warnings (client)
-│
-├── checkout/                # Checkout flow components
-│   ├── CheckoutForm.tsx     # Main checkout form (client)
-│   ├── ShippingForm.tsx     # Shipping address (client)
-│   ├── OrderSummary.tsx     # Order review (server)
-│   ├── StripeCheckout.tsx   # Stripe embedded (client)
-│   └── OrderConfirmation.tsx # Success message (server)
-│
-├── portfolio/               # Portfolio components
-│   ├── PortfolioCard.tsx    # Portfolio item card (server)
-│   ├── PortfolioGrid.tsx    # Portfolio grid (server)
-│   ├── PortfolioGallery.tsx # Image gallery (client)
-│   └── CaseStudy.tsx        # Case study layout (server)
-│
-├── admin/                   # Admin components
-│   ├── AuthGuard.tsx        # Admin auth wrapper (client)
-│   ├── OrdersList.tsx       # Orders table (server)
-│   ├── OrderDetail.tsx      # Single order view (server)
-│   ├── InventoryTable.tsx   # Inventory grid (server)
-│   ├── FulfillmentForm.tsx  # Fulfillment form (client)
-│   └── NFTTracker.tsx       # NFT tracking (server)
-│
-└── shared/                  # Shared/utility components
-    ├── Image.tsx            # Next.js Image wrapper
-    ├── Link.tsx             # Next.js Link wrapper
-    ├── Container.tsx        # Content container
-    ├── Section.tsx          # Page section
-    ├── ErrorBoundary.tsx    # Error boundary (client)
-    └── SEO.tsx              # SEO metadata (server)
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   ├── Card.tsx
+│   ├── Modal.tsx            # (client)
+│   ├── Toast.tsx            # (client)
+│   └── Spinner.tsx
+├── products/
+│   ├── ProductCard.tsx      # (server)
+│   ├── ProductGrid.tsx      # (server)
+│   ├── ProductDetail.tsx    # (server)
+│   ├── ProductImages.tsx    # (client)
+│   ├── VariantSelector.tsx  # (client)
+│   └── AddToCartButton.tsx  # (client)
+├── cart/
+│   ├── CartProvider.tsx     # (client - context)
+│   ├── CartButton.tsx       # (client)
+│   ├── CartDrawer.tsx       # (client)
+│   └── CartSummary.tsx      # (client)
+├── checkout/
+│   ├── CheckoutForm.tsx     # (client)
+│   ├── ShippingForm.tsx     # (client)
+│   ├── OrderSummary.tsx     # (server)
+│   └── StripeCheckout.tsx   # (client)
+├── portfolio/
+│   ├── PortfolioCard.tsx    # (server)
+│   └── PortfolioGallery.tsx # (client)
+├── admin/
+│   ├── AuthGuard.tsx        # (client)
+│   ├── OrdersList.tsx       # (server)
+│   └── FulfillmentForm.tsx  # (client)
+└── shared/
+    ├── Image.tsx
+    ├── Link.tsx
+    └── ErrorBoundary.tsx    # (client)
 
 /lib
-├── components/              # Component utilities
-│   ├── cn.ts               # Tailwind class merger (clsx + tailwind-merge)
-│   └── format.ts           # Formatting utilities (currency, date, etc.)
+├── components/
+│   ├── cn.ts               # Tailwind class merger
+│   └── format.ts           # Currency, date formatting
 ```
 
 ---
@@ -145,14 +100,7 @@ Next.js 14 App Router uses a mix of Server Components (default) and Client Compo
 
 ### Server Components (Default)
 
-**When to use:**
-
-- Static content rendering
-- Data fetching from database
-- SEO-critical content
-- No client-side interactivity needed
-
-**Example:**
+**When to use:** Static content, data fetching from DB, SEO-critical content, no interactivity
 
 ```tsx
 // components/products/ProductCard.tsx
@@ -188,14 +136,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
 ### Client Components
 
-**When to use:**
-
-- useState, useEffect, other React hooks
-- Event handlers (onClick, onChange, etc.)
-- Browser APIs (localStorage, geolocation, etc.)
-- Third-party libraries requiring window object
-
-**Example:**
+**When to use:** useState, useEffect, event handlers, browser APIs, third-party libraries requiring window
 
 ```tsx
 // components/products/AddToCartButton.tsx
@@ -233,7 +174,7 @@ export function AddToCartButton({ productId, variantId, quantity }: AddToCartBut
 
 ### Composition Pattern
 
-**Server Component wrapping Client Components:**
+Server Component wrapping Client Components:
 
 ```tsx
 // app/(shop)/products/[id]/page.tsx (Server Component)
@@ -247,14 +188,9 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
   return (
     <div>
-      {/* Server Component */}
-      <ProductDetail product={product} />
-
-      {/* Client Component */}
-      <ProductImages images={product.images} />
-
-      {/* Client Component */}
-      <AddToCartButton productId={product.id} quantity={1} />
+      <ProductDetail product={product} /> {/* Server */}
+      <ProductImages images={product.images} /> {/* Client */}
+      <AddToCartButton productId={product.id} quantity={1} /> {/* Client */}
     </div>
   );
 }
@@ -264,147 +200,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
 ## Key Components
 
-### Layout Components
-
-#### Header
-
-```tsx
-// components/layout/Header.tsx
-"use client";
-
-import { Navigation } from "./Navigation";
-import { CartButton } from "@/components/cart/CartButton";
-import { MobileMenu } from "./MobileMenu";
-
-export function Header() {
-  return (
-    <header className="sticky top-0 z-50 border-b bg-white">
-      <div className="container flex h-16 items-center justify-between">
-        <Logo />
-        <Navigation />
-        <div className="flex items-center gap-4">
-          <CartButton />
-          <MobileMenu />
-        </div>
-      </div>
-    </header>
-  );
-}
-```
-
-**Why Client Component:** Sticky positioning, mobile menu toggle, cart interactions
-
----
-
-#### Footer
-
-```tsx
-// components/layout/Footer.tsx (Server Component)
-
-export function Footer() {
-  return (
-    <footer className="bg-black py-12 text-white">
-      <div className="container grid grid-cols-4 gap-8">
-        <div>
-          <h4>Products</h4>
-          <ul>
-            <li>
-              <Link href="/products">All Products</Link>
-            </li>
-            <li>
-              <Link href="/products?category=kit">Kits</Link>
-            </li>
-          </ul>
-        </div>
-        {/* More columns */}
-      </div>
-    </footer>
-  );
-}
-```
-
-**Why Server Component:** Static content, no interactivity
-
----
-
-### Product Components
-
-#### ProductGrid
-
-```tsx
-// components/products/ProductGrid.tsx (Server Component)
-import { Product } from "@/types";
-import { ProductCard } from "./ProductCard";
-
-interface ProductGridProps {
-  products: Product[];
-}
-
-export function ProductGrid({ products }: ProductGridProps) {
-  return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  );
-}
-```
-
----
-
-#### VariantSelector
-
-```tsx
-// components/products/VariantSelector.tsx
-"use client";
-
-import { useState } from "react";
-import { Variant } from "@/types";
-
-interface VariantSelectorProps {
-  variants: Variant[];
-  onSelect: (variantId: string) => void;
-}
-
-export function VariantSelector({ variants, onSelect }: VariantSelectorProps) {
-  const [selected, setSelected] = useState<string>(variants[0].id);
-
-  const handleSelect = (variantId: string) => {
-    setSelected(variantId);
-    onSelect(variantId);
-  };
-
-  return (
-    <div className="flex gap-2">
-      {variants.map((variant) => (
-        <button
-          key={variant.id}
-          onClick={() => handleSelect(variant.id)}
-          className={cn(
-            "rounded border px-4 py-2",
-            selected === variant.id ? "border-black bg-black text-white" : "border-gray-300"
-          )}
-          disabled={!variant.is_available}
-        >
-          {variant.variant_value}
-          {variant.is_limited_edition && (
-            <span className="ml-2 text-xs">({variant.available_quantity} left)</span>
-          )}
-        </button>
-      ))}
-    </div>
-  );
-}
-```
-
-**Why Client Component:** Interactive selection, local state
-
----
-
-### Cart Components
-
-#### CartProvider (Context)
+### CartProvider (Context)
 
 ```tsx
 // components/cart/CartProvider.tsx
@@ -427,13 +223,11 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("cart");
     if (stored) setItems(JSON.parse(stored));
   }, []);
 
-  // Save cart to localStorage on change
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
@@ -499,69 +293,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ---
 
-#### CartDrawer
+### Button (UI Primitive)
 
-```tsx
-// components/cart/CartDrawer.tsx
-"use client";
-
-import { useCart } from "./CartProvider";
-import { CartItem } from "./CartItem";
-import { Button } from "@/components/ui/Button";
-import Link from "next/link";
-
-interface CartDrawerProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-export function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, total } = useCart();
-
-  if (!open) return null;
-
-  return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
-
-      {/* Drawer */}
-      <div className="fixed top-0 right-0 z-50 flex h-full w-96 flex-col bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b p-4">
-          <h2 className="text-lg font-bold">Cart ({items.length})</h2>
-          <button onClick={onClose}>×</button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4">
-          {items.length === 0 ? (
-            <p className="text-gray-500">Your cart is empty</p>
-          ) : (
-            items.map((item) => <CartItem key={item.productId} item={item} />)
-          )}
-        </div>
-
-        <div className="border-t p-4">
-          <div className="mb-4 flex justify-between">
-            <span>Total:</span>
-            <span className="font-bold">${(total / 100).toFixed(2)}</span>
-          </div>
-          <Link href="/checkout">
-            <Button className="w-full">Checkout</Button>
-          </Link>
-        </div>
-      </div>
-    </>
-  );
-}
-```
-
----
-
-### UI Components (Primitives)
-
-#### Button
-
-```tsx
+```typescript
 // components/ui/Button.tsx
 import { cn } from "@/lib/components/cn";
 import { Spinner } from "./Spinner";
@@ -588,7 +322,7 @@ export function Button({
         {
           "bg-black text-white hover:bg-gray-800": variant === "primary",
           "bg-gray-200 text-black hover:bg-gray-300": variant === "secondary",
-          "border border-black text-black hover:bg-black hover:text-white": variant === "outline",
+          "border border-black hover:bg-black hover:text-white": variant === "outline",
           "px-3 py-1.5 text-sm": size === "sm",
           "px-4 py-2": size === "md",
           "px-6 py-3 text-lg": size === "lg",
@@ -610,51 +344,38 @@ export function Button({
 ## State Management Strategy
 
 ### Local State (useState)
-
 - Component-specific UI state
 - Form inputs
-- Toggle states (open/closed, expanded/collapsed)
+- Toggle states
 
 ### Context (useContext)
-
 - Cart state (CartProvider)
 - Auth state (future - AuthProvider)
 - Theme state (future - ThemeProvider)
 
 ### Server State
-
 - Product data (fetched in Server Components)
-- Order data (fetched in Server Components)
-- Portfolio data (fetched in Server Components)
+- Order data
+- Portfolio data
 
-### No Global State Library
-
-- **Why:** Next.js Server Components eliminate need for Redux/Zustand for most cases
-- **When we might add one:** Complex admin dashboard with heavy client-side state
-- **Decision:** Re-evaluate after MVP
+**No Global State Library:** Next.js Server Components eliminate need for Redux/Zustand for most cases.
 
 ---
 
 ## Styling Strategy
 
 ### Tailwind CSS
-
 - Utility-first approach
 - Use `cn()` helper to merge classes conditionally
-- Custom colors in `tailwind.config.ts` for brand
+- Custom colors in `tailwind.config.ts`
 
-### Component Variants
-
-- Use `clsx` or `cva` (class-variance-authority) for variant styling
-- Keep variant logic in component, not scattered in JSX
-
-**Example with CVA:**
+### Component Variants (with CVA)
 
 ```tsx
 import { cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "rounded font-medium transition", // base styles
+  "rounded font-medium transition",
   {
     variants: {
       variant: {
@@ -692,7 +413,6 @@ import { db } from "@/lib/db";
 import { ProductGrid } from "@/components/products/ProductGrid";
 
 export default async function ProductsPage() {
-  // Direct DB query in Server Component
   const products = await db.query.products.findMany({
     where: eq(products.dev_status, 5),
   });
@@ -700,8 +420,6 @@ export default async function ProductsPage() {
   return <ProductGrid products={products} />;
 }
 ```
-
----
 
 ### Client Components (when needed)
 
@@ -729,8 +447,6 @@ export function OrdersList() {
   return <div>{/* render orders */}</div>;
 }
 ```
-
-**Note:** Prefer Server Components for initial data load, use Client Components for dynamic updates
 
 ---
 
@@ -785,9 +501,7 @@ export function CheckoutForm() {
 
     const res = await fetch("/api/checkout/session", {
       method: "POST",
-      body: JSON.stringify({
-        /* cart items */
-      }),
+      body: JSON.stringify({/* cart items */}),
     });
 
     const { url } = await res.json();
@@ -825,43 +539,6 @@ export default function Error({
 }
 ```
 
-### Component-level Error Handling
-
-```tsx
-// components/shared/ErrorBoundary.tsx
-"use client";
-
-import { Component, ReactNode } from "react";
-
-interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
-}
-
-interface State {
-  hasError: boolean;
-}
-
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback || <div>Something went wrong</div>;
-    }
-
-    return this.props.children;
-  }
-}
-```
-
 ---
 
 ## Loading States
@@ -883,58 +560,21 @@ export default function ProductsPage() {
 }
 
 async function ProductsLoader() {
-  const products = await getProducts(); // async data fetch
+  const products = await getProducts();
   return <ProductGrid products={products} />;
 }
 ```
-
-### Loading.tsx Files
-
-```tsx
-// app/(shop)/products/loading.tsx
-import { Spinner } from "@/components/ui/Spinner";
-
-export default function Loading() {
-  return (
-    <div className="flex items-center justify-center py-12">
-      <Spinner size="lg" />
-    </div>
-  );
-}
-```
-
----
-
-## Testing Strategy
-
-### Component Testing (Future)
-
-- Vitest + React Testing Library
-- Test UI components in isolation
-- Test user interactions (clicks, form submissions)
-
-### Visual Regression Testing (Future)
-
-- Chromatic or Percy
-- Catch unintended style changes
-
-### E2E Testing (Future)
-
-- Playwright
-- Test critical flows (checkout, order lookup)
 
 ---
 
 ## Performance Optimization
 
 ### Image Optimization
-
 - Always use Next.js `<Image>` component
-- Cloudinary for transformations (resize, format, quality)
-- Lazy load images below the fold
+- Cloudinary for transformations
+- Lazy load below the fold
 
 ### Code Splitting
-
 - Automatic with Next.js App Router
 - Dynamic imports for heavy components:
   ```tsx
@@ -944,13 +584,11 @@ export default function Loading() {
   ```
 
 ### Memoization (when needed)
-
 ```tsx
 "use client";
 import { memo } from "react";
 
 export const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
-  // Heavy computation or rendering
   return <div>{/* ... */}</div>;
 });
 ```
@@ -959,88 +597,12 @@ export const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
 
 ## Accessibility
 
-### Semantic HTML
-
-- Use proper heading hierarchy (h1 → h2 → h3)
+- Use semantic HTML (proper heading hierarchy)
 - Use `<button>` for actions, `<a>` for navigation
-- Use `<label>` for form inputs
-
-### ARIA Attributes
-
-```tsx
-<button aria-label="Add to cart" aria-describedby="price-info" aria-disabled={loading}>
-  Add to Cart
-</button>
-```
-
-### Keyboard Navigation
-
-- Ensure all interactive elements are keyboard accessible
-- Use `tabIndex` appropriately
-- Test with keyboard only (Tab, Enter, Escape)
-
-### Focus Management
-
-```tsx
-"use client";
-import { useEffect, useRef } from "react";
-
-export function Modal({ open, onClose }) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (open) {
-      closeButtonRef.current?.focus();
-    }
-  }, [open]);
-
-  return (
-    <div role="dialog" aria-modal="true">
-      <button ref={closeButtonRef} onClick={onClose}>
-        Close
-      </button>
-      {/* modal content */}
-    </div>
-  );
-}
-```
+- Add ARIA attributes where needed
+- Ensure keyboard navigation works
+- Manage focus (especially in modals)
 
 ---
 
-## Component Development Workflow
-
-1. **Identify component type** (Server or Client)
-2. **Design props interface** (TypeScript)
-3. **Build component** (HTML structure + Tailwind)
-4. **Add interactivity** (if Client Component)
-5. **Test in isolation** (Storybook or dedicated page - future)
-6. **Integrate into page** (use in route)
-7. **Test user flow** (manual testing)
-8. **Optimize** (memoization, lazy loading if needed)
-
----
-
-## Future Considerations
-
-### Component Library (Future)
-
-- Extract UI components to separate package
-- Publish to npm for reuse in `admin/`, `portal/`, `mobile/` repos
-- Use Storybook for documentation
-
-### Design System (Future)
-
-- Formalize color palette, typography, spacing
-- Create design tokens
-- Generate Tailwind config from tokens
-
-### Animation Library (Future)
-
-- Framer Motion for complex animations
-- Keep simple transitions in Tailwind
-
----
-
-**Document Created:** 2025-10-22
-**Last Updated:** 2025-10-22
-**Status:** Complete - Ready for implementation
+**Last Updated:** 2025-10-24
