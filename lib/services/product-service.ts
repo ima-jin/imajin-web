@@ -2,6 +2,8 @@ import { db } from "@/db";
 import { products, variants, productSpecs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import type { Product, ProductWithVariants, ProductWithSpecs, ProductFilters } from "@/types/product";
+import { mapDbProductToProduct, mapDbProductsToProducts } from "@/lib/mappers/product-mapper";
+import { mapDbVariantsToVariants } from "@/lib/mappers/variant-mapper";
 
 /**
  * Get all products with optional filtering
@@ -32,30 +34,34 @@ export async function getAllProducts(filters?: ProductFilters): Promise<Product[
     conditions.push(eq(products.hasVariants, filters.hasVariants));
   }
 
-  const result = await db
+  const dbProducts = await db
     .select()
     .from(products)
     .where(conditions.length > 0 ? and(...conditions) : undefined);
 
-  return result;
+  return mapDbProductsToProducts(dbProducts);
 }
 
 /**
  * Get a single product by ID
  */
 export async function getProductById(id: string): Promise<Product | null> {
-  const result = await db.select().from(products).where(eq(products.id, id));
+  const dbProducts = await db.select().from(products).where(eq(products.id, id));
 
-  return result[0] || null;
+  if (dbProducts.length === 0) {
+    return null;
+  }
+
+  return mapDbProductToProduct(dbProducts[0]);
 }
 
 /**
  * Get products by development status
  */
 export async function getProductsByStatus(status: number): Promise<Product[]> {
-  const result = await db.select().from(products).where(eq(products.devStatus, status));
+  const dbProducts = await db.select().from(products).where(eq(products.devStatus, status));
 
-  return result;
+  return mapDbProductsToProducts(dbProducts);
 }
 
 /**
@@ -73,9 +79,11 @@ export async function getProductWithVariants(id: string): Promise<ProductWithVar
   const specs = await db.select().from(productSpecs).where(eq(productSpecs.productId, id));
 
   // Get variants if product has them
-  const productVariants = product.hasVariants
+  const dbVariants = product.hasVariants
     ? await db.select().from(variants).where(eq(variants.productId, id))
     : [];
+
+  const productVariants = mapDbVariantsToVariants(dbVariants);
 
   return {
     ...product,

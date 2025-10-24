@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   createTestDbConnection,
   closeTestDbConnection,
-  clearTestData,
 } from "@/tests/helpers/db-helpers";
 import {
   getAllProducts,
@@ -21,20 +20,23 @@ describe("Product Service", () => {
 
   beforeEach(async () => {
     ({ client, db } = createTestDbConnection());
-    await clearTestData(db);
+    // Don't clear all data - let each describe block manage its own test data
   });
 
   afterEach(async () => {
-    await clearTestData(db);
+    // Don't clear all data - let each describe block clean up its own test data
     await closeTestDbConnection(client);
   });
 
   describe("getAllProducts", () => {
+    // Test data IDs for this describe block
+    const testIds = ["svc-prod-1", "svc-prod-2", "svc-prod-3", "svc-prod-4"];
+
     beforeEach(async () => {
       // Seed test products with different statuses
       await db.insert(products).values([
         {
-          id: "test-prod-1",
+          id: "svc-prod-1",
           name: "Test Product 1",
           category: "material",
           devStatus: 5,
@@ -43,7 +45,7 @@ describe("Product Service", () => {
           hasVariants: false,
         },
         {
-          id: "test-prod-2",
+          id: "svc-prod-2",
           name: "Test Product 2",
           category: "connector",
           devStatus: 5,
@@ -52,7 +54,7 @@ describe("Product Service", () => {
           hasVariants: false,
         },
         {
-          id: "test-prod-3",
+          id: "svc-prod-3",
           name: "Test Product 3 (Dev)",
           category: "material",
           devStatus: 3,
@@ -61,7 +63,7 @@ describe("Product Service", () => {
           hasVariants: false,
         },
         {
-          id: "test-prod-4",
+          id: "svc-prod-4",
           name: "Test Product 4 (Inactive)",
           category: "material",
           devStatus: 5,
@@ -70,6 +72,14 @@ describe("Product Service", () => {
           hasVariants: false,
         },
       ]);
+    });
+
+    afterEach(async () => {
+      // Clean up only our test data
+      const { eq } = await import("drizzle-orm");
+      for (const id of testIds) {
+        await db.delete(products).where(eq(products.id, id));
+      }
     });
 
     it("returns only active products with dev_status = 5 by default", async () => {
@@ -84,7 +94,7 @@ describe("Product Service", () => {
       const result = await getAllProducts({ category: "material" });
 
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("test-prod-1");
+      expect(result[0].id).toBe("svc-prod-1");
       expect(result[0].category).toBe("material");
     });
 
@@ -92,7 +102,7 @@ describe("Product Service", () => {
       const result = await getAllProducts({ devStatus: 3 });
 
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("test-prod-3");
+      expect(result[0].id).toBe("svc-prod-3");
       expect(result[0].devStatus).toBe(3);
     });
 
@@ -100,7 +110,7 @@ describe("Product Service", () => {
       const result = await getAllProducts({ isActive: false, devStatus: 5 });
 
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("test-prod-4");
+      expect(result[0].id).toBe("svc-prod-4");
       expect(result[0].isActive).toBe(false);
     });
 
@@ -119,14 +129,16 @@ describe("Product Service", () => {
       });
 
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe("test-prod-1");
+      expect(result[0].id).toBe("svc-prod-1");
     });
   });
 
   describe("getProductById", () => {
+    const testIds = ["svc-prod-1"];
+
     beforeEach(async () => {
       await db.insert(products).values({
-        id: "test-prod-1",
+        id: "svc-prod-1",
         name: "Test Product",
         category: "material",
         devStatus: 5,
@@ -136,11 +148,18 @@ describe("Product Service", () => {
       });
     });
 
+    afterEach(async () => {
+      const { eq } = await import("drizzle-orm");
+      for (const id of testIds) {
+        await db.delete(products).where(eq(products.id, id));
+      }
+    });
+
     it("returns product when found", async () => {
-      const result = await getProductById("test-prod-1");
+      const result = await getProductById("svc-prod-1");
 
       expect(result).not.toBeNull();
-      expect(result?.id).toBe("test-prod-1");
+      expect(result?.id).toBe("svc-prod-1");
       expect(result?.name).toBe("Test Product");
     });
 
@@ -152,10 +171,12 @@ describe("Product Service", () => {
   });
 
   describe("getProductsByStatus", () => {
+    const testIds = ["svc-prod-1", "svc-prod-2", "svc-prod-3"];
+
     beforeEach(async () => {
       await db.insert(products).values([
         {
-          id: "test-prod-1",
+          id: "svc-prod-1",
           name: "Status 5 Product 1",
           category: "material",
           devStatus: 5,
@@ -164,7 +185,7 @@ describe("Product Service", () => {
           hasVariants: false,
         },
         {
-          id: "test-prod-2",
+          id: "svc-prod-2",
           name: "Status 5 Product 2",
           category: "material",
           devStatus: 5,
@@ -173,7 +194,7 @@ describe("Product Service", () => {
           hasVariants: false,
         },
         {
-          id: "test-prod-3",
+          id: "svc-prod-3",
           name: "Status 3 Product",
           category: "material",
           devStatus: 3,
@@ -182,6 +203,13 @@ describe("Product Service", () => {
           hasVariants: false,
         },
       ]);
+    });
+
+    afterEach(async () => {
+      const { eq } = await import("drizzle-orm");
+      for (const id of testIds) {
+        await db.delete(products).where(eq(products.id, id));
+      }
     });
 
     it("returns all products with specified status", async () => {
@@ -199,10 +227,13 @@ describe("Product Service", () => {
   });
 
   describe("getProductWithVariants", () => {
+    const testProductIds = ["svc-prod-variants", "svc-prod-no-variants"];
+    const testVariantIds = ["variant-black", "variant-white"];
+
     beforeEach(async () => {
       // Create product with variants
       await db.insert(products).values({
-        id: "test-prod-variants",
+        id: "svc-prod-variants",
         name: "Product With Variants",
         category: "kit",
         devStatus: 5,
@@ -215,7 +246,7 @@ describe("Product Service", () => {
       await db.insert(variants).values([
         {
           id: "variant-black",
-          productId: "test-prod-variants",
+          productId: "svc-prod-variants",
           stripeProductId: "stripe_black",
           variantType: "color",
           variantValue: "BLACK",
@@ -226,7 +257,7 @@ describe("Product Service", () => {
         },
         {
           id: "variant-white",
-          productId: "test-prod-variants",
+          productId: "svc-prod-variants",
           stripeProductId: "stripe_white",
           variantType: "color",
           variantValue: "WHITE",
@@ -240,14 +271,14 @@ describe("Product Service", () => {
       // Add specs
       await db.insert(productSpecs).values([
         {
-          productId: "test-prod-variants",
+          productId: "svc-prod-variants",
           specKey: "voltage",
           specValue: "24",
           specUnit: "v",
           displayOrder: 1,
         },
         {
-          productId: "test-prod-variants",
+          productId: "svc-prod-variants",
           specKey: "dimensions",
           specValue: "240 x 240 x 240",
           specUnit: "mm",
@@ -256,17 +287,29 @@ describe("Product Service", () => {
       ]);
     });
 
+    afterEach(async () => {
+      const { eq } = await import("drizzle-orm");
+      // Delete in order to respect foreign keys: variants -> specs -> products
+      for (const id of testVariantIds) {
+        await db.delete(variants).where(eq(variants.id, id));
+      }
+      for (const id of testProductIds) {
+        await db.delete(productSpecs).where(eq(productSpecs.productId, id));
+        await db.delete(products).where(eq(products.id, id));
+      }
+    });
+
     it("returns product with variants and specs", async () => {
-      const result = await getProductWithVariants("test-prod-variants");
+      const result = await getProductWithVariants("svc-prod-variants");
 
       expect(result).not.toBeNull();
-      expect(result?.id).toBe("test-prod-variants");
+      expect(result?.id).toBe("svc-prod-variants");
       expect(result?.variants).toHaveLength(2);
       expect(result?.specs).toHaveLength(2);
     });
 
     it("includes variant availability information", async () => {
-      const result = await getProductWithVariants("test-prod-variants");
+      const result = await getProductWithVariants("svc-prod-variants");
 
       const blackVariant = result?.variants.find((v) => v.variantValue === "BLACK");
       expect(blackVariant).toBeDefined();
@@ -276,7 +319,7 @@ describe("Product Service", () => {
 
     it("returns empty variants array for product without variants", async () => {
       await db.insert(products).values({
-        id: "test-prod-no-variants",
+        id: "svc-prod-no-variants",
         name: "Product Without Variants",
         category: "material",
         devStatus: 5,
@@ -285,7 +328,7 @@ describe("Product Service", () => {
         hasVariants: false,
       });
 
-      const result = await getProductWithVariants("test-prod-no-variants");
+      const result = await getProductWithVariants("svc-prod-no-variants");
 
       expect(result).not.toBeNull();
       expect(result?.variants).toEqual([]);
@@ -299,9 +342,11 @@ describe("Product Service", () => {
   });
 
   describe("getProductWithSpecs", () => {
+    const testIds = ["svc-prod-specs", "svc-prod-no-specs"];
+
     beforeEach(async () => {
       await db.insert(products).values({
-        id: "test-prod-specs",
+        id: "svc-prod-specs",
         name: "Product With Specs",
         category: "material",
         devStatus: 5,
@@ -312,21 +357,21 @@ describe("Product Service", () => {
 
       await db.insert(productSpecs).values([
         {
-          productId: "test-prod-specs",
+          productId: "svc-prod-specs",
           specKey: "led_count",
           specValue: "64",
           specUnit: "LEDs",
           displayOrder: 1,
         },
         {
-          productId: "test-prod-specs",
+          productId: "svc-prod-specs",
           specKey: "voltage",
           specValue: "5",
           specUnit: "v",
           displayOrder: 2,
         },
         {
-          productId: "test-prod-specs",
+          productId: "svc-prod-specs",
           specKey: "power_consumption",
           specValue: "30",
           specUnit: "W",
@@ -335,11 +380,19 @@ describe("Product Service", () => {
       ]);
     });
 
+    afterEach(async () => {
+      const { eq } = await import("drizzle-orm");
+      for (const id of testIds) {
+        await db.delete(productSpecs).where(eq(productSpecs.productId, id));
+        await db.delete(products).where(eq(products.id, id));
+      }
+    });
+
     it("returns product with specs ordered by display_order", async () => {
-      const result = await getProductWithSpecs("test-prod-specs");
+      const result = await getProductWithSpecs("svc-prod-specs");
 
       expect(result).not.toBeNull();
-      expect(result?.id).toBe("test-prod-specs");
+      expect(result?.id).toBe("svc-prod-specs");
       expect(result?.specs).toHaveLength(3);
       expect(result?.specs[0].specKey).toBe("led_count");
       expect(result?.specs[1].specKey).toBe("voltage");
@@ -348,7 +401,7 @@ describe("Product Service", () => {
 
     it("returns empty specs array for product without specs", async () => {
       await db.insert(products).values({
-        id: "test-prod-no-specs",
+        id: "svc-prod-no-specs",
         name: "Product Without Specs",
         category: "material",
         devStatus: 5,
@@ -357,7 +410,7 @@ describe("Product Service", () => {
         hasVariants: false,
       });
 
-      const result = await getProductWithSpecs("test-prod-no-specs");
+      const result = await getProductWithSpecs("svc-prod-no-specs");
 
       expect(result).not.toBeNull();
       expect(result?.specs).toEqual([]);

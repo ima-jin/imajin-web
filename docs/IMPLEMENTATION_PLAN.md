@@ -66,25 +66,39 @@
 - [ ] Update tests to use `DATABASE_URL_TEST`
 - [ ] Add type mapper/validator layer (Dr. Clean rec)
 
-### 2.2 Product Catalog Pages
+### 2.2 Product Catalog Pages ✅
 **Pre-work:**
-- [ ] Create `.env.test` with test database URL
-- [ ] Update test config for test database
-- [ ] Add `test:db:reset` script
-- [ ] Document test DB setup in TESTING_STRATEGY.md
+- [x] Create `.env.test` with test database URL
+- [x] Update test config for test database
+- [x] Add `test:db:reset` script
+- [x] Document test DB setup in TESTING_STRATEGY.md
 
 **Type Safety Layer:**
-- [ ] Create `lib/mappers/product-mapper.ts`
-- [ ] Add Zod validation for all DB queries
-- [ ] Handle JSON fields with parsing/validation
-- [ ] Create mapper tests
+- [x] Create `lib/mappers/product-mapper.ts`
+- [x] Create `lib/mappers/variant-mapper.ts`
+- [x] Add Zod validation for all DB queries
+- [x] Handle JSON fields with parsing/validation
+- [x] Create mapper tests (13 tests for product-mapper, 7 tests for variant-mapper)
+
+**API Routes:**
+- [x] GET /api/products (with category filtering)
+- [x] GET /api/products/[id] (with variants and specs)
+- [x] Integration tests for both endpoints (47 tests total)
+
+**Shared Components:**
+- [x] ProductCard component (12 tests)
+- [x] ProductGrid component (6 tests)
+- [x] CategoryFilter component (9 tests)
+- [x] LimitedEditionBadge component (9 tests)
+- [x] ProductSpecs component (8 tests)
+- [x] HeroSection component
 
 **Pages:**
-- [ ] Homepage with featured products
-- [ ] Product listing page
-- [ ] Product detail page (variants, qty, add to cart, specs)
-- [ ] Limited Edition badges
-- [ ] Dependency warnings UI
+- [x] Homepage with featured products (app/page.tsx)
+- [x] Product listing page (app/products/page.tsx)
+- [x] Product detail page with variants, specs, badges (app/products/[id]/page.tsx)
+- [x] Limited Edition badges
+- [ ] Dependency warnings UI - **DEFERRED to Phase 2.3**
 
 ### 2.3 Shopping Cart
 - [ ] Cart state (Context or Zustand)
@@ -116,26 +130,65 @@
 - [ ] "Sold out" UI states
 - [ ] Low stock warnings
 
-### 2.6 Phase 2 Testing
-**Tests:**
-- [ ] `tests/integration/api/products.test.ts`
-- [ ] `tests/unit/lib/cart-calculations.test.ts`
-- [ ] `tests/unit/lib/validation.test.ts`
-- [ ] `tests/unit/components/ProductCard.test.tsx`
-- [ ] `tests/unit/components/CartItem.test.tsx`
-- [ ] `tests/unit/components/VariantSelector.test.tsx`
-- [ ] `tests/integration/db/products-repository.test.ts`
-- [ ] `tests/smoke/phase2-ecommerce.spec.ts`
+### 2.6 Phase 2 Testing & Smoke Test Generation
 
-**Gate Criteria:**
-- [ ] Phase 1 tests still pass
-- [ ] Products API returns expected data
-- [ ] Product pages render correctly
-- [ ] Cart operations work
-- [ ] Cart persists in localStorage
-- [ ] Variant selector updates correctly
-- [ ] Dependency validation works
-- [ ] Phase 2 smoke tests pass
+**Purpose:** Create comprehensive smoke test suite that validates entire Phase 2 after all sub-phases complete.
+
+**Tasks:**
+- [ ] Write `tests/smoke/phase2-ecommerce.spec.ts` - Phase 2 smoke test suite
+- [ ] Verify all Phase 2 unit/integration tests passing
+- [ ] Run smoke tests against all Phase 2 features
+- [ ] Validate no regressions in Phase 1 smoke tests
+
+**Smoke Test Coverage (phase2-ecommerce.spec.ts):**
+```typescript
+// Product browsing
+- Products API returns data
+- Product listing page loads
+- Product detail page renders
+- Category filtering works
+
+// Shopping cart
+- Add to cart functionality
+- Cart persists in localStorage
+- Update quantities
+- Remove items
+- Cart total calculation
+
+// Variants & dependencies
+- Variant selector works
+- Limited edition badges display
+- Dependency warnings show
+- Voltage compatibility validation
+```
+
+**Existing Tests (from sub-phases):**
+- [x] `tests/integration/api/products.test.ts` (10 tests) - Phase 2.1/2.2
+- [x] `tests/integration/api/products-id.test.ts` (10 tests) - Phase 2.2
+- [x] `tests/unit/lib/mappers/product-mapper.test.ts` (13 tests) - Phase 2.2
+- [x] `tests/unit/lib/mappers/variant-mapper.test.ts` (7 tests) - Phase 2.2
+- [x] `tests/unit/components/ProductCard.test.tsx` (12 tests) - Phase 2.2
+- [x] `tests/unit/components/ProductGrid.test.tsx` (6 tests) - Phase 2.2
+- [x] `tests/unit/components/CategoryFilter.test.tsx` (9 tests) - Phase 2.2
+- [x] `tests/unit/components/LimitedEditionBadge.test.tsx` (9 tests) - Phase 2.2
+- [x] `tests/unit/components/ProductSpecs.test.tsx` (8 tests) - Phase 2.2
+- [ ] `tests/unit/lib/cart-calculations.test.ts` - **Phase 2.3**
+- [ ] `tests/unit/lib/validation.test.ts` - **Phase 2.3**
+- [ ] `tests/unit/components/CartItem.test.tsx` - **Phase 2.3**
+- [ ] `tests/unit/components/VariantSelector.test.tsx` - **Phase 2.3**
+- [ ] `tests/integration/db/products-repository.test.ts` - **Phase 2.3**
+- [ ] `tests/smoke/phase2-ecommerce.spec.ts` - **This phase (2.6)**
+
+**Gate Criteria (Phase 2.2):**
+- [x] Phase 1 tests still pass (153 total tests passing)
+- [x] Products API returns expected data
+- [x] Product pages render correctly
+- [x] Limited Edition badges display correctly
+- [ ] Cart operations work - **Phase 2.3**
+- [ ] Cart persists in localStorage - **Phase 2.3**
+- [ ] Variant selector updates correctly - **Phase 2.3**
+- [ ] Dependency validation works - **Phase 2.3**
+- [ ] Phase 2 smoke tests pass - **After Phase 2 complete**
 
 **Run:** `npm run test:smoke -- phase1 phase2`
 

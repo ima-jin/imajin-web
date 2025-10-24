@@ -8,6 +8,11 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./tests/helpers/vitest.setup.ts"],
+    env: {
+      // Set NODE_ENV to test - database will auto-select imajin_test
+      NODE_ENV: "test",
+    },
+    fileParallelism: false, // Run test files sequentially to avoid database conflicts
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],
@@ -21,7 +26,11 @@ export default defineConfig({
         "**/coverage/**",
       ],
     },
-    include: ["tests/unit/**/*.test.{ts,tsx}", "tests/integration/**/*.test.{ts,tsx}"],
+    include: [
+      "tests/unit/**/*.test.{ts,tsx}",
+      "tests/integration/**/*.test.{ts,tsx}",
+      "tests/smoke/**/*.test.{ts,tsx}",
+    ],
   },
   resolve: {
     alias: {

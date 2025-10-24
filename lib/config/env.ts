@@ -33,7 +33,23 @@ export function validateEnvironment(): EnvironmentConfig {
   const dbPort = parseInt(dbPortStr, 10);
   const dbUser = process.env.DB_USER || "imajin";
   const dbPassword = process.env.DB_PASSWORD || "imajin_dev";
-  const dbName = process.env.DB_NAME || "imajin_local";
+
+  // Automatically select database based on NODE_ENV
+  let dbName = process.env.DB_NAME;
+  if (!dbName) {
+    switch (nodeEnv) {
+      case "test":
+        dbName = "imajin_test";
+        break;
+      case "production":
+        dbName = "imajin_prod";
+        break;
+      case "development":
+      default:
+        dbName = "imajin_local";
+        break;
+    }
+  }
 
   // Validate port is a number
   if (isNaN(dbPort)) {
