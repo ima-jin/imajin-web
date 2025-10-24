@@ -3,11 +3,11 @@ import { cleanup } from "@testing-library/react";
 import { afterEach, beforeAll, afterAll } from "vitest";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
 import * as schema from "@/db/schema";
+import { getDatabaseConnectionString } from "@/lib/config/database";
 
 // Mock environment variables for tests
-process.env.NODE_ENV = "test";
+// Note: Vitest sets NODE_ENV automatically, we just ensure other env vars
 process.env.NEXT_PUBLIC_ENV = "test";
 
 // Global test database connection
@@ -23,9 +23,7 @@ afterEach(() => {
 beforeAll(async () => {
   try {
     // Create test database connection
-    const connectionString =
-      process.env.DATABASE_URL ||
-      `postgresql://${process.env.DB_USER || "imajin"}:${process.env.DB_PASSWORD || "imajin_dev"}@${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || "5435"}/${process.env.DB_NAME || "imajin_local"}`;
+    const connectionString = getDatabaseConnectionString();
 
     testClient = postgres(connectionString, { max: 1 });
     testDb = drizzle(testClient, { schema });

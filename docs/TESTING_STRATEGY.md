@@ -147,11 +147,31 @@ This document defines a comprehensive testing approach for the Imajin web platfo
 │   ├── orders.ts
 │   └── users.ts
 │
-└── setup/
+└── helpers/
     ├── vitest.setup.ts
-    ├── playwright.config.ts
+    ├── playwright.setup.ts
+    ├── db-helpers.ts
     └── test-helpers.ts
 ```
+
+### File Naming Convention
+
+**Test Files:**
+- Use `.test.ts` or `.test.tsx` for unit and integration tests (Vitest)
+- Use `.spec.ts` for E2E and smoke tests (Playwright)
+- **DO NOT mix naming conventions** - stick to one pattern per test type
+
+**Test Setup/Helper Files:**
+- Use `.setup.ts` suffix for global setup files (e.g., `vitest.setup.ts`)
+- Use `-helpers.ts` suffix for helper utilities (e.g., `db-helpers.ts`, `test-helpers.ts`)
+- Place in `/tests/helpers/` directory
+
+**Examples:**
+- ✅ `cart.test.ts` - Unit/integration test
+- ✅ `checkout.spec.ts` - E2E test
+- ✅ `db-helpers.ts` - Helper utilities
+- ❌ `cart.spec.ts` - Wrong for Vitest tests
+- ❌ `checkout.test.ts` - Wrong for Playwright tests
 
 ---
 

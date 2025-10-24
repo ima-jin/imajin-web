@@ -1,7 +1,6 @@
 import { test as setup } from "@playwright/test";
 import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
-import * as schema from "@/db/schema";
+import { getDatabaseConnectionString } from "@/lib/config/database";
 
 /**
  * Global setup for Playwright tests
@@ -12,12 +11,8 @@ setup("playwright global setup", async ({}) => {
 
   try {
     // Verify database is accessible for E2E tests
-    const connectionString =
-      process.env.DATABASE_URL ||
-      `postgresql://${process.env.DB_USER || "imajin"}:${process.env.DB_PASSWORD || "imajin_dev"}@${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || "5435"}/${process.env.DB_NAME || "imajin_local"}`;
-
+    const connectionString = getDatabaseConnectionString();
     const client = postgres(connectionString, { max: 1 });
-    const db = drizzle(client, { schema });
 
     // Quick health check
     await client`SELECT 1`;

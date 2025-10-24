@@ -9,7 +9,7 @@ import { products } from "@/db/schema";
 export async function GET() {
   try {
     // Test database connection by querying products
-    const result = await db.select().from(products).limit(1);
+    await db.select().from(products).limit(1);
 
     // Check environment variables are loaded
     const envCheck = {
@@ -23,7 +23,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       database: "connected",
       environment: envCheck,
-      version: "1.0.0",
+      version: process.env.npm_package_version || "0.1.0",
     });
   } catch (error) {
     console.error("Health check failed:", error);

@@ -1,6 +1,7 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "@/db/schema";
+import { getDatabaseConnectionString } from "@/lib/config/database";
 
 /**
  * Database test helpers
@@ -11,10 +12,7 @@ import * as schema from "@/db/schema";
  * Use this when you need an isolated database connection in tests
  */
 export function createTestDbConnection() {
-  const connectionString =
-    process.env.DATABASE_URL ||
-    `postgresql://${process.env.DB_USER || "imajin"}:${process.env.DB_PASSWORD || "imajin_dev"}@${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || "5435"}/${process.env.DB_NAME || "imajin_local"}`;
-
+  const connectionString = getDatabaseConnectionString();
   const client = postgres(connectionString);
   const db = drizzle(client, { schema });
 
@@ -82,7 +80,7 @@ export async function seedTestData(db: ReturnType<typeof drizzle>) {
 export async function waitForDatabase(maxRetries = 10, delayMs = 500): Promise<boolean> {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const { client, db } = createTestDbConnection();
+      const { client } = createTestDbConnection();
       await client`SELECT 1`;
       await closeTestDbConnection(client);
       return true;

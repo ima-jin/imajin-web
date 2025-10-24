@@ -6,7 +6,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   testMatch: /.*\.(spec|test)\.ts/,
-  testIgnore: ["**/setup/vitest.setup.ts", "**/setup/db-helpers.ts", "**/setup/test-helpers.ts"],
+  testIgnore: ["**/helpers/vitest.setup.ts", "**/helpers/db-helpers.ts", "**/helpers/test-helpers.ts"],
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

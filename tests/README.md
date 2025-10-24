@@ -25,7 +25,7 @@ tests/
 ├── e2e/               # End-to-end tests (Playwright)
 ├── smoke/             # Smoke test suites per phase (Playwright)
 ├── fixtures/          # Test data generators and fixtures
-└── setup/             # Test configuration and helpers
+└── helpers/           # Test configuration and helper utilities
 ```
 
 ## Running Tests
@@ -113,7 +113,7 @@ import {
   clearTestData,
   seedTestData,
   waitForDatabase,
-} from "@/tests/setup/db-helpers";
+} from "@/tests/helpers/db-helpers";
 
 // Create isolated database connection
 const { client, db } = createTestDbConnection();
@@ -166,8 +166,9 @@ npm run test:smoke
 
 - `vitest.config.ts` - Vitest configuration
 - `playwright.config.ts` - Playwright configuration
-- `setup/vitest.setup.ts` - Global test setup
-- `setup/test-helpers.ts` - Shared test utilities
+- `helpers/vitest.setup.ts` - Global test setup
+- `helpers/db-helpers.ts` - Database test utilities
+- `helpers/test-helpers.ts` - Shared test utilities
 
 ## Best Practices
 
