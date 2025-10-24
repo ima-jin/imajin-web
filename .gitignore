@@ -68,3 +68,6 @@ temp-*
 Thumbs.db
 .Spotlight-V100
 .Trashes
+
+# Claude AI
+.claude/settings.local.json
