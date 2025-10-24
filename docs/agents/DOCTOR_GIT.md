@@ -168,22 +168,27 @@ temp commit
 
 ### Body (Details Section)
 
+**CRITICAL: Keep it concise. Too verbose is exhausting to read.**
+
 **Structure:**
 - Start with high-level context (1-2 sentences)
-- Group related changes logically
+- Group related changes logically (3-5 bullet points max)
 - Use bullet points for clarity
-- Include technical specifics
+- Include technical specifics only if not obvious from diff
 - Wrap lines at 72 characters
+
+**Length guidelines:**
+- Simple changes: Subject line only
+- Medium changes: Subject + 3-5 bullets
+- Complex changes: Subject + 6-10 bullets (absolute max)
+- **Rule of thumb: If body is longer than the diff, it's too long**
 
 **What to include:**
 - Phase section references (Phase 1.5, Phase 2.3, etc.)
-- New capabilities enabled
-- Technical implementation details
-- Configuration changes
-- Dependencies added with rationale
-- Test coverage added
-- Documentation updated
-- Gate criteria satisfied
+- New capabilities enabled (what's now possible?)
+- Key technical decisions (why this approach?)
+- Breaking changes or migrations required
+- Gate criteria satisfied (if phase completion)
 
 **What to skip:**
 - File-by-file change lists (git knows this)
@@ -191,6 +196,7 @@ temp commit
 - Temporary debugging notes
 - Personal commentary
 - Redundant information
+- Every single detail (save for PR descriptions)
 
 ### Special Sections
 
@@ -404,34 +410,33 @@ Before finalizing a commit message, verify:
 **Accuracy:**
 - [ ] Commit type is correct (feat/fix/chore/test/docs)
 - [ ] Subject line captures the essence
-- [ ] Technical details are accurate
+- [ ] Technical details are accurate (if included)
 - [ ] Phase references are correct
 - [ ] No misleading or vague descriptions
 
-**Completeness:**
-- [ ] Major changes are mentioned
-- [ ] New capabilities are noted
-- [ ] Test additions are called out
-- [ ] Documentation updates referenced
-- [ ] Breaking changes highlighted (if any)
+**Conciseness:**
+- [ ] **Body shorter than the diff (or close to it)**
+- [ ] Only essential information included
+- [ ] No redundant explanations of obvious changes
+- [ ] 3-10 bullets max (prefer 3-5)
+- [ ] Could not be shorter without losing clarity
 
 **Context:**
 - [ ] Intent is clear (why, not just what)
-- [ ] Implementation plan connection made
-- [ ] Next steps implied or stated
-- [ ] Project-specific details included
+- [ ] Implementation plan connection made (if relevant)
+- [ ] Breaking changes noted (if any)
+- [ ] Next steps implied (if phase completion)
 
 **Clarity:**
 - [ ] Someone unfamiliar could understand the change
-- [ ] Technical jargon is necessary, not excessive
-- [ ] Organized logically (not stream of consciousness)
+- [ ] Organized logically (grouped by purpose)
 - [ ] No typos or grammar issues
 
 **Pragmatism:**
 - [ ] Focused on what matters
-- [ ] Not overly verbose (save details for PR description)
-- [ ] Not too terse (subject line alone isn't enough)
+- [ ] Not exhausting to read
 - [ ] Useful 6 months from now
+- [ ] Respects reader's time
 
 ---
 
@@ -455,11 +460,11 @@ Before finalizing a commit message, verify:
 
 **Do write:**
 - Clear, specific subject lines
-- Grouped logical changes in body
-- Intent and rationale
-- Technical specifics where needed
-- Phase/plan references
-- What's now possible
+- Concise body (3-5 bullets typically)
+- Intent and rationale (the "why")
+- Only non-obvious technical specifics
+- Phase/plan references (when relevant)
+- What's now possible (new capabilities)
 
 ---
 

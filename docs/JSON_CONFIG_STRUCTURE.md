@@ -19,21 +19,21 @@ Product and portfolio data is managed through JSON configuration files in the `/
 
 ```
 /config
-├── products/
-│   ├── materials.json       # Material panels (PCBs)
-│   ├── connectors.json      # Spine connectors
-│   ├── controls.json        # Control units
-│   ├── diffusers.json       # Diffusion caps
-│   ├── kits.json            # Complete kits (DIY, Founder)
-│   └── interfaces.json      # Wall interfaces
+├── products.json            # All products, variants, and dependencies (single file)
 ├── portfolio/
 │   ├── installations.json   # Installation projects
 │   └── case-studies.json    # Case studies
-├── dependencies.json        # Product dependency rules
 ├── default.json             # Default app config
 ├── dev.json                 # Dev environment overrides
 └── live.json                # Production overrides
 ```
+
+**Rationale for single products.json:**
+- Small product catalog (~13 products total)
+- Easier to manage, search, and edit
+- Single source of truth, less file overhead
+- Products have `category` field for filtering/organization
+- Can split later if catalog grows significantly (100+ products)
 
 ---
 
@@ -41,7 +41,7 @@ Product and portfolio data is managed through JSON configuration files in the `/
 
 ### Schema
 
-Each product category file follows this structure:
+The products.json file follows this structure:
 
 ```typescript
 // types/config.ts
@@ -84,11 +84,13 @@ export interface VariantConfig {
 
 ---
 
-### Example: Materials
+### Example: Complete products.json Structure
 
 ```json
-// config/products/materials.json
+// config/products.json
 {
+  "version": "1.0",
+  "updated": "2025-10-24",
   "products": [
     {
       "id": "Material-5x5-O",
@@ -208,19 +210,10 @@ export interface VariantConfig {
         "weight_grams": 72,
         "compatible_diffusers": ["Diffuse-12-C", "Diffuse-12-S"]
       }
-    }
-  ]
-}
-```
-
----
-
-### Example: Kits with Variants
-
-```json
-// config/products/kits.json
-{
-  "products": [
+    },
+    // ... additional products (connectors, controls, diffusers, kits) would continue here ...
+  ],
+  "variants": [
     {
       "id": "Unit-8x8x8-DIY",
       "name": "8x8x8 DIY Cube Kit",
@@ -388,17 +381,7 @@ export interface VariantConfig {
       "max_quantity": 200,
       "images": ["cloudinary-url-red-hero.jpg", "cloudinary-url-red-detail.jpg"]
     }
-  ]
-}
-```
-
----
-
-## Product Dependencies
-
-```json
-// config/dependencies.json
-{
+  ],
   "dependencies": [
     {
       "product_id": "Connect-4x31.6-5v",
@@ -452,6 +435,8 @@ export interface VariantConfig {
   ]
 }
 ```
+
+**Note:** All products, variants, and dependencies are now in a single `products.json` file for simplicity. Products are organized by `category` field for filtering.
 
 **Dependency Types:**
 

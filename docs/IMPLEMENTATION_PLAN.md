@@ -143,15 +143,37 @@ npm run test:smoke -- phase1
 
 ## Phase 2: E-commerce Core
 
-### 2.1 Product Data Management
+### 2.1 Product Data Management ✅
 
-- [ ] Create JSON config file structure for products (`/config/products.json`)
-- [ ] Define product data model (align with Stripe Product IDs)
-- [ ] Create script to sync JSON → Database
-- [ ] Build product management utilities (CRUD operations)
+- [x] Create JSON config file structure for products (`/config/products.json`)
+- [x] Define product data model (align with Stripe Product IDs)
+- [x] Create script to seed database from JSON (`npm run seed:db`)
+- [x] Build product management utilities (CRUD operations)
+
+**Improvements for Phase 2.2:**
+- [ ] Rename `sync:products` to `seed:db` (more accurate terminology)
+- [ ] Configure separate test database (`imajin_test`) for test isolation
+- [ ] Update test configuration to use `DATABASE_URL_TEST` environment variable
+- [ ] Add type mapper/validator layer between DB and application (Dr. Clean recommendation)
 
 ### 2.2 Product Catalog Pages
 
+**Pre-work: Infrastructure Improvements**
+
+*Test Database Setup:*
+- [ ] Create `.env.test` with `DATABASE_URL_TEST=postgresql://imajin:imajin_dev@localhost:5435/imajin_test`
+- [ ] Update test configuration files (vitest.config.ts, playwright.config.ts) to use test database
+- [ ] Add `test:db:reset` script to package.json for cleaning test database between runs
+- [ ] Document test database setup in TESTING_STRATEGY.md
+
+*Type Safety Layer (Dr. Clean recommendation):*
+- [ ] Create `lib/mappers/product-mapper.ts` - Map DB types to application types
+- [ ] Add runtime validation with Zod for all DB queries
+- [ ] Ensure TypeScript types match runtime data (catch null/undefined mismatches)
+- [ ] Handle JSON fields (specs, metadata) with proper parsing/validation
+- [ ] Create mapper tests to verify type transformations
+
+**Catalog Pages:**
 - [ ] Homepage with featured products
 - [ ] Product listing page (all products)
 - [ ] Product detail page (individual product)

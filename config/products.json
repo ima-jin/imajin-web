@@ -1,0 +1,876 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-24",
+  "products": [
+    {
+      "id": "Material-5x5-O",
+      "name": "5x5 Opaque Panel",
+      "description": "150mm, 5×5 prototype PCB from 2023 (opaque, 30mm spacing)",
+      "long_description": "Our original prototype panel featuring a 5×5 grid of addressable LEDs. Perfect for smaller installations or prototyping. Each panel contains 25 individually controllable RGB LEDs with opaque PCB backing for focused light output.\n\n**Use Cases:**\n- Small-scale installations\n- Prototyping and testing\n- Accent lighting\n- Legacy system compatibility",
+      "category": "material",
+      "dev_status": 5,
+      "base_price": 1600,
+      "stripe_product_id": "prod_material_5x5_o",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "dimensions",
+          "value": "150 x 150",
+          "unit": "mm",
+          "display_order": 1
+        },
+        {
+          "key": "led_count",
+          "value": "25",
+          "unit": "LEDs",
+          "display_order": 2
+        },
+        {
+          "key": "spacing",
+          "value": "30",
+          "unit": "mm",
+          "display_order": 3
+        },
+        {
+          "key": "led_type",
+          "value": "WS2812B",
+          "display_order": 4
+        },
+        {
+          "key": "voltage",
+          "value": "5",
+          "unit": "v",
+          "display_order": 5
+        },
+        {
+          "key": "power_consumption",
+          "value": "15",
+          "unit": "W",
+          "display_order": 6
+        }
+      ],
+      "metadata": {
+        "year_introduced": "2023",
+        "generation": "1",
+        "weight_grams": "45"
+      }
+    },
+    {
+      "id": "Material-8x8-V",
+      "name": "8x8 Void Panel",
+      "description": "240mm, 8×8 prototype PCB from 2024 (negative space cut away, 31.6mm spacing)",
+      "long_description": "Our current-generation panel featuring a refined 8×8 grid with negative space design for enhanced visual depth. The void-style PCB creates floating LED effects perfect for modern installations.\n\n**Key Features:**\n- 64 individually addressable RGB LEDs\n- Precision-cut negative space design\n- Optimized 31.6mm spacing for ideal coverage\n- Compatible with our spine connector system\n- Designed for scalability (tested up to 80 panels)\n\n**Use Cases:**\n- Large-scale installations\n- Commercial projects\n- Expandable fixtures\n- Founder Edition cubes",
+      "category": "material",
+      "dev_status": 5,
+      "base_price": 3500,
+      "stripe_product_id": "prod_TFqJ6019ONDct2",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "dimensions",
+          "value": "240 x 240",
+          "unit": "mm",
+          "display_order": 1
+        },
+        {
+          "key": "led_count",
+          "value": "64",
+          "unit": "LEDs",
+          "display_order": 2
+        },
+        {
+          "key": "spacing",
+          "value": "31.6",
+          "unit": "mm",
+          "display_order": 3
+        },
+        {
+          "key": "led_type",
+          "value": "WS2812B",
+          "display_order": 4
+        },
+        {
+          "key": "voltage",
+          "value": "5 / 24",
+          "unit": "v",
+          "display_order": 5
+        },
+        {
+          "key": "power_consumption",
+          "value": "38",
+          "unit": "W",
+          "display_order": 6
+        },
+        {
+          "key": "pcb_thickness",
+          "value": "1.6",
+          "unit": "mm",
+          "display_order": 7
+        }
+      ],
+      "metadata": {
+        "year_introduced": "2024",
+        "generation": "2",
+        "weight_grams": "72",
+        "compatible_diffusers": ["Diffuse-12-C", "Diffuse-12-S"]
+      }
+    },
+    {
+      "id": "Connect-4x31.6-5v",
+      "name": "4-Output Spine (5v)",
+      "description": "4 output spine connector for Material-8x8-V units (5v compatible)",
+      "long_description": "Spine connector designed for vertical stacking of Material-8x8-V panels in 5v systems. Features 4 outputs for connecting multiple panels with proper spacing and power distribution.\n\n**Compatibility:**\n- Material-8x8-V panels (31.6mm spacing)\n- 5v control units (Control-2-5v)\n- Maximum 8-10 panels per system",
+      "category": "connector",
+      "dev_status": 2,
+      "base_price": 2000,
+      "stripe_product_id": "prod_connect_4x31_6_5v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "4",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "5",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "spacing",
+          "value": "31.6",
+          "unit": "mm",
+          "display_order": 3
+        },
+        {
+          "key": "compatible_panels",
+          "value": "Material-8x8-V",
+          "display_order": 4
+        }
+      ],
+      "metadata": {
+        "voltage_system": "5v"
+      }
+    },
+    {
+      "id": "Connect-5x31.6-5v",
+      "name": "5-Output Spine (5v)",
+      "description": "5 output spine connector for Material-8x8-V units (5v compatible)",
+      "long_description": "Extended spine connector with 5 outputs for larger vertical stacks in 5v systems. Provides additional connectivity for more complex configurations.\n\n**Compatibility:**\n- Material-8x8-V panels (31.6mm spacing)\n- 5v control units (Control-2-5v)\n- Maximum 8-10 panels per system",
+      "category": "connector",
+      "dev_status": 1,
+      "base_price": 2200,
+      "stripe_product_id": "prod_connect_5x31_6_5v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "5",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "5",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "spacing",
+          "value": "31.6",
+          "unit": "mm",
+          "display_order": 3
+        },
+        {
+          "key": "compatible_panels",
+          "value": "Material-8x8-V",
+          "display_order": 4
+        }
+      ],
+      "metadata": {
+        "voltage_system": "5v"
+      }
+    },
+    {
+      "id": "Connect-4x31.6-24v",
+      "name": "4-Output Spine (24v)",
+      "description": "4 output spine connector for Material-8x8-V units (24v compatible)",
+      "long_description": "Professional-grade 24v spine connector for scalable installations. Supports larger panel counts and longer cable runs than 5v systems.\n\n**Compatibility:**\n- Material-8x8-V panels (31.6mm spacing)\n- 24v control units (Control-8-24v, Control-16-24v)\n- Scalable to 64-80 panels",
+      "category": "connector",
+      "dev_status": 0,
+      "base_price": 6000,
+      "stripe_product_id": "prod_connect_4x31_6_24v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "4",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "24",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "spacing",
+          "value": "31.6",
+          "unit": "mm",
+          "display_order": 3
+        },
+        {
+          "key": "compatible_panels",
+          "value": "Material-8x8-V",
+          "display_order": 4
+        }
+      ],
+      "metadata": {
+        "voltage_system": "24v"
+      }
+    },
+    {
+      "id": "Connect-5x31.6-24v",
+      "name": "5-Output Spine (24v)",
+      "description": "5 output spine connector for Material-8x8-V units (24v compatible)",
+      "long_description": "Extended 24v spine connector with 5 outputs for large-scale professional installations. Maximum connectivity and flexibility for complex fixtures.\n\n**Compatibility:**\n- Material-8x8-V panels (31.6mm spacing)\n- 24v control units (Control-8-24v, Control-16-24v)\n- Scalable to 64-80 panels",
+      "category": "connector",
+      "dev_status": 0,
+      "base_price": 7500,
+      "stripe_product_id": "prod_connect_5x31_6_24v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "5",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "24",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "spacing",
+          "value": "31.6",
+          "unit": "mm",
+          "display_order": 3
+        },
+        {
+          "key": "compatible_panels",
+          "value": "Material-8x8-V",
+          "display_order": 4
+        }
+      ],
+      "metadata": {
+        "voltage_system": "24v"
+      }
+    },
+    {
+      "id": "Diffuse-12-C",
+      "name": "12mm Cube Cap",
+      "description": "12mm SLA printed cube-shaped diffuser cap",
+      "long_description": "High-quality SLA 3D printed diffusion cap with cube geometry. Provides even light distribution and professional finish for LED installations.\n\n**Technical Details:**\n- SLA printed for high surface quality\n- Cube-shaped design\n- Perfect fit for WS2812B LEDs\n- Material-5x5-O: 25 caps per panel\n- Material-8x8-V: 64 caps per panel",
+      "category": "diffuser",
+      "dev_status": 4,
+      "base_price": 40,
+      "stripe_product_id": "prod_diffuse_12_c",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "size",
+          "value": "12",
+          "unit": "mm",
+          "display_order": 1
+        },
+        {
+          "key": "shape",
+          "value": "Cube",
+          "display_order": 2
+        },
+        {
+          "key": "printing_method",
+          "value": "SLA",
+          "display_order": 3
+        },
+        {
+          "key": "compatible_leds",
+          "value": "WS2812B",
+          "display_order": 4
+        }
+      ],
+      "metadata": {
+        "material": "Resin",
+        "finish": "Translucent"
+      }
+    },
+    {
+      "id": "Diffuse-12-S",
+      "name": "12mm Sphere Cap",
+      "description": "12mm SLA printed sphere-shaped diffuser cap",
+      "long_description": "High-quality SLA 3D printed diffusion cap with spherical geometry. Provides smooth, even light diffusion with a modern aesthetic.\n\n**Technical Details:**\n- SLA printed for high surface quality\n- Sphere-shaped design\n- Perfect fit for WS2812B LEDs\n- Material-5x5-O: 25 caps per panel\n- Material-8x8-V: 64 caps per panel",
+      "category": "diffuser",
+      "dev_status": 2,
+      "base_price": 40,
+      "stripe_product_id": "prod_diffuse_12_s",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "size",
+          "value": "12",
+          "unit": "mm",
+          "display_order": 1
+        },
+        {
+          "key": "shape",
+          "value": "Sphere",
+          "display_order": 2
+        },
+        {
+          "key": "printing_method",
+          "value": "SLA",
+          "display_order": 3
+        },
+        {
+          "key": "compatible_leds",
+          "value": "WS2812B",
+          "display_order": 4
+        }
+      ],
+      "metadata": {
+        "material": "Resin",
+        "finish": "Translucent"
+      }
+    },
+    {
+      "id": "Control-2-5v",
+      "name": "2-Output Control (5v)",
+      "description": "5v control unit, supports 8-10 Material-8x8-V panels (2 ESP32 outputs)",
+      "long_description": "Compact 5v control unit based on ESP32 microcontroller. Perfect for smaller installations and DIY projects. Features 2 outputs for controlling up to 8-10 Material-8x8-V panels.\n\n**Key Features:**\n- ESP32-based control\n- 2 independent outputs\n- WiFi connectivity\n- Web-based configuration\n- Maximum 8-10 panels (512-640 LEDs)\n- Open-source firmware",
+      "category": "control",
+      "dev_status": 1,
+      "base_price": 4500,
+      "stripe_product_id": "prod_control_2_5v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "2",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "5",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "max_panels",
+          "value": "8-10",
+          "display_order": 3
+        },
+        {
+          "key": "max_leds",
+          "value": "512-640",
+          "unit": "LEDs",
+          "display_order": 4
+        },
+        {
+          "key": "microcontroller",
+          "value": "ESP32",
+          "display_order": 5
+        },
+        {
+          "key": "connectivity",
+          "value": "WiFi",
+          "display_order": 6
+        }
+      ],
+      "metadata": {
+        "voltage_system": "5v",
+        "firmware": "open-source"
+      }
+    },
+    {
+      "id": "Control-8-24v",
+      "name": "8-Output Control (24v)",
+      "description": "24v control unit, supports 32-40 Material-8x8-V panels (8 ESP32 outputs)",
+      "long_description": "Professional-grade 24v control unit for medium to large installations. Features 8 outputs for controlling up to 32-40 Material-8x8-V panels with excellent scalability.\n\n**Key Features:**\n- ESP32-based control\n- 8 independent outputs\n- WiFi connectivity\n- Web-based configuration\n- Maximum 32-40 panels (2048-2560 LEDs)\n- Professional power distribution\n- Open-source firmware",
+      "category": "control",
+      "dev_status": 0,
+      "base_price": 9000,
+      "stripe_product_id": "prod_control_8_24v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "8",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "24",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "max_panels",
+          "value": "32-40",
+          "display_order": 3
+        },
+        {
+          "key": "max_leds",
+          "value": "2048-2560",
+          "unit": "LEDs",
+          "display_order": 4
+        },
+        {
+          "key": "microcontroller",
+          "value": "ESP32",
+          "display_order": 5
+        },
+        {
+          "key": "connectivity",
+          "value": "WiFi",
+          "display_order": 6
+        }
+      ],
+      "metadata": {
+        "voltage_system": "24v",
+        "firmware": "open-source"
+      }
+    },
+    {
+      "id": "Control-16-24v",
+      "name": "16-Output Control (24v)",
+      "description": "24v control unit, supports 64-80 Material-8x8-V panels (16 ESP32 outputs)",
+      "long_description": "Maximum capacity 24v control unit for large-scale commercial installations. Features 16 outputs for controlling up to 64-80 Material-8x8-V panels.\n\n**Key Features:**\n- ESP32-based control\n- 16 independent outputs\n- WiFi connectivity\n- Web-based configuration\n- Maximum 64-80 panels (4096-5120 LEDs)\n- Professional power distribution\n- Open-source firmware\n- Designed for commercial installations",
+      "category": "control",
+      "dev_status": 0,
+      "base_price": 16000,
+      "stripe_product_id": "prod_control_16_24v",
+      "has_variants": false,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "outputs",
+          "value": "16",
+          "display_order": 1
+        },
+        {
+          "key": "voltage",
+          "value": "24",
+          "unit": "v",
+          "display_order": 2
+        },
+        {
+          "key": "max_panels",
+          "value": "64-80",
+          "display_order": 3
+        },
+        {
+          "key": "max_leds",
+          "value": "4096-5120",
+          "unit": "LEDs",
+          "display_order": 4
+        },
+        {
+          "key": "microcontroller",
+          "value": "ESP32",
+          "display_order": 5
+        },
+        {
+          "key": "connectivity",
+          "value": "WiFi",
+          "display_order": 6
+        }
+      ],
+      "metadata": {
+        "voltage_system": "24v",
+        "firmware": "open-source"
+      }
+    },
+    {
+      "id": "Unit-8x8x8-DIY",
+      "name": "8x8x8 DIY Cube Kit",
+      "description": "DIY version of the 5v 8-layer original cube",
+      "long_description": "Build your own LED cube with our comprehensive DIY kit. Includes everything you need to assemble an 8×8×8 fixture (512 addressable LEDs) perfect for makers, hackers, and lighting enthusiasts.\n\n**What's Included:**\n- 8× Material-8x8-V panels (BLACK PCB)\n- 7× Connect-5x31.6-5v spine connectors\n- 1× Control-2-5v control unit\n- 512× Diffuse-12-C round diffusion caps\n- Assembly instructions and wiring guide\n- Access to online configurator tool\n\n**Requirements:**\n- Basic soldering skills\n- 5V 10A power supply (not included)\n- 2-3 hours assembly time\n\n**Note:** DIY kits do not include warranty or assembly service guarantees.",
+      "category": "kit",
+      "dev_status": 5,
+      "base_price": 49500,
+      "stripe_product_id": "prod_diy_cube",
+      "has_variants": false,
+      "requires_assembly": true,
+      "images": [],
+      "specs": [
+        {
+          "key": "dimensions",
+          "value": "240 x 240 x 240",
+          "unit": "mm",
+          "display_order": 1
+        },
+        {
+          "key": "total_leds",
+          "value": "512",
+          "unit": "LEDs",
+          "display_order": 2
+        },
+        {
+          "key": "layers",
+          "value": "8",
+          "display_order": 3
+        },
+        {
+          "key": "voltage",
+          "value": "5",
+          "unit": "v",
+          "display_order": 4
+        },
+        {
+          "key": "max_power",
+          "value": "50",
+          "unit": "W",
+          "display_order": 5
+        },
+        {
+          "key": "assembly_time",
+          "value": "2-3",
+          "unit": "hours",
+          "display_order": 6
+        }
+      ],
+      "metadata": {
+        "includes_warranty": false,
+        "skill_level": "intermediate",
+        "voltage_system": "5v",
+        "contents": {
+          "Material-8x8-V": 8,
+          "Connect-5x31.6-5v": 7,
+          "Control-2-5v": 1,
+          "Diffuse-12-C": 512
+        }
+      }
+    },
+    {
+      "id": "Unit-8x8x8-Founder",
+      "name": "Founder Edition Cube",
+      "description": "Fully hand-assembled 24v 8-layer cube with 10-year warranty and MJN NFT",
+      "long_description": "The ultimate LED cube experience. Each Founder Edition unit is meticulously hand-assembled, tested, and certified. Limited to 1,000 units worldwide across three exclusive colorways.\n\n**Premium Features:**\n- Hand-assembled by Imajin craftspeople\n- 24v professional-grade system\n- Control-8-24v unit (8 outputs, 2 initially configured)\n- Expandable to 32+ layers\n- 10-year comprehensive warranty\n- ESA certified for safety and reliability\n- MJN RWA NFT token (minted on Solana)\n- Unique serial number engraved on unit\n- Certificate of authenticity\n- Premium packaging\n\n**Limited Edition:**\n- BLACK: 500 units\n- WHITE: 300 units\n- RED: 200 units\n\n**What's Included:**\n- 8× Material-8x8-V panels (selected color)\n- 7× Connect-5x31.6-24v spine connectors\n- 1× Control-8-24v control unit\n- 512× Diffuse-12-C round diffusion caps\n- Professional cabling and cable management\n- MJN NFT token (delivered post-shipment)\n- Warranty documentation\n\n**Optional Upgrades:**\n- Control-16-24v upgrade (+$70) - doubles expansion capacity",
+      "category": "kit",
+      "dev_status": 5,
+      "base_price": 99500,
+      "stripe_product_id": "prod_founder_base",
+      "has_variants": true,
+      "requires_assembly": false,
+      "images": [],
+      "specs": [
+        {
+          "key": "dimensions",
+          "value": "240 x 240 x 240",
+          "unit": "mm",
+          "display_order": 1
+        },
+        {
+          "key": "total_leds",
+          "value": "512",
+          "unit": "LEDs",
+          "display_order": 2
+        },
+        {
+          "key": "layers",
+          "value": "8 (expandable to 32)",
+          "display_order": 3
+        },
+        {
+          "key": "voltage",
+          "value": "24",
+          "unit": "v",
+          "display_order": 4
+        },
+        {
+          "key": "max_power",
+          "value": "120",
+          "unit": "W",
+          "display_order": 5
+        },
+        {
+          "key": "warranty",
+          "value": "10 years",
+          "display_order": 6
+        },
+        {
+          "key": "certifications",
+          "value": "ESA",
+          "display_order": 7
+        }
+      ],
+      "metadata": {
+        "includes_warranty": true,
+        "warranty_years": 10,
+        "is_limited_edition": true,
+        "includes_nft": true,
+        "hand_assembled": true,
+        "voltage_system": "24v",
+        "contents": {
+          "Material-8x8-V": 8,
+          "Connect-5x31.6-24v": 7,
+          "Control-8-24v": 1,
+          "Diffuse-12-C": 512
+        }
+      }
+    }
+  ],
+  "variants": [
+    {
+      "id": "Unit-8x8x8-Founder-Black",
+      "product_id": "Unit-8x8x8-Founder",
+      "stripe_product_id": "prod_founder_black",
+      "variant_type": "color",
+      "variant_value": "BLACK",
+      "price_modifier": 0,
+      "is_limited_edition": true,
+      "max_quantity": 500,
+      "images": [],
+      "metadata": {
+        "panel_color": "BLACK"
+      }
+    },
+    {
+      "id": "Unit-8x8x8-Founder-White",
+      "product_id": "Unit-8x8x8-Founder",
+      "stripe_product_id": "prod_founder_white",
+      "variant_type": "color",
+      "variant_value": "WHITE",
+      "price_modifier": 0,
+      "is_limited_edition": true,
+      "max_quantity": 300,
+      "images": [],
+      "metadata": {
+        "panel_color": "WHITE"
+      }
+    },
+    {
+      "id": "Unit-8x8x8-Founder-Red",
+      "product_id": "Unit-8x8x8-Founder",
+      "stripe_product_id": "prod_founder_red",
+      "variant_type": "color",
+      "variant_value": "RED",
+      "price_modifier": 0,
+      "is_limited_edition": true,
+      "max_quantity": 200,
+      "images": [],
+      "metadata": {
+        "panel_color": "RED"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "product_id": "Connect-4x31.6-5v",
+      "depends_on_product_id": "Material-8x8-V",
+      "dependency_type": "requires",
+      "message": "Spine connectors are designed for Material-8x8-V panels (31.6mm spacing)"
+    },
+    {
+      "product_id": "Connect-5x31.6-5v",
+      "depends_on_product_id": "Material-8x8-V",
+      "dependency_type": "requires",
+      "message": "Spine connectors are designed for Material-8x8-V panels (31.6mm spacing)"
+    },
+    {
+      "product_id": "Connect-4x31.6-5v",
+      "depends_on_product_id": "Control-2-5v",
+      "dependency_type": "voltage_match",
+      "message": "5v spine connectors must be used with a 5v control unit"
+    },
+    {
+      "product_id": "Connect-5x31.6-5v",
+      "depends_on_product_id": "Control-2-5v",
+      "dependency_type": "voltage_match",
+      "message": "5v spine connectors must be used with a 5v control unit"
+    },
+    {
+      "product_id": "Connect-4x31.6-24v",
+      "depends_on_product_id": "Material-8x8-V",
+      "dependency_type": "requires",
+      "message": "Spine connectors are designed for Material-8x8-V panels (31.6mm spacing)"
+    },
+    {
+      "product_id": "Connect-5x31.6-24v",
+      "depends_on_product_id": "Material-8x8-V",
+      "dependency_type": "requires",
+      "message": "Spine connectors are designed for Material-8x8-V panels (31.6mm spacing)"
+    },
+    {
+      "product_id": "Connect-4x31.6-24v",
+      "depends_on_product_id": "Control-8-24v",
+      "dependency_type": "voltage_match",
+      "message": "24v spine connectors must be used with a 24v control unit (Control-8-24v or Control-16-24v)"
+    },
+    {
+      "product_id": "Connect-4x31.6-24v",
+      "depends_on_product_id": "Control-16-24v",
+      "dependency_type": "voltage_match",
+      "message": "24v spine connectors must be used with a 24v control unit (Control-8-24v or Control-16-24v)"
+    },
+    {
+      "product_id": "Connect-5x31.6-24v",
+      "depends_on_product_id": "Control-8-24v",
+      "dependency_type": "voltage_match",
+      "message": "24v spine connectors must be used with a 24v control unit (Control-8-24v or Control-16-24v)"
+    },
+    {
+      "product_id": "Connect-5x31.6-24v",
+      "depends_on_product_id": "Control-16-24v",
+      "dependency_type": "voltage_match",
+      "message": "24v spine connectors must be used with a 24v control unit (Control-8-24v or Control-16-24v)"
+    },
+    {
+      "product_id": "Material-8x8-V",
+      "depends_on_product_id": "Diffuse-12-C",
+      "dependency_type": "suggests",
+      "message": "Recommended: 64 diffusion caps per panel for even light distribution",
+      "metadata": {
+        "quantity_ratio": 64,
+        "alternative_products": ["Diffuse-12-S"]
+      }
+    },
+    {
+      "product_id": "Material-8x8-V",
+      "depends_on_product_id": "Diffuse-12-S",
+      "dependency_type": "suggests",
+      "message": "Recommended: 64 diffusion caps per panel for even light distribution",
+      "metadata": {
+        "quantity_ratio": 64,
+        "alternative_products": ["Diffuse-12-C"]
+      }
+    },
+    {
+      "product_id": "Material-5x5-O",
+      "depends_on_product_id": "Diffuse-12-C",
+      "dependency_type": "suggests",
+      "message": "Recommended: 25 diffusion caps per panel for even light distribution",
+      "metadata": {
+        "quantity_ratio": 25
+      }
+    },
+    {
+      "product_id": "Material-8x8-V",
+      "depends_on_product_id": "Connect-4x31.6-5v",
+      "dependency_type": "suggests",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "metadata": {
+        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+      }
+    },
+    {
+      "product_id": "Material-8x8-V",
+      "depends_on_product_id": "Connect-5x31.6-5v",
+      "dependency_type": "suggests",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "metadata": {
+        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+      }
+    },
+    {
+      "product_id": "Material-8x8-V",
+      "depends_on_product_id": "Connect-4x31.6-24v",
+      "dependency_type": "suggests",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "metadata": {
+        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+      }
+    },
+    {
+      "product_id": "Material-8x8-V",
+      "depends_on_product_id": "Connect-5x31.6-24v",
+      "dependency_type": "suggests",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "metadata": {
+        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+      }
+    },
+    {
+      "product_id": "Connect-4x31.6-5v",
+      "depends_on_product_id": "Connect-4x31.6-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot mix 5v and 24v components in the same fixture. Choose one voltage system."
+    },
+    {
+      "product_id": "Connect-4x31.6-5v",
+      "depends_on_product_id": "Connect-5x31.6-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot mix 5v and 24v components in the same fixture. Choose one voltage system."
+    },
+    {
+      "product_id": "Connect-5x31.6-5v",
+      "depends_on_product_id": "Connect-4x31.6-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot mix 5v and 24v components in the same fixture. Choose one voltage system."
+    },
+    {
+      "product_id": "Connect-5x31.6-5v",
+      "depends_on_product_id": "Connect-5x31.6-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot mix 5v and 24v components in the same fixture. Choose one voltage system."
+    },
+    {
+      "product_id": "Control-2-5v",
+      "depends_on_product_id": "Control-8-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot use multiple control units in the same fixture. Choose one control unit appropriate for your scale."
+    },
+    {
+      "product_id": "Control-2-5v",
+      "depends_on_product_id": "Control-16-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot use multiple control units in the same fixture. Choose one control unit appropriate for your scale."
+    },
+    {
+      "product_id": "Control-8-24v",
+      "depends_on_product_id": "Control-2-5v",
+      "dependency_type": "incompatible",
+      "message": "Cannot use multiple control units in the same fixture. Choose one control unit appropriate for your scale."
+    },
+    {
+      "product_id": "Control-8-24v",
+      "depends_on_product_id": "Control-16-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot use multiple control units in the same fixture. Choose one control unit appropriate for your scale."
+    },
+    {
+      "product_id": "Control-16-24v",
+      "depends_on_product_id": "Control-2-5v",
+      "dependency_type": "incompatible",
+      "message": "Cannot use multiple control units in the same fixture. Choose one control unit appropriate for your scale."
+    },
+    {
+      "product_id": "Control-16-24v",
+      "depends_on_product_id": "Control-8-24v",
+      "dependency_type": "incompatible",
+      "message": "Cannot use multiple control units in the same fixture. Choose one control unit appropriate for your scale."
+    }
+  ]
+}
