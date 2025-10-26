@@ -100,13 +100,99 @@
 - [x] Limited Edition badges
 - [ ] Dependency warnings UI - **DEFERRED to Phase 2.3**
 
-### 2.3 Shopping Cart
-- [ ] Cart state (Context or Zustand)
-- [ ] Cart storage (localStorage + server sync)
-- [ ] Add/remove/update operations
-- [ ] Cart UI (slide-out or page)
-- [ ] Cart validation
-- [ ] Total calculation
+### 2.3 Shopping Cart ✅ COMPLETE
+
+**Technical Debt Identified:** Styling architecture needs refactoring. See Phase 2.3.5 below.
+
+
+- [x] Cart state (Context API with CartProvider)
+- [x] Cart storage (localStorage + server sync)
+- [x] Add/remove/update operations
+- [x] Cart UI (slide-out drawer with CartDrawer)
+- [x] Cart validation (including voltage compatibility - 5v/24v cannot mix)
+- [x] Total calculation (CartSummary component)
+- [x] Dependency warnings UI (CartValidation component)
+
+**Components Built:**
+- CartProvider (18 tests) - State management with localStorage
+- CartSummary (6 tests) - Displays totals and item count
+- CartValidation (9 tests) - Shows errors and warnings
+- CartItem (16 tests) - Individual cart item display with quantity controls
+- CartButton (9 tests) - Cart icon with item count badge
+- CartDrawer (12 tests) - Slide-out cart panel
+- AddToCartButton (10 tests) - Product add-to-cart button
+- ProductAddToCart - Product page integration component
+- Header - Navigation with cart button
+
+**Services:**
+- cart-validator.ts (13 tests) - Business logic validation
+- /api/cart/validate (7 tests) - Validation API endpoint
+- formatCurrency utility - Price formatting
+
+**Business Rules Implemented:**
+- ✅ Voltage compatibility (cannot mix 5v and 24v)
+- ✅ Limited edition quantity tracking
+- ✅ Product dependency validation (requires/suggests)
+- ✅ Stock availability checking
+- ✅ Cart persistence across sessions
+
+**Test Coverage:** 100 tests passing (80 unit + 20 integration)
+**Total Project Tests:** 271 passing
+
+**Dr. Clean Reminders:**
+- ⚠️ Keep mapper pattern consistent (create `cart-mapper.ts` if needed)
+- ⚠️ Be cautious with localStorage + server sync (race conditions, stale data)
+- ⚠️ Validate dependency rules carefully (voltage matching: cannot mix 5v/24v)
+- ⚠️ Maintain test coverage ratio (1.5:1)
+
+### 2.3.5 Design System & Style Architecture ⚠️ TECHNICAL DEBT
+
+**Type:** Architecture refactoring
+**Priority:** HIGH - Should complete BEFORE Phase 2.4
+**Reason:** Styling tightly coupled via inline Tailwind classes. No design system or theme variables.
+
+**Tasks:**
+- [ ] Create design token system in `app/globals.css` (colors, typography, spacing, etc.)
+- [ ] Build UI component library: `/components/ui/`
+  - [ ] Button (variants: primary, secondary, ghost, link)
+  - [ ] Card (with CardHeader, CardContent, CardFooter)
+  - [ ] Badge (variants: default, limited, new, success, warning, error)
+  - [ ] Input, Select, Textarea (consistent form styling)
+  - [ ] Heading, Text (semantic typography components)
+  - [ ] Price (consistent price formatting)
+  - [ ] Container, Section (layout components)
+- [ ] Refactor existing components to use UI library:
+  - [ ] All product components (ProductCard, ProductGrid, ProductSpecs, LimitedEditionBadge)
+  - [ ] All cart components (CartDrawer, CartItem, CartButton, AddToCartButton)
+  - [ ] Layout components (Header, HeroSection)
+  - [ ] All pages (Homepage, Product Listing, Product Detail)
+- [ ] Write tests for UI library (~80 new tests)
+- [ ] Create documentation:
+  - [ ] `/docs/DESIGN_SYSTEM.md` - Component usage, theme variables
+  - [ ] `/docs/STYLE_GUIDE.md` - Brand guidelines, UI patterns
+- [ ] Validation:
+  - [ ] All existing tests pass (no regressions)
+  - [ ] No visual regressions (pages look the same)
+  - [ ] Theme variables easily changeable
+  - [ ] Consistent UI patterns across all pages
+
+**Benefits:**
+- Separation of concerns (presentation vs markup)
+- Maintainability (change design once, not 50 files)
+- Consistency (all buttons/cards/etc look/behave the same)
+- Velocity (build new pages faster from component library)
+- Flexibility (rebrand/redesign = update theme tokens)
+
+**Timeline:** 2-3 days
+
+**See:** `/docs/tasks/Phase 2.3.5 - Design System & Decoupling.md` for full specification
+
+**Gate Criteria:**
+- [ ] Design token system implemented
+- [ ] Core UI library built and tested (9 components, ~80 tests)
+- [ ] All existing components refactored (no scattered inline styles)
+- [ ] All tests passing
+- [ ] Documentation complete
 
 ### 2.4 Checkout Flow
 - [ ] Checkout page/form
@@ -252,12 +338,16 @@
 
 ## Phase 4: Polish & Optimization
 
-### 4.1 Performance
+### 4.1 Performance & Monitoring
 - [ ] Image optimization (Next.js Image + Cloudinary)
 - [ ] Code splitting, lazy loading
 - [ ] Cloudflare caching
 - [ ] DB query optimization
-- [ ] Lighthouse audit
+- [ ] Lighthouse audit (target: >90 all categories)
+- [ ] Structured logging system (replace console.error) - **Dr. Clean rec**
+- [ ] Bundle size monitoring (@next/bundle-analyzer) - **Dr. Clean rec**
+- [ ] Lighthouse CI checks in GitHub Actions - **Dr. Clean rec**
+- [ ] Error tracking service (Sentry, LogRocket, or similar) - **Dr. Clean rec**
 
 ### 4.2 SEO
 - [ ] Meta tags

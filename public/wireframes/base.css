@@ -1,0 +1,182 @@
+/* Shared wireframe styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: #f5f5f5;
+}
+
+.wireframe-note {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  padding: 12px;
+  margin: 20px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Header */
+header {
+  background: white;
+  border-bottom: 2px solid #ddd;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
+nav {
+  display: flex;
+  gap: 30px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.icon-button {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Content boxes */
+.placeholder-box {
+  background: #e9ecef;
+  border: 2px dashed #adb5bd;
+  padding: 40px;
+  text-align: center;
+  color: #6c757d;
+  margin: 20px 0;
+}
+
+.image-placeholder {
+  background: #dee2e6;
+  border: 2px dashed #adb5bd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #000;
+  color: white;
+}
+
+.btn-secondary {
+  background: white;
+  color: #000;
+  border: 2px solid #000;
+}
+
+/* Grid systems */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+/* Sections */
+section {
+  padding: 60px 0;
+}
+
+.section-title {
+  font-size: 36px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* Annotations */
+.annotation {
+  background: #e7f3ff;
+  border-left: 4px solid #2196F3;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Footer */
+footer {
+  background: #000;
+  color: white;
+  padding: 40px;
+  margin-top: 60px;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.footer-section h4 {
+  margin-bottom: 16px;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section a {
+  color: #ccc;
+  text-decoration: none;
+}

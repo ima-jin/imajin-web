@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imajin Website Wireframes - Navigation</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    body {
+      background: #f5f5f5;
+    }
+
+    .header-section {
+      background: linear-gradient(135deg, #000 0%, #333 100%);
+      color: white;
+      padding: 60px 40px;
+      text-align: center;
+    }
+
+    .header-section h1 {
+      font-size: 48px;
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+
+    .header-section p {
+      font-size: 18px;
+      opacity: 0.9;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .strategy-note {
+      background: #fff3cd;
+      border: 3px solid #ffc107;
+      padding: 32px;
+      margin: 40px auto;
+      max-width: 1000px;
+      border-radius: 8px;
+    }
+
+    .strategy-note h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #000;
+    }
+
+    .strategy-note ul {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+
+    .strategy-note li {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+
+    .wireframe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      padding: 60px 0;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .wireframe-card {
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .wireframe-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      border-color: #000;
+    }
+
+    .wireframe-preview {
+      height: 240px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: #ccc;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wireframe-preview:after {
+      content: "Preview";
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    .wireframe-info {
+      padding: 24px;
+    }
+
+    .wireframe-number {
+      display: inline-block;
+      background: #000;
+      color: white;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .wireframe-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .wireframe-description {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .wireframe-highlights {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .wireframe-highlights li {
+      font-size: 13px;
+      color: #666;
+      padding: 4px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .wireframe-highlights li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    .footer-section {
+      background: #000;
+      color: white;
+      padding: 40px;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    .footer-section p {
+      opacity: 0.8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-section">
+    <img src="/images/logo-optimized.svg" alt="Imajin" style="height: 100px; width: auto; margin-bottom: 24px;">
+    <h1>Website Wireframes</h1>
+    <p>
+      Pre-development mockups for luxury residential lighting e-commerce platform
+    </p>
+  </div>
+
+  <div class="container">
+    <div class="wireframe-grid">
+
+      <!-- HOMEPAGE -->
+      <a href="01-homepage.html" class="wireframe-card">
+        <div class="wireframe-preview">🏠</div>
+        <div class="wireframe-info">
+          <span class="wireframe-number">01</span>
+          <h3 class="wireframe-title">Homepage</h3>
+          <p class="wireframe-description">
+            Hero-driven landing page with lifestyle photography showcasing Founder Edition fixtures in beautiful residential spaces.
+          </p>
+          <ul class="wireframe-highlights">
+            <li>Hero: "Sculptural LED Lighting for Modern Spaces"</li>
+            <li>Founder Edition showcase with pricing</li>
+            <li>Lifestyle imagery throughout</li>
+            <li>"Ready to Install" messaging prominent</li>
+          </ul>
+        </div>
+      </a>
+
+      <!-- PRODUCT LISTING -->
+      <a href="02-product-listing.html" class="wireframe-card">
+        <div class="wireframe-preview">🛍️</div>
+        <div class="wireframe-info">
+          <span class="wireframe-number">02</span>
+          <h3 class="wireframe-title">Product Listing</h3>
+          <p class="wireframe-description">
+            Shop page with clear product hierarchy: Founder Edition first, expansion products second, DIY kits de-emphasized.
+          </p>
+          <ul class="wireframe-highlights">
+            <li>Founder Edition featured prominently</li>
+            <li>Sidebar filters for easy navigation</li>
+            <li>Limited edition counters ("487 remaining")</li>
+            <li>DIY kits appear last with lower priority</li>
+          </ul>
+        </div>
+      </a>
+
+      <!-- PRODUCT DETAIL -->
+      <a href="03-product-detail.html" class="wireframe-card">
+        <div class="wireframe-preview">📸</div>
+        <div class="wireframe-info">
+          <span class="wireframe-number">03</span>
+          <h3 class="wireframe-title">Product Detail</h3>
+          <p class="wireframe-description">
+            Detailed product page for Founder Edition Black with large lifestyle images, specifications, and easy purchase flow.
+          </p>
+          <ul class="wireframe-highlights">
+            <li>Large lifestyle photo gallery</li>
+            <li>Scarcity messaging (units remaining)</li>
+            <li>"Pre-assembled and tested" emphasized</li>
+            <li>Related products for upsell</li>
+          </ul>
+        </div>
+      </a>
+
+      <!-- SHOPPING CART -->
+      <a href="04-cart.html" class="wireframe-card">
+        <div class="wireframe-preview">🛒</div>
+        <div class="wireframe-info">
+          <span class="wireframe-number">04</span>
+          <h3 class="wireframe-title">Shopping Cart</h3>
+          <p class="wireframe-description">
+            Clean cart interface with order summary, trust signals, and subtle upsells for high-margin add-ons.
+          </p>
+          <ul class="wireframe-highlights">
+            <li>Product images remind quality</li>
+            <li>Tax shown upfront (no surprises)</li>
+            <li>Trust badges (security, returns, shipping)</li>
+            <li>Subtle upsells (warranty, accessories)</li>
+          </ul>
+        </div>
+      </a>
+
+      <!-- CHECKOUT -->
+      <a href="05-checkout.html" class="wireframe-card">
+        <div class="wireframe-preview">💳</div>
+        <div class="wireframe-info">
+          <span class="wireframe-number">05</span>
+          <h3 class="wireframe-title">Checkout</h3>
+          <p class="wireframe-description">
+            Streamlined checkout using Stripe embedded component for secure payment processing with minimal friction.
+          </p>
+          <ul class="wireframe-highlights">
+            <li>Stripe embedded checkout (PCI compliant)</li>
+            <li>Clear progress steps</li>
+            <li>Sticky order summary sidebar</li>
+            <li>Installation service scheduling (if added)</li>
+          </ul>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="annotation" style="max-width: 1000px; margin: 0 auto 60px;">
+      <h3 style="font-size: 18px; margin-bottom: 16px;">📋 Next Steps</h3>
+      <ol style="padding-left: 24px; line-height: 1.8;">
+        <li><strong>Review & Feedback:</strong> Share with business development director for approval</li>
+        <li><strong>Visual Design:</strong> Create high-fidelity designs with actual brand assets, typography, colors</li>
+        <li><strong>Content Creation:</strong> Professional photography of fixtures in residential settings</li>
+        <li><strong>Development:</strong> Begin Phase 1 implementation per IMPLEMENTATION_PLAN.md</li>
+      </ol>
+
+      <h3 style="font-size: 18px; margin: 32px 0 16px;">💡 Key Success Metrics</h3>
+      <ul style="padding-left: 24px; line-height: 1.8;">
+        <li><strong>6-Second Test:</strong> First-time visitor understands "buy pre-made fixtures here"</li>
+        <li><strong>Target Customer:</strong> Resonates with high-budget residential customers</li>
+        <li><strong>Conversion Path:</strong> Clear path from landing to checkout with minimal friction</li>
+        <li><strong>Brand Positioning:</strong> Luxury lighting brand, NOT maker community</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-section">
+    <p>
+      <strong>Imajin Website Wireframes</strong> | Created: 2025-10-26<br>
+      HTML wireframes - editable, version-controllable, viewable in any browser
+    </p>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homepage - Imajin Wireframe</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    .hero {
+      position: relative;
+      height: 600px;
+      background: #000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-content {
+      text-align: center;
+      z-index: 2;
+      max-width: 800px;
+      padding: 40px;
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      margin-bottom: 20px;
+      font-weight: 300;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 60px;
+      margin: 60px 0;
+    }
+
+    .feature-item {
+      text-align: center;
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      background: #f0f0f0;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid #ddd;
+      overflow: hidden;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 300px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-weight: bold;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .product-price {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #000;
+      color: white;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .lifestyle-section {
+      background: white;
+      padding: 80px 0;
+    }
+
+    .lifestyle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .lifestyle-image {
+      height: 500px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+    }
+
+    .lifestyle-content h2 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      font-weight: 300;
+    }
+
+    .lifestyle-content p {
+      font-size: 18px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wireframe-note">
+    🎨 WIREFRAME: Homepage - Luxury Residential Focus
+  </div>
+
+  <header>
+    <div class="logo"><img src="/images/logo-optimized.svg" alt="Imajin" style="height: 40px; width: auto;"></div>
+    <nav>
+      <a href="02-product-listing.html">Shop</a>
+      <a href="#">Collections</a>
+      <a href="#">Portfolio</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button">Search</button>
+      <button class="icon-button">Cart (0)</button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Sculptural LED Lighting for Modern Spaces</h1>
+      <p>Pre-made modular fixtures designed in Toronto. Ready to transform your home.</p>
+      <div class="annotation" style="max-width: 600px; margin: 20px auto;">
+        📝 Background: High-quality lifestyle photo of Founder Edition fixture installed in a beautiful modern residential space (kitchen, dining room, or living area). Professional photography showing the fixture as art piece.
+      </div>
+      <div class="hero-cta">
+        <a href="02-product-listing.html" class="btn btn-primary">Shop Pre-Made Fixtures</a>
+        <a href="#" class="btn btn-secondary">View Portfolio</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUE PROPS -->
+  <section class="container">
+    <div class="annotation">
+      📝 Six-second clarity test: Visitor immediately sees "Shop Pre-Made Fixtures" and lifestyle photography. No mention of DIY, maker culture, or custom installs above the fold.
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon">ICON</div>
+        <h3>Ready to Install</h3>
+        <p>Pre-assembled fixtures arrive ready to hang. Professional installation available in GTA.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">ICON</div>
+        <h3>Modular Design</h3>
+        <p>Expand your fixture over time. Add panels and change configurations as your space evolves.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">ICON</div>
+        <h3>10-Year Warranty</h3>
+        <p>Founder Edition units include comprehensive warranty and exclusive ownership certificate.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDER EDITION SHOWCASE -->
+  <section style="background: white; padding: 80px 0;">
+    <div class="container">
+      <div class="section-title">Founder Edition Collection</div>
+      <p style="text-align: center; font-size: 18px; color: #666; max-width: 700px; margin: 0 auto 60px;">
+        Limited run of 1,000 units. Each includes MJN NFT ownership certificate and 10-year warranty.
+      </p>
+
+      <div class="grid-3">
+        <!-- BLACK -->
+        <div class="product-card">
+          <div class="product-image">
+            Lifestyle Photo<br>BLACK in Modern Kitchen
+          </div>
+          <div class="product-info">
+            <span class="badge">500 Units</span>
+            <div class="product-title">Founder Edition - Black</div>
+            <p style="color: #666;">8 LED panels, 24v controller, ready to install</p>
+            <div class="product-price">$2,499</div>
+            <a href="03-product-detail.html" class="btn btn-primary" style="width: 100%; text-align: center;">View Details</a>
+          </div>
+        </div>
+
+        <!-- WHITE -->
+        <div class="product-card">
+          <div class="product-image">
+            Lifestyle Photo<br>WHITE in Minimalist Dining
+          </div>
+          <div class="product-info">
+            <span class="badge">300 Units</span>
+            <div class="product-title">Founder Edition - White</div>
+            <p style="color: #666;">8 LED panels, 24v controller, ready to install</p>
+            <div class="product-price">$2,499</div>
+            <a href="03-product-detail.html" class="btn btn-primary" style="width: 100%; text-align: center;">View Details</a>
+          </div>
+        </div>
+
+        <!-- RED -->
+        <div class="product-card">
+          <div class="product-image">
+            Lifestyle Photo<br>RED in Contemporary Space
+          </div>
+          <div class="product-info">
+            <span class="badge">200 Units - Rare</span>
+            <div class="product-title">Founder Edition - Red</div>
+            <p style="color: #666;">8 LED panels, 24v controller, ready to install</p>
+            <div class="product-price">$2,499</div>
+            <a href="03-product-detail.html" class="btn btn-primary" style="width: 100%; text-align: center;">View Details</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        📝 Pricing strategy: Showing prices builds credibility with high-budget customers. They want to know upfront if this is in their range. No "contact for quote" - that's for custom work.
+      </div>
+    </div>
+  </section>
+
+  <!-- LIFESTYLE SECTION -->
+  <section class="lifestyle-section">
+    <div class="container">
+      <div class="lifestyle-grid">
+        <div class="lifestyle-image">
+          Installation Photo<br>Residential Setting
+        </div>
+        <div class="lifestyle-content">
+          <h2>Designed in Toronto.<br>Built to Last.</h2>
+          <p>
+            Each Imajin fixture is a sculptural statement piece. Our modular LED panels transform kitchens, dining rooms, and living spaces with warm, even light.
+          </p>
+          <p>
+            Proudly designed and manufactured in Toronto. Limited production runs ensure exceptional quality control.
+          </p>
+          <a href="#" class="btn btn-primary">See Our Portfolio</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BROWSE ALL -->
+  <section class="container" style="padding: 80px 0;">
+    <div class="section-title">Browse All Products</div>
+    <div class="grid-4">
+      <div class="product-card">
+        <div class="product-image" style="height: 250px;">Product Photo</div>
+        <div class="product-info">
+          <div class="product-title">Additional Panels</div>
+          <p>Expand your fixture</p>
+          <div class="product-price">$299</div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-image" style="height: 250px;">Product Photo</div>
+        <div class="product-info">
+          <div class="product-title">Diffusion Caps</div>
+          <p>Soften the light</p>
+          <div class="product-price">$49</div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-image" style="height: 250px;">Product Photo</div>
+        <div class="product-info">
+          <div class="product-title">Controller Upgrade</div>
+          <p>Expand to 16 outputs</p>
+          <div class="product-price">$399</div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-image" style="height: 250px;">Product Photo</div>
+        <div class="product-info">
+          <div class="product-title">Installation Service</div>
+          <p>Professional setup (GTA)</p>
+          <div class="product-price">$299</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="02-product-listing.html" class="btn btn-secondary">View All Products</a>
+    </div>
+  </section>
+
+  <div class="annotation container">
+    📝 <strong>Strategic Notes:</strong><br>
+    - "Pre-made" and "Ready to Install" messaging prominent<br>
+    - DIY kits de-emphasized (secondary browse section only)<br>
+    - Custom installs not mentioned (save for tier-3 sales conversations)<br>
+    - Portfolio shows residential installations, not art projects<br>
+    - Professional photography throughout<br>
+    - Clear pricing eliminates "is this in my budget?" friction<br>
+    - Target: 6-second clarity that this is luxury lighting e-commerce
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Founder Edition</a></li>
+          <li><a href="#">Expansion Panels</a></li>
+          <li><a href="#">Controllers</a></li>
+          <li><a href="#">Accessories</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Portfolio</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Installation Guide</a></li>
+          <li><a href="#">Warranty</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

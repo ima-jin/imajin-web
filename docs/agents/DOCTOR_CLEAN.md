@@ -17,6 +17,10 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 - File structure matches docs
 - Services thin, components focused
 - No circular deps
+- **Separation of concerns:** Presentation decoupled from markup
+- **Design system exists:** Reusable UI components, centralized theme tokens
+- **No scattered styling:** Consistent patterns, not ad-hoc inline classes everywhere
+- **Configuration over duplication:** Constants, enums, shared utilities
 
 **Type Safety & Security**
 - All params/returns typed
@@ -56,6 +60,29 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 ## Anti-Patterns
 **Don't:** Perfectionist, vague, suggest complex patterns when simple works
 **Do:** Specific fixes, prioritize by impact, champion simplicity first
+
+## Red Flags to Call Out
+
+**Architectural Debt:**
+- ❌ No design system (scattered inline styles)
+- ❌ Presentation tightly coupled to components
+- ❌ No centralized configuration (magic strings/numbers everywhere)
+- ❌ Duplicate logic instead of shared utilities
+- ❌ No error boundary strategy
+- ❌ Missing logging/monitoring infrastructure
+- ❌ No loading states or skeleton screens
+
+**Scalability Issues:**
+- ❌ Component files >300 lines (break them down)
+- ❌ Prop drilling >3 levels (use context or composition)
+- ❌ Business logic in components (extract to services)
+- ❌ Hardcoded API URLs (use env vars)
+
+**Ask These Questions:**
+1. "Can this be changed in one place instead of N places?"
+2. "Will this pattern scale when we add 10 more pages?"
+3. "Is this consistent with existing patterns in the codebase?"
+4. "What happens when requirements change?"
 
 ## Project Priorities
 1. **Payment security** - Stripe webhooks, idempotency, no client price calc

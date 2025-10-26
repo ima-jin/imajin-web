@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Imajin Wireframe</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    .checkout-header {
+      background: white;
+      border-bottom: 2px solid #ddd;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .checkout-steps {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .step.active {
+      color: #000;
+      font-weight: 600;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .step.active .step-number {
+      background: #000;
+      color: white;
+    }
+
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 60px;
+      padding: 60px 0;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .checkout-form {
+      background: white;
+      padding: 40px;
+      border: 1px solid #ddd;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 24px;
+      font-weight: 400;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #000;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #000;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .stripe-embed {
+      background: #f8f8f8;
+      border: 2px dashed #ccc;
+      padding: 60px 40px;
+      text-align: center;
+      color: #666;
+      margin: 20px 0;
+    }
+
+    .order-summary-sidebar {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 32px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .summary-items {
+      margin: 24px 0;
+    }
+
+    .summary-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-item-image {
+      width: 80px;
+      height: 80px;
+      background: #f5f5f5;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #999;
+      border: 1px solid #ddd;
+    }
+
+    .summary-item-details {
+      flex: 1;
+    }
+
+    .summary-item-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .summary-item-meta {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .summary-item-price {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .summary-totals {
+      margin-top: 24px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .summary-row.total {
+      border-top: 2px solid #000;
+      border-bottom: none;
+      font-size: 20px;
+      font-weight: bold;
+      padding-top: 20px;
+      margin-top: 8px;
+    }
+
+    .security-note {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 16px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wireframe-note">
+    🎨 WIREFRAME: Checkout (Stripe Embedded)
+  </div>
+
+  <div class="checkout-header">
+    <div class="logo"><img src="/images/logo-optimized.svg" alt="Imajin" style="height: 40px; width: auto;"></div>
+    <div class="checkout-steps">
+      <div class="step active">
+        <div class="step-number">1</div>
+        <span>Information</span>
+      </div>
+      <span style="color: #ddd;">→</span>
+      <div class="step">
+        <div class="step-number">2</div>
+        <span>Shipping</span>
+      </div>
+      <span style="color: #ddd;">→</span>
+      <div class="step">
+        <div class="step-number">3</div>
+        <span>Payment</span>
+      </div>
+    </div>
+    <a href="04-cart.html" style="color: #666; text-decoration: none; font-size: 14px;">
+      ← Back to Cart
+    </a>
+  </div>
+
+  <div class="annotation container" style="margin-top: 20px;">
+    📝 <strong>Checkout Strategy:</strong> Using Stripe Embedded Checkout for PCI compliance and security. Most form fields handled by Stripe. We only collect shipping info and special instructions.
+  </div>
+
+  <div class="checkout-layout">
+
+    <!-- LEFT: Checkout Form -->
+    <div>
+      <div class="checkout-form">
+
+        <!-- CONTACT INFORMATION -->
+        <div class="form-section">
+          <h2 class="section-title">Contact Information</h2>
+
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" placeholder="you@example.com" required>
+            <p style="font-size: 12px; color: #666; margin-top: 4px;">
+              Order confirmation and tracking will be sent here.
+            </p>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="newsletter">
+            <label for="newsletter" style="margin: 0; font-weight: normal;">
+              Keep me updated on new products and exclusive offers
+            </label>
+          </div>
+        </div>
+
+        <!-- SHIPPING ADDRESS -->
+        <div class="form-section">
+          <h2 class="section-title">Shipping Address</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" required>
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Company (Optional)</label>
+            <input type="text">
+          </div>
+
+          <div class="form-group">
+            <label>Address *</label>
+            <input type="text" placeholder="Street address" required>
+          </div>
+
+          <div class="form-group">
+            <input type="text" placeholder="Apartment, suite, etc. (optional)">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>City *</label>
+              <input type="text" required>
+            </div>
+            <div class="form-group">
+              <label>Province *</label>
+              <select required>
+                <option value="">Select province</option>
+                <option value="ON">Ontario</option>
+                <option value="QC">Quebec</option>
+                <option value="BC">British Columbia</option>
+                <option value="AB">Alberta</option>
+                <option value="MB">Manitoba</option>
+                <option value="SK">Saskatchewan</option>
+                <option value="NS">Nova Scotia</option>
+                <option value="NB">New Brunswick</option>
+                <option value="NL">Newfoundland and Labrador</option>
+                <option value="PE">Prince Edward Island</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Postal Code *</label>
+              <input type="text" placeholder="A1A 1A1" required>
+            </div>
+            <div class="form-group">
+              <label>Phone *</label>
+              <input type="tel" placeholder="(416) 555-0123" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSTALLATION SERVICE (if in cart) -->
+        <div class="form-section" style="background: #f8f8f8; padding: 24px; margin: -40px -40px 40px -40px;">
+          <h3 style="font-size: 18px; margin-bottom: 16px;">🔧 Installation Service Details</h3>
+          <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
+            You've added professional installation. Please provide preferred dates.
+          </p>
+
+          <div class="form-group">
+            <label>Preferred Installation Date</label>
+            <input type="date">
+          </div>
+
+          <div class="form-group">
+            <label>Special Instructions (Optional)</label>
+            <textarea rows="3" placeholder="Any specific requirements or concerns for the installer..."></textarea>
+          </div>
+
+          <div class="annotation">
+            📝 Conditional section - only shown if installation service is in cart. Allows customer to coordinate scheduling.
+          </div>
+        </div>
+
+        <!-- DELIVERY NOTES -->
+        <div class="form-section">
+          <h2 class="section-title">Delivery Notes</h2>
+
+          <div class="form-group">
+            <label>Special Delivery Instructions (Optional)</label>
+            <textarea rows="3" placeholder="Gate code, parking instructions, etc."></textarea>
+          </div>
+        </div>
+
+        <!-- STRIPE EMBEDDED CHECKOUT -->
+        <div class="form-section">
+          <h2 class="section-title">Payment Information</h2>
+
+          <div class="security-note">
+            🔒 Secure payment powered by Stripe. We never see or store your card details.
+          </div>
+
+          <div class="stripe-embed">
+            <strong>STRIPE EMBEDDED CHECKOUT COMPONENT</strong>
+            <p style="margin-top: 12px; font-size: 14px;">
+              Credit/Debit Card Form<br>
+              - Card number<br>
+              - Expiry date<br>
+              - CVC<br>
+              - Billing address (if different)<br>
+            </p>
+            <p style="margin-top: 12px; font-size: 14px; color: #999;">
+              (Handled entirely by Stripe's embedded component)
+            </p>
+          </div>
+
+          <div class="annotation">
+            📝 <strong>Stripe Integration:</strong> Using Stripe's embedded checkout component handles PCI compliance, payment processing, and reduces our liability. We just integrate the iframe/component.
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="form-section">
+          <div class="checkbox-group">
+            <input type="checkbox" id="terms" required>
+            <label for="terms" style="margin: 0; font-weight: normal; font-size: 14px;">
+              I agree to the <a href="#" style="color: #000; text-decoration: underline;">Terms & Conditions</a> and <a href="#" style="color: #000; text-decoration: underline;">Return Policy</a>
+            </label>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%; font-size: 18px; padding: 16px; margin-top: 20px;">
+            Complete Order - $3,161.74 CAD
+          </button>
+
+          <p style="text-align: center; font-size: 12px; color: #666; margin-top: 16px;">
+            By completing this order, you agree to our terms and conditions.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Order Summary -->
+    <div>
+      <div class="order-summary-sidebar">
+        <h2 style="font-size: 24px; margin-bottom: 24px; font-weight: 400;">Order Summary</h2>
+
+        <div class="summary-items">
+          <!-- ITEM 1 -->
+          <div class="summary-item">
+            <div class="summary-item-image">
+              Product<br>Image
+            </div>
+            <div class="summary-item-details">
+              <div class="summary-item-title">Founder Edition - Black</div>
+              <div class="summary-item-meta">Qty: 1 | Color: Black</div>
+            </div>
+            <div class="summary-item-price">$2,499.00</div>
+          </div>
+
+          <!-- ITEM 2 -->
+          <div class="summary-item">
+            <div class="summary-item-image">
+              Service<br>Icon
+            </div>
+            <div class="summary-item-details">
+              <div class="summary-item-title">Installation Service</div>
+              <div class="summary-item-meta">Qty: 1 | GTA Area</div>
+            </div>
+            <div class="summary-item-price">$299.00</div>
+          </div>
+        </div>
+
+        <div class="summary-totals">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>$2,798.00</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span style="color: #4caf50; font-weight: 600;">FREE</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Tax (HST 13%)</span>
+            <span>$363.74</span>
+          </div>
+
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>$3,161.74 CAD</span>
+          </div>
+        </div>
+
+        <div class="annotation">
+          📝 Sticky sidebar keeps total visible as user scrolls through checkout form. Reduces confusion and abandoned checkouts.
+        </div>
+
+        <!-- Trust Signals -->
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <strong style="font-size: 14px;">Your Purchase Includes:</strong>
+          </div>
+          <ul style="list-style: none; font-size: 13px; color: #666;">
+            <li style="padding: 6px 0; padding-left: 24px; position: relative;">
+              <span style="position: absolute; left: 0;">✓</span>
+              Free shipping across Canada
+            </li>
+            <li style="padding: 6px 0; padding-left: 24px; position: relative;">
+              <span style="position: absolute; left: 0;">✓</span>
+              10-year warranty (Founder Edition)
+            </li>
+            <li style="padding: 6px 0; padding-left: 24px; position: relative;">
+              <span style="position: absolute; left: 0;">✓</span>
+              MJN NFT ownership certificate
+            </li>
+            <li style="padding: 6px 0; padding-left: 24px; position: relative;">
+              <span style="position: absolute; left: 0;">✓</span>
+              30-day return policy
+            </li>
+            <li style="padding: 6px 0; padding-left: 24px; position: relative;">
+              <span style="position: absolute; left: 0;">✓</span>
+              Secure payment via Stripe
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contact Support -->
+        <div style="margin-top: 24px; padding: 20px; background: #f8f8f8; text-align: center;">
+          <p style="font-size: 13px; color: #666; margin-bottom: 8px;">
+            Need help with your order?
+          </p>
+          <a href="#" style="color: #000; font-weight: 600; font-size: 14px;">Contact Support</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="container">
+    <div class="annotation">
+      📝 <strong>Checkout Best Practices:</strong><br>
+      - Minimal form fields (Stripe handles payment details)<br>
+      - Clear progress indicator<br>
+      - Sticky order summary<br>
+      - Trust signals throughout<br>
+      - No surprises on price (tax shown in cart already)<br>
+      - Easy back-to-cart option<br>
+      - Conditional fields (installation service details only if added)<br>
+      - Mobile-responsive layout (would stack vertically on mobile)
+    </div>
+  </div>
+
+  <footer style="margin-top: 40px;">
+    <div style="background: #f8f8f8; padding: 30px 0; text-align: center; border-top: 1px solid #ddd;">
+      <div style="display: flex; justify-content: center; gap: 40px; font-size: 13px; color: #666;">
+        <a href="#" style="color: #666;">Refund Policy</a>
+        <a href="#" style="color: #666;">Privacy Policy</a>
+        <a href="#" style="color: #666;">Terms of Service</a>
+        <a href="#" style="color: #666;">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

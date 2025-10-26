@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ProductSpecs } from "@/components/products/ProductSpecs";
 import { LimitedEditionBadge } from "@/components/products/LimitedEditionBadge";
+import { ProductAddToCart } from "@/components/products/ProductAddToCart";
 import type { Variant } from "@/types/product";
 
 interface ProductDetailPageProps {
@@ -119,14 +120,18 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               </div>
             )}
 
-            {/* Add to Cart Placeholder */}
+            {/* Add to Cart */}
             <div className="pt-4">
-              <button
-                className="w-full bg-gray-900 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
-                disabled
-              >
-                Add to Cart (Coming Soon)
-              </button>
+              <ProductAddToCart
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  basePrice: product.basePrice,
+                  image: product.image,
+                  voltage: product.voltage,
+                  variants: product.variants,
+                }}
+              />
             </div>
           </div>
         </div>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Founder Edition Black - Imajin Wireframe</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    .breadcrumb {
+      padding: 20px 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .breadcrumb a {
+      color: #666;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .product-detail {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 60px;
+      padding: 40px 0;
+    }
+
+    .product-gallery {
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+
+    .main-image {
+      width: 100%;
+      height: 600px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-weight: bold;
+      margin-bottom: 16px;
+      border: 1px solid #ddd;
+    }
+
+    .thumbnail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .thumbnail {
+      height: 100px;
+      background: #f5f5f5;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #999;
+      cursor: pointer;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+      border-color: #000;
+    }
+
+    .product-info-panel {
+      background: white;
+      padding: 40px;
+      border: 1px solid #ddd;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #d32f2f;
+      color: white;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .product-title {
+      font-size: 36px;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+
+    .product-subtitle {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .price-section {
+      padding: 24px 0;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 24px;
+    }
+
+    .price {
+      font-size: 42px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .price-note {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .availability-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #f8f8f8;
+      border-left: 4px solid #4caf50;
+      margin-bottom: 24px;
+    }
+
+    .availability-status.limited {
+      border-left-color: #ff9800;
+      background: #fff8e1;
+    }
+
+    .variant-selector {
+      margin-bottom: 32px;
+    }
+
+    .variant-selector h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .variant-options {
+      display: flex;
+      gap: 12px;
+    }
+
+    .variant-option {
+      padding: 12px 24px;
+      border: 2px solid #ddd;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .variant-option:hover {
+      border-color: #666;
+    }
+
+    .variant-option.active {
+      border-color: #000;
+      background: #000;
+      color: white;
+    }
+
+    .quantity-selector {
+      margin-bottom: 24px;
+    }
+
+    .quantity-selector h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .quantity-controls button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .quantity-controls input {
+      width: 60px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+
+    .cta-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin: 24px 0;
+    }
+
+    .feature-list li {
+      padding: 12px 0;
+      padding-left: 32px;
+      position: relative;
+      border-bottom: 1px solid #eee;
+    }
+
+    .feature-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+      color: #4caf50;
+    }
+
+    .info-tabs {
+      margin-top: 60px;
+      border-top: 2px solid #ddd;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 0;
+      margin-top: -2px;
+    }
+
+    .tab-button {
+      padding: 16px 32px;
+      background: #f5f5f5;
+      border: none;
+      border-top: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .tab-button.active {
+      background: white;
+      border-top-color: #000;
+    }
+
+    .tab-content {
+      background: white;
+      padding: 40px;
+      border: 1px solid #ddd;
+      border-top: none;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .spec-table tr {
+      border-bottom: 1px solid #eee;
+    }
+
+    .spec-table td {
+      padding: 12px 0;
+    }
+
+    .spec-table td:first-child {
+      font-weight: 600;
+      width: 200px;
+    }
+
+    .related-products {
+      padding: 60px 0;
+      background: #f8f8f8;
+      margin-top: 60px;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid #ddd;
+    }
+
+    .product-card-image {
+      width: 100%;
+      height: 250px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+    }
+
+    .product-card-info {
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wireframe-note">
+    🎨 WIREFRAME: Product Detail - Founder Edition Black
+  </div>
+
+  <header>
+    <div class="logo"><img src="/images/logo-optimized.svg" alt="Imajin" style="height: 40px; width: auto;"></div>
+    <nav>
+      <a href="01-homepage.html">Home</a>
+      <a href="02-product-listing.html">Shop</a>
+      <a href="#">Collections</a>
+      <a href="#">Portfolio</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button">Search</button>
+      <button class="icon-button">Cart (0)</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="01-homepage.html">Home</a> /
+      <a href="02-product-listing.html">Shop</a> /
+      <a href="#">Founder Edition</a> /
+      <strong>Black</strong>
+    </div>
+
+    <div class="product-detail">
+
+      <!-- LEFT: Gallery -->
+      <div class="product-gallery">
+        <div class="main-image">
+          LIFESTYLE PHOTO<br>
+          Founder Edition Black<br>
+          Installed in Modern Kitchen<br>
+          High-res professional photography
+        </div>
+        <div class="thumbnail-grid">
+          <div class="thumbnail active">View 1<br>Kitchen</div>
+          <div class="thumbnail">View 2<br>Detail</div>
+          <div class="thumbnail">View 3<br>Close-up</div>
+          <div class="thumbnail">View 4<br>Lit</div>
+        </div>
+
+        <div class="annotation">
+          📝 Large lifestyle images sell luxury products. Show the fixture as statement piece in beautiful spaces. Multiple angles including close-ups of quality/craftsmanship.
+        </div>
+      </div>
+
+      <!-- RIGHT: Product Info -->
+      <div class="product-info-panel">
+        <span class="badge">Limited to 500 Units</span>
+
+        <h1 class="product-title">Founder Edition - Black</h1>
+        <p class="product-subtitle">
+          Pre-assembled modular LED fixture with 8 panels and 24v controller. Ready to install.
+        </p>
+
+        <div class="price-section">
+          <div class="price">$2,499</div>
+          <p class="price-note">Free shipping in Canada. Installation available in GTA ($299).</p>
+        </div>
+
+        <div class="availability-status limited">
+          <div>
+            <strong>⚠️ 487 of 500 remaining</strong><br>
+            <span style="font-size: 14px; color: #666;">In stock, ships within 2-3 business days</span>
+          </div>
+        </div>
+
+        <div class="annotation">
+          📝 Scarcity creates urgency for high-budget customers. "487 remaining" is more compelling than "In Stock".
+        </div>
+
+        <!-- Color Variant Selector -->
+        <div class="variant-selector">
+          <h4>Choose Color</h4>
+          <div class="variant-options">
+            <button class="variant-option active">Black (487 left)</button>
+            <button class="variant-option">White (268 left)</button>
+            <button class="variant-option">Red (183 left)</button>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="quantity-selector">
+          <h4>Quantity</h4>
+          <div class="quantity-controls">
+            <button>-</button>
+            <input type="number" value="1" min="1" max="5">
+            <button>+</button>
+            <span style="font-size: 14px; color: #666;">Max 5 per order</span>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <div class="cta-section">
+          <a href="04-cart.html" class="btn btn-primary" style="width: 100%; text-align: center; font-size: 18px;">
+            Add to Cart
+          </a>
+          <button class="btn btn-secondary" style="width: 100%; font-size: 16px;">
+            Add Installation Service (+$299)
+          </button>
+        </div>
+
+        <!-- What's Included -->
+        <div style="background: #f8f8f8; padding: 24px; margin-bottom: 24px;">
+          <h4 style="margin-bottom: 16px; font-size: 16px;">What's Included</h4>
+          <ul class="feature-list" style="margin: 0;">
+            <li>8 × Material-8x8-V LED Panels (Black finish)</li>
+            <li>1 × Control-8-24v Controller</li>
+            <li>8 × 24v Spine Connectors</li>
+            <li>8 × Round Diffusion Caps</li>
+            <li>Mounting Hardware & Power Supply</li>
+            <li>MJN NFT Ownership Certificate</li>
+            <li>10-Year Comprehensive Warranty</li>
+          </ul>
+        </div>
+
+        <!-- Key Features -->
+        <h4 style="margin-bottom: 16px; font-size: 16px;">Key Features</h4>
+        <ul class="feature-list">
+          <li>Pre-assembled and tested - ready to hang</li>
+          <li>Expandable to 16 panels with controller upgrade</li>
+          <li>Modular design allows configuration changes</li>
+          <li>Dimmable LED panels with even light distribution</li>
+          <li>Designed and manufactured in Toronto</li>
+          <li>Limited edition with blockchain certificate</li>
+        </ul>
+
+        <div class="annotation">
+          📝 "Pre-assembled and tested" emphasized. This is NOT a DIY project. Target customer wants luxury lighting, not a maker experience.
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS: Specifications, Installation, Warranty -->
+    <div class="info-tabs">
+      <div class="tab-buttons">
+        <button class="tab-button active">Specifications</button>
+        <button class="tab-button">Installation</button>
+        <button class="tab-button">Warranty</button>
+        <button class="tab-button">Reviews</button>
+      </div>
+
+      <div class="tab-content">
+        <div class="annotation">
+          📝 Tab content would switch via JavaScript. Showing "Specifications" as default view.
+        </div>
+
+        <h3 style="margin-bottom: 24px;">Technical Specifications</h3>
+
+        <table class="spec-table">
+          <tr>
+            <td>Dimensions</td>
+            <td>8 panels: ~64" × 8" (configurable arrangement)</td>
+          </tr>
+          <tr>
+            <td>Power</td>
+            <td>24v DC, 120W max (15W per panel)</td>
+          </tr>
+          <tr>
+            <td>Voltage System</td>
+            <td>24v (compatible with 24v expansion products only)</td>
+          </tr>
+          <tr>
+            <td>Light Output</td>
+            <td>~1200 lumens per panel (9,600 total)</td>
+          </tr>
+          <tr>
+            <td>Color Temperature</td>
+            <td>2700K warm white (custom available)</td>
+          </tr>
+          <tr>
+            <td>Dimmability</td>
+            <td>Yes, via controller (0-100%)</td>
+          </tr>
+          <tr>
+            <td>Lifespan</td>
+            <td>50,000 hours rated (17+ years at 8hrs/day)</td>
+          </tr>
+          <tr>
+            <td>Materials</td>
+            <td>Aluminum frame, acrylic diffusion, custom PCB</td>
+          </tr>
+          <tr>
+            <td>Weight</td>
+            <td>~12 lbs total (1.5 lbs per panel)</td>
+          </tr>
+          <tr>
+            <td>Certifications</td>
+            <td>UL/CSA listed components</td>
+          </tr>
+          <tr>
+            <td>Warranty</td>
+            <td>10 years comprehensive (Founder Edition)</td>
+          </tr>
+        </table>
+
+        <div style="margin-top: 32px; padding: 20px; background: #f8f8f8;">
+          <strong>Note on Expandability:</strong> This 8-panel configuration can be expanded up to 16 panels with controller upgrade (Control-16-24v, sold separately). All expansion components must use 24v system.
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation">
+      📝 Specs are detailed but not overwhelming. High-budget customers care about quality indicators (warranty, lifespan, materials) more than technical minutiae.
+    </div>
+  </div>
+
+  <!-- RELATED PRODUCTS -->
+  <div class="related-products">
+    <div class="container">
+      <h2 style="font-size: 32px; margin-bottom: 40px; text-align: center;">Complete Your Setup</h2>
+
+      <div class="grid-4">
+        <div class="product-card">
+          <div class="product-card-image">
+            Product Photo<br>Installation Service
+          </div>
+          <div class="product-card-info">
+            <div style="font-size: 14px; color: #999; margin-bottom: 8px;">SERVICE</div>
+            <h4>Professional Installation</h4>
+            <p style="font-size: 14px; color: #666; margin: 8px 0;">GTA only. Mounting & wiring.</p>
+            <div style="font-size: 24px; font-weight: bold; margin: 12px 0;">$299</div>
+            <button class="btn btn-primary" style="width: 100%; font-size: 14px;">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-card-image">
+            Product Photo<br>Additional Panel
+          </div>
+          <div class="product-card-info">
+            <div style="font-size: 14px; color: #999; margin-bottom: 8px;">EXPANSION</div>
+            <h4>Additional LED Panel</h4>
+            <p style="font-size: 14px; color: #666; margin: 8px 0;">Add panels later. Black finish.</p>
+            <div style="font-size: 24px; font-weight: bold; margin: 12px 0;">$299</div>
+            <button class="btn btn-primary" style="width: 100%; font-size: 14px;">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-card-image">
+            Product Photo<br>Controller Upgrade
+          </div>
+          <div class="product-card-info">
+            <div style="font-size: 14px; color: #999; margin-bottom: 8px;">UPGRADE</div>
+            <h4>16-Output Controller</h4>
+            <p style="font-size: 14px; color: #666; margin: 8px 0;">Expand to 16 panels total.</p>
+            <div style="font-size: 24px; font-weight: bold; margin: 12px 0;">$499</div>
+            <button class="btn btn-primary" style="width: 100%; font-size: 14px;">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-card-image">
+            Product Photo<br>Extended Warranty
+          </div>
+          <div class="product-card-info">
+            <div style="font-size: 14px; color: #999; margin-bottom: 8px;">PROTECTION</div>
+            <h4>Extended Warranty</h4>
+            <p style="font-size: 14px; color: #666; margin: 8px 0;">Add 5 years coverage.</p>
+            <div style="font-size: 24px; font-weight: bold; margin: 12px 0;">$249</div>
+            <button class="btn btn-primary" style="width: 100%; font-size: 14px;">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="annotation">
+        📝 Related products = upsell opportunities. Installation service is high-margin and removes friction for target customer. Extended warranty appeals to quality-conscious buyers.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Founder Edition</a></li>
+          <li><a href="#">Expansion Panels</a></li>
+          <li><a href="#">Controllers</a></li>
+          <li><a href="#">Accessories</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Portfolio</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Installation Guide</a></li>
+          <li><a href="#">Warranty</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

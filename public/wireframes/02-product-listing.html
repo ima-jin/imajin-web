@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - Imajin Wireframe</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    .page-header {
+      background: white;
+      padding: 60px 0 40px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .page-header h1 {
+      font-size: 48px;
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+
+    .page-header p {
+      font-size: 18px;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .shop-layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 40px;
+      padding: 40px 0;
+    }
+
+    .sidebar {
+      background: white;
+      padding: 24px;
+      height: fit-content;
+      border: 1px solid #ddd;
+    }
+
+    .sidebar h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .filter-group {
+      margin-bottom: 32px;
+    }
+
+    .filter-group label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .filter-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid #ddd;
+      overflow: hidden;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 350px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: #000;
+      color: white;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge.limited {
+      background: #d32f2f;
+    }
+
+    .badge.new {
+      background: #1976d2;
+    }
+
+    .availability {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.95);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+
+    .product-info {
+      padding: 24px;
+    }
+
+    .product-category {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .product-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .product-description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .product-price {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .featured-section {
+      grid-column: 1 / -1;
+      background: #f8f8f8;
+      padding: 40px;
+      margin-bottom: 40px;
+      border: 2px solid #ddd;
+    }
+
+    .featured-section h2 {
+      font-size: 32px;
+      margin-bottom: 24px;
+      font-weight: 300;
+    }
+
+    .category-section {
+      margin-bottom: 60px;
+    }
+
+    .category-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .category-header h2 {
+      font-size: 28px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .category-header p {
+      color: #666;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wireframe-note">
+    🎨 WIREFRAME: Product Listing - Pre-Made Fixtures First
+  </div>
+
+  <header>
+    <div class="logo"><img src="/images/logo-optimized.svg" alt="Imajin" style="height: 40px; width: auto;"></div>
+    <nav>
+      <a href="01-homepage.html">Home</a>
+      <a href="02-product-listing.html"><strong>Shop</strong></a>
+      <a href="#">Collections</a>
+      <a href="#">Portfolio</a>
+      <a href="#">About</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button">Search</button>
+      <button class="icon-button">Cart (0)</button>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <h1>Shop Pre-Made Fixtures</h1>
+    <p>Sculptural LED lighting ready for your home. Limited production runs, designed in Toronto.</p>
+  </div>
+
+  <div class="container">
+    <div class="shop-layout">
+
+      <!-- SIDEBAR FILTERS -->
+      <aside class="sidebar">
+        <h3>Filter By</h3>
+
+        <div class="filter-group">
+          <h4 style="font-size: 14px; margin-bottom: 12px; font-weight: 600;">Product Type</h4>
+          <label><input type="checkbox" checked> Complete Fixtures</label>
+          <label><input type="checkbox"> Expansion Panels</label>
+          <label><input type="checkbox"> Controllers</label>
+          <label><input type="checkbox"> Accessories</label>
+        </div>
+
+        <div class="filter-group">
+          <h4 style="font-size: 14px; margin-bottom: 12px; font-weight: 600;">Availability</h4>
+          <label><input type="checkbox" checked> In Stock</label>
+          <label><input type="checkbox"> Limited Edition</label>
+        </div>
+
+        <div class="filter-group">
+          <h4 style="font-size: 14px; margin-bottom: 12px; font-weight: 600;">Color</h4>
+          <label><input type="checkbox"> Black</label>
+          <label><input type="checkbox"> White</label>
+          <label><input type="checkbox"> Red</label>
+        </div>
+
+        <div class="filter-group">
+          <h4 style="font-size: 14px; margin-bottom: 12px; font-weight: 600;">Price Range</h4>
+          <label><input type="checkbox"> Under $500</label>
+          <label><input type="checkbox"> $500 - $1,500</label>
+          <label><input type="checkbox"> $1,500 - $3,000</label>
+          <label><input type="checkbox"> $3,000+</label>
+        </div>
+
+        <div class="annotation">
+          📝 Filters help high-budget customers quickly find complete fixtures vs. individual components.
+        </div>
+      </aside>
+
+      <!-- PRODUCT GRID -->
+      <main>
+
+        <!-- FOUNDER EDITION FEATURED -->
+        <div class="featured-section">
+          <h2>Founder Edition Collection</h2>
+          <p style="margin-bottom: 32px; color: #666;">
+            Limited run of 1,000 units worldwide. Each includes 8 LED panels, 24v controller, 10-year warranty, and MJN NFT ownership certificate.
+          </p>
+
+          <div class="product-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <!-- BLACK -->
+            <a href="03-product-detail.html" class="product-card">
+              <div class="product-image">
+                <span class="badge limited">500 Available</span>
+                <span class="availability">487 Remaining</span>
+                Lifestyle Photo<br>Black Fixture<br>in Modern Kitchen
+              </div>
+              <div class="product-info">
+                <div class="product-category">Founder Edition</div>
+                <div class="product-title">Black</div>
+                <div class="product-description">
+                  Ready to install. Includes 8 panels, controller, mounting hardware.
+                </div>
+                <div class="product-price">$2,499</div>
+                <button class="btn btn-primary" style="width: 100%;">View Details</button>
+              </div>
+            </a>
+
+            <!-- WHITE -->
+            <a href="03-product-detail.html" class="product-card">
+              <div class="product-image">
+                <span class="badge limited">300 Available</span>
+                <span class="availability">268 Remaining</span>
+                Lifestyle Photo<br>White Fixture<br>in Minimalist Dining
+              </div>
+              <div class="product-info">
+                <div class="product-category">Founder Edition</div>
+                <div class="product-title">White</div>
+                <div class="product-description">
+                  Ready to install. Includes 8 panels, controller, mounting hardware.
+                </div>
+                <div class="product-price">$2,499</div>
+                <button class="btn btn-primary" style="width: 100%;">View Details</button>
+              </div>
+            </a>
+
+            <!-- RED -->
+            <a href="03-product-detail.html" class="product-card">
+              <div class="product-image">
+                <span class="badge limited">200 Available</span>
+                <span class="availability">183 Remaining</span>
+                Lifestyle Photo<br>Red Fixture<br>in Contemporary Space
+              </div>
+              <div class="product-info">
+                <div class="product-category">Founder Edition</div>
+                <div class="product-title">Red</div>
+                <div class="product-description">
+                  Ready to install. Includes 8 panels, controller, mounting hardware.
+                </div>
+                <div class="product-price">$2,499</div>
+                <button class="btn btn-primary" style="width: 100%;">View Details</button>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="annotation">
+          📝 <strong>Priority hierarchy:</strong> Founder Edition (pre-made, premium) appears first and prominently. DIY kits and components appear below as secondary offerings.
+        </div>
+
+        <!-- EXPANSION & UPGRADES -->
+        <div class="category-section">
+          <div class="category-header">
+            <h2>Expand Your Fixture</h2>
+            <p>Add panels and upgrade components to customize your installation.</p>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                <span class="badge new">New</span>
+                Product Photo<br>Material-8x8-V Panel
+              </div>
+              <div class="product-info">
+                <div class="product-category">Expansion Panel</div>
+                <div class="product-title">Additional LED Panel</div>
+                <div class="product-description">
+                  Add up to 16 panels per controller. Black, White, or Red finish.
+                </div>
+                <div class="product-price">$299</div>
+                <button class="btn btn-primary" style="width: 100%;">Add to Cart</button>
+              </div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Product Photo<br>Control-16-24v
+              </div>
+              <div class="product-info">
+                <div class="product-category">Controller Upgrade</div>
+                <div class="product-title">16-Output Controller</div>
+                <div class="product-description">
+                  Upgrade from 8 to 16 outputs. Expand to larger configurations.
+                </div>
+                <div class="product-price">$499</div>
+                <button class="btn btn-primary" style="width: 100%;">Add to Cart</button>
+              </div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Product Photo<br>Spine Connectors
+              </div>
+              <div class="product-info">
+                <div class="product-category">Hardware</div>
+                <div class="product-title">24v Spine Connectors</div>
+                <div class="product-description">
+                  Connect additional panels. Set of 4 aluminum connectors.
+                </div>
+                <div class="product-price">$89</div>
+                <button class="btn btn-primary" style="width: 100%;">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCESSORIES -->
+        <div class="category-section">
+          <div class="category-header">
+            <h2>Accessories</h2>
+            <p>Enhance and customize your fixture's appearance.</p>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Product Photo<br>Diffusion Caps
+              </div>
+              <div class="product-info">
+                <div class="product-category">Accessory</div>
+                <div class="product-title">Round Diffusion Caps</div>
+                <div class="product-description">
+                  Soften light output. Set of 8 acrylic caps.
+                </div>
+                <div class="product-price">$49</div>
+                <button class="btn btn-primary" style="width: 100%;">Add to Cart</button>
+              </div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Service Photo<br>Professional Installer
+              </div>
+              <div class="product-info">
+                <div class="product-category">Service</div>
+                <div class="product-title">Installation Service</div>
+                <div class="product-description">
+                  Professional installation in GTA. Includes mounting and wiring.
+                </div>
+                <div class="product-price">$299</div>
+                <button class="btn btn-primary" style="width: 100%;">Book Service</button>
+              </div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Product Photo<br>Extended Warranty
+              </div>
+              <div class="product-info">
+                <div class="product-category">Protection</div>
+                <div class="product-title">Extended Warranty</div>
+                <div class="product-description">
+                  Add 5 years to standard 2-year warranty. Covers all components.
+                </div>
+                <div class="product-price">$249</div>
+                <button class="btn btn-primary" style="width: 100%;">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIY KITS (DE-EMPHASIZED) -->
+        <div class="category-section" style="opacity: 0.8;">
+          <div class="category-header">
+            <h2>DIY Kits</h2>
+            <p>For makers who want to assemble themselves. Requires technical knowledge.</p>
+          </div>
+
+          <div class="annotation">
+            📝 DIY kits appear last, with lower visual priority. Target is residential customers buying pre-made units, not maker community.
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Product Photo<br>DIY Kit Components
+              </div>
+              <div class="product-info">
+                <div class="product-category">DIY Kit</div>
+                <div class="product-title">8-Panel DIY Kit</div>
+                <div class="product-description">
+                  Unassembled components. Assembly required. 2-year warranty.
+                </div>
+                <div class="product-price">$1,899</div>
+                <button class="btn btn-secondary" style="width: 100%;">View Details</button>
+              </div>
+            </div>
+
+            <div class="product-card">
+              <div class="product-image" style="height: 280px;">
+                Product Photo<br>Individual Components
+              </div>
+              <div class="product-info">
+                <div class="product-category">Components</div>
+                <div class="product-title">Individual Parts</div>
+                <div class="product-description">
+                  Controllers, panels, and connectors sold separately.
+                </div>
+                <div class="product-price">From $49</div>
+                <button class="btn btn-secondary" style="width: 100%;">Browse Parts</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <div class="annotation">
+      📝 <strong>Hierarchy achieved:</strong><br>
+      1. Founder Edition (pre-made, premium) - Featured prominently<br>
+      2. Expansion products - For existing customers<br>
+      3. Accessories & services - High-margin add-ons<br>
+      4. DIY kits - De-emphasized, last section<br>
+      <br>
+      This order matches revenue strategy: sell pre-made units to high-budget customers first, then expansion/accessories to existing customers, DIY as tertiary market.
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Founder Edition</a></li>
+          <li><a href="#">Expansion Panels</a></li>
+          <li><a href="#">Controllers</a></li>
+          <li><a href="#">Accessories</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Portfolio</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Installation Guide</a></li>
+          <li><a href="#">Warranty</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

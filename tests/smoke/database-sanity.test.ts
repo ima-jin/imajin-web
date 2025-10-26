@@ -248,7 +248,7 @@ describe("Database Sanity Checks (Working Database)", () => {
         .where(eq(variants.isLimitedEdition, true));
 
       limitedVariants.forEach((variant) => {
-        const available = (variant.maxQuantity || 0) - variant.soldQuantity;
+        const available = (variant.maxQuantity || 0) - (variant.soldQuantity ?? 0);
         expect(available).toBeGreaterThanOrEqual(0);
 
         if (variant.variantValue) {
