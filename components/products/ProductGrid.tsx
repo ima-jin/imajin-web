@@ -1,4 +1,5 @@
 import { ProductCard } from "./ProductCard";
+import { Text } from "@/components/ui/Text";
 import type { Product } from "@/types/product";
 
 interface ProductGridProps {
@@ -20,8 +21,12 @@ export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">No products found</p>
-        <p className="text-gray-400 text-sm mt-2">Try adjusting your filters</p>
+        <Text size="lg" color="muted" className="mb-2">
+          No products found
+        </Text>
+        <Text size="sm" color="muted">
+          Try adjusting your filters
+        </Text>
       </div>
     );
   }

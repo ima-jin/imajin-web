@@ -1,6 +1,7 @@
 'use client';
 
 import { useCart } from './CartProvider';
+import { Badge } from '@/components/ui/Badge';
 
 interface CartButtonProps {
   onClick: () => void;
@@ -36,9 +37,14 @@ export function CartButton({ onClick }: CartButtonProps) {
 
       {/* Item Count Badge */}
       {itemCount > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full min-w-[1.25rem] h-5 flex items-center justify-center px-1">
+        <Badge
+          variant="danger"
+          size="sm"
+          rounded="full"
+          className="absolute -top-1 -right-1 min-w-[1.25rem] h-5"
+        >
           {displayCount}
-        </span>
+        </Badge>
       )}
     </button>
   );

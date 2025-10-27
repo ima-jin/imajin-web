@@ -29,8 +29,8 @@ describe('CartItem', () => {
     );
 
     expect(screen.getByText('Test Product')).toBeInTheDocument();
-    // Next.js Image transforms src URLs, so we just check alt text
-    expect(screen.getByRole('img')).toHaveAttribute('alt', 'Test Product');
+    // Image placeholder is shown until real images are available
+    expect(screen.getByText('Image')).toBeInTheDocument();
   });
 
   it('displays unit price', () => {

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from './CartProvider';
+import { Button } from '@/components/ui/Button';
 import type { CartItem } from '@/types/cart';
 
 interface AddToCartButtonProps {
@@ -44,24 +45,15 @@ export function AddToCartButton({
     }
   };
 
-  const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
-  };
-
   return (
-    <button
-      type="button"
+    <Button
+      variant="primary"
+      size={size}
       onClick={handleClick}
-      disabled={isLoading || showSuccess}
-      className={`
-        ${sizeClasses[size]}
-        bg-blue-600 text-white font-medium rounded-lg
-        hover:bg-blue-700 transition
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${className}
-      `}
+      disabled={showSuccess}
+      loading={isLoading}
+      loadingText="Adding..."
+      className={className}
     >
       {showSuccess ? (
         <span className="flex items-center gap-2">
@@ -80,11 +72,9 @@ export function AddToCartButton({
           </svg>
           Added!
         </span>
-      ) : isLoading ? (
-        <span>Adding...</span>
       ) : (
         buttonText
       )}
-    </button>
+    </Button>
   );
 }

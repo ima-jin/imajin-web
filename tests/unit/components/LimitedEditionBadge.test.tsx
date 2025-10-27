@@ -46,8 +46,9 @@ describe("LimitedEditionBadge", () => {
     );
 
     const badge = container.firstChild;
-    expect(badge).toHaveClass("bg-blue-100");
-    expect(badge).toHaveClass("text-blue-700");
+    // Uses "limited" variant from design system (purple)
+    expect(badge).toHaveClass("bg-purple-100");
+    expect(badge).toHaveClass("text-purple-800");
   });
 
   it("handles exactly 10% remaining as not low stock", () => {
@@ -56,7 +57,8 @@ describe("LimitedEditionBadge", () => {
     );
 
     const badge = container.firstChild;
-    expect(badge).toHaveClass("bg-blue-100");
+    // Uses "limited" variant from design system (purple)
+    expect(badge).toHaveClass("bg-purple-100");
   });
 
   it("handles 1 unit remaining correctly", () => {

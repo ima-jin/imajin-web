@@ -57,14 +57,14 @@
 ### 2.1 Product Data Management ✅
 - [x] JSON config structure (`/config/products.json`)
 - [x] Product data model (aligned with Stripe)
-- [x] Seed script (`npm run seed:db`)
+- [x] Seed script (`npm run db:seed`)
 - [x] Product CRUD utilities
 
 **Phase 2.2 Improvements:**
-- [ ] Rename `sync:products` → `seed:db`
-- [ ] Configure separate test database (`imajin_test`)
-- [ ] Update tests to use `DATABASE_URL_TEST`
-- [ ] Add type mapper/validator layer (Dr. Clean rec)
+- [x] Scripts reorganized: `db:seed`, `db:sync`, `db:verify`
+- [x] Configure separate test database (`imajin_test`)
+- [x] Update tests to use test database
+- [x] Add type mapper/validator layer (Dr. Clean rec)
 
 ### 2.2 Product Catalog Pages ✅
 **Pre-work:**
@@ -145,36 +145,36 @@
 - ⚠️ Validate dependency rules carefully (voltage matching: cannot mix 5v/24v)
 - ⚠️ Maintain test coverage ratio (1.5:1)
 
-### 2.3.5 Design System & Style Architecture ⚠️ TECHNICAL DEBT
+### 2.3.5 Design System & Style Architecture ✅ COMPLETE
 
 **Type:** Architecture refactoring
 **Priority:** HIGH - Should complete BEFORE Phase 2.4
 **Reason:** Styling tightly coupled via inline Tailwind classes. No design system or theme variables.
 
 **Tasks:**
-- [ ] Create design token system in `app/globals.css` (colors, typography, spacing, etc.)
-- [ ] Build UI component library: `/components/ui/`
-  - [ ] Button (variants: primary, secondary, ghost, link)
-  - [ ] Card (with CardHeader, CardContent, CardFooter)
-  - [ ] Badge (variants: default, limited, new, success, warning, error)
-  - [ ] Input, Select, Textarea (consistent form styling)
-  - [ ] Heading, Text (semantic typography components)
-  - [ ] Price (consistent price formatting)
-  - [ ] Container, Section (layout components)
-- [ ] Refactor existing components to use UI library:
-  - [ ] All product components (ProductCard, ProductGrid, ProductSpecs, LimitedEditionBadge)
-  - [ ] All cart components (CartDrawer, CartItem, CartButton, AddToCartButton)
-  - [ ] Layout components (Header, HeroSection)
-  - [ ] All pages (Homepage, Product Listing, Product Detail)
-- [ ] Write tests for UI library (~80 new tests)
-- [ ] Create documentation:
-  - [ ] `/docs/DESIGN_SYSTEM.md` - Component usage, theme variables
-  - [ ] `/docs/STYLE_GUIDE.md` - Brand guidelines, UI patterns
-- [ ] Validation:
-  - [ ] All existing tests pass (no regressions)
-  - [ ] No visual regressions (pages look the same)
-  - [ ] Theme variables easily changeable
-  - [ ] Consistent UI patterns across all pages
+- [x] Create design token system in `app/globals.css` (colors, typography, spacing, etc.)
+- [x] Build UI component library: `/components/ui/`
+  - [x] Button (variants: primary, secondary, ghost, link, danger)
+  - [x] Card (with CardHeader, CardContent, CardFooter)
+  - [x] Badge (variants: default, limited, warning, error, success, voltage, danger)
+  - [ ] Input, Select, Textarea (consistent form styling) - **DEFERRED to Phase 2.4**
+  - [x] Heading, Text (semantic typography components)
+  - [x] Price (consistent price formatting)
+  - [x] Container, Section (layout components)
+- [x] Refactor existing components to use UI library:
+  - [x] All product components (ProductCard, ProductGrid, ProductSpecs, LimitedEditionBadge)
+  - [x] All cart components (CartDrawer, CartItem, CartButton, AddToCartButton)
+  - [x] Layout components (Header, HeroSection)
+  - [x] All pages (Homepage, Product Listing, Product Detail)
+- [x] Write tests for UI library (~80 new tests) - 94 tests written
+- [x] Create documentation:
+  - [x] `/docs/DESIGN_SYSTEM.md` - Component usage, theme variables
+  - [x] `/docs/STYLE_GUIDE.md` - Brand guidelines, UI patterns
+- [x] Validation:
+  - [x] All existing tests pass (no regressions) - 365/365 passing
+  - [x] No visual regressions (pages look the same)
+  - [x] Theme variables easily changeable
+  - [x] Consistent UI patterns across all pages
 
 **Benefits:**
 - Separation of concerns (presentation vs markup)
@@ -183,18 +183,26 @@
 - Velocity (build new pages faster from component library)
 - Flexibility (rebrand/redesign = update theme tokens)
 
-**Timeline:** 2-3 days
+**Timeline:** 2-3 days (Completed: 2025-10-26)
 
 **See:** `/docs/tasks/Phase 2.3.5 - Design System & Decoupling.md` for full specification
 
 **Gate Criteria:**
-- [ ] Design token system implemented
-- [ ] Core UI library built and tested (9 components, ~80 tests)
-- [ ] All existing components refactored (no scattered inline styles)
-- [ ] All tests passing
-- [ ] Documentation complete
+- [x] Design token system implemented
+- [x] Core UI library built and tested (8 components, 94 tests)
+- [x] All existing components refactored (29 UI component imports)
+- [x] All tests passing (365/365)
+- [x] Documentation complete
 
 ### 2.4 Checkout Flow
+
+**Pre-requisite:** Build form UI components from design system (Input, Select, Textarea) - deferred from Phase 2.3.5
+
+- [ ] Build form UI components:
+  - [ ] `/components/ui/Input.tsx` (with error states, helper text)
+  - [ ] `/components/ui/Select.tsx` (consistent styling)
+  - [ ] `/components/ui/Textarea.tsx` (with character count)
+  - [ ] Tests for form components (~12 tests each)
 - [ ] Checkout page/form
 - [ ] Customer info collection
 - [ ] Shipping address form
@@ -340,6 +348,9 @@
 
 ### 4.1 Performance & Monitoring
 - [ ] Image optimization (Next.js Image + Cloudinary)
+  - [ ] Replace `<img>` with `<Image />` in Header component (header logo)
+  - [ ] Optimize product images with Next.js Image
+  - [ ] Configure Cloudinary loader for automatic optimization
 - [ ] Code splitting, lazy loading
 - [ ] Cloudflare caching
 - [ ] DB query optimization

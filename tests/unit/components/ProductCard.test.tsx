@@ -81,9 +81,11 @@ describe("ProductCard", () => {
 
   it("applies correct styling classes", () => {
     const { container } = render(<ProductCard product={mockProduct} />);
-    const card = container.firstChild;
+    // Link is first child, Card is inside it
+    const link = container.firstChild;
+    const card = link?.firstChild;
 
-    // Should have border, rounded corners, and hover effects
+    // Card component should have border and rounded corners
     expect(card).toHaveClass("border");
     expect(card).toHaveClass("rounded-lg");
   });

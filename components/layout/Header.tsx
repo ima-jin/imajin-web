@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Container } from '@/components/ui/Container';
 import { CartButton } from '@/components/cart/CartButton';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 
@@ -11,7 +12,7 @@ export function Header() {
   return (
     <>
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="container mx-auto px-4">
+        <Container>
           <div className="flex items-center justify-between h-16">
             {/* Logo/Brand */}
             <Link href="/" className="flex items-center">
@@ -25,13 +26,16 @@ export function Header() {
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <Link href="/products" className="text-gray-600 hover:text-gray-900">
-                Products
+                Shop
+              </Link>
+              <Link href="/collections" className="text-gray-600 hover:text-gray-900">
+                Collections
+              </Link>
+              <Link href="/portfolio" className="text-gray-600 hover:text-gray-900">
+                Portfolio
               </Link>
               <Link href="/about" className="text-gray-600 hover:text-gray-900">
                 About
-              </Link>
-              <Link href="/contact" className="text-gray-600 hover:text-gray-900">
-                Contact
               </Link>
             </nav>
 
@@ -40,7 +44,7 @@ export function Header() {
               <CartButton onClick={() => setIsCartOpen(true)} />
             </div>
           </div>
-        </div>
+        </Container>
       </header>
 
       {/* Cart Drawer */}

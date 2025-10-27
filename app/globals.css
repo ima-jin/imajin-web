@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* ===== COLOR PALETTE ===== */
+  /* Primary */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-secondary: #ffffff;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* Backgrounds */
+  --color-bg-light: #ffffff;
+  --color-bg-dark: #000000;
+  --color-bg-neutral: #f8f9fa;
+  --color-bg-gray-50: #f9fafb;
+  --color-bg-gray-100: #f3f4f6;
+
+  /* Text */
+  --color-text-primary: #171717;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
+  --color-text-light: #9ca3af;
+  --color-text-inverse: #ffffff;
+
+  /* Accents */
+  --color-accent-success: #10b981;
+  --color-accent-warning: #f59e0b;
+  --color-accent-error: #dc2626;
+  --color-accent-error-hover: #b91c1c;
+  --color-accent-limited: #7c3aed;
+
+  /* Badge Backgrounds */
+  --color-badge-default-bg: #f3f4f6;
+  --color-badge-default-text: #374151;
+  --color-badge-warning-bg: #fef3c7;
+  --color-badge-warning-text: #92400e;
+  --color-badge-error-bg: #fee2e2;
+  --color-badge-error-text: #991b1b;
+  --color-badge-success-bg: #d1fae5;
+  --color-badge-success-text: #065f46;
+  --color-badge-limited-bg: #ede9fe;
+  --color-badge-limited-text: #5b21b6;
+  --color-badge-voltage-bg: #dbeafe;
+  --color-badge-voltage-text: #1e40af;
+
+  /* Borders */
+  --color-border-light: #e5e7eb;
+  --color-border-medium: #d1d5db;
+  --color-border-dark: #000000;
+
+  /* ===== TYPOGRAPHY ===== */
+  --font-heading: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Font Sizes */
+  --text-hero: 3.5rem;              /* 56px */
+  --text-h1: 3rem;                  /* 48px */
+  --text-h2: 2.25rem;               /* 36px */
+  --text-h3: 1.5rem;                /* 24px */
+  --text-h4: 1.25rem;               /* 20px */
+  --text-h5: 1.125rem;              /* 18px */
+  --text-body-lg: 1.125rem;         /* 18px */
+  --text-body: 1rem;                /* 16px */
+  --text-body-sm: 0.875rem;         /* 14px */
+  --text-caption: 0.75rem;          /* 12px */
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===== SPACING ===== */
+  --spacing-xs: 0.5rem;             /* 8px */
+  --spacing-sm: 0.75rem;            /* 12px */
+  --spacing-md: 1rem;               /* 16px */
+  --spacing-lg: 1.5rem;             /* 24px */
+  --spacing-xl: 2rem;               /* 32px */
+  --spacing-2xl: 2.5rem;            /* 40px */
+  --spacing-3xl: 3rem;              /* 48px */
+  --spacing-4xl: 4rem;              /* 64px */
+  --spacing-5xl: 5rem;              /* 80px */
+
+  /* Semantic Spacing */
+  --spacing-section: var(--spacing-5xl);
+  --spacing-card-padding: var(--spacing-xl);
+  --spacing-card-gap: var(--spacing-lg);
+
+  /* ===== LAYOUT ===== */
+  --container-max-width: 1400px;
+  --container-padding: var(--spacing-xl);
+
+  /* Max Width Utilities */
+  --max-width-xs: 20rem;        /* 320px */
+  --max-width-sm: 24rem;        /* 384px */
+  --max-width-md: 28rem;        /* 448px */
+  --max-width-lg: 32rem;        /* 512px */
+  --max-width-xl: 36rem;        /* 576px */
+  --max-width-2xl: 42rem;       /* 672px */
+  --max-width-3xl: 48rem;       /* 768px */
+  --max-width-4xl: 56rem;       /* 896px */
+  --max-width-5xl: 64rem;       /* 1024px */
+  --max-width-6xl: 72rem;       /* 1152px */
+  --max-width-7xl: 80rem;       /* 1280px */
+
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg-light);
+  color: var(--color-text-primary);
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
 }

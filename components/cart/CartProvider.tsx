@@ -17,29 +17,30 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  // Lazy initialization - load from localStorage only once on mount
-  const [items, setItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const stored = localStorage.getItem('imajin_cart');
-    if (!stored) return [];
-    try {
-      const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      console.error('Failed to parse cart from localStorage:', error);
-      localStorage.removeItem('imajin_cart');
-      return [];
-    }
-  });
+  // Always start with empty array to avoid hydration mismatch
+  // Load from localStorage after mount in useEffect
+  const [items, setItems] = useState<CartItem[]>([]);
   // Track if component has mounted (for SSR/hydration)
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Mark as hydrated after mount (client-side only)
+  // Load from localStorage and mark as hydrated after mount (client-side only)
   useEffect(() => {
-    // This effect only runs once on mount to set hydration flag
     if (typeof window !== 'undefined') {
-      // Use queueMicrotask to defer state update, preventing cascading renders
-      queueMicrotask(() => setIsHydrated(true));
+      // Load cart from localStorage
+      const stored = localStorage.getItem('imajin_cart');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setItems(parsed);
+          }
+        } catch (error) {
+          console.error('Failed to parse cart from localStorage:', error);
+          localStorage.removeItem('imajin_cart');
+        }
+      }
+      // Mark as hydrated
+      setIsHydrated(true);
     }
   }, []);
 

@@ -8,11 +8,16 @@ This directory contains the database schema, migrations, and seed data for the I
 # Push schema to database (creates/updates tables)
 npm run db:push
 
-# Seed database with sample data
+# Seed/sync database from products.json (upsert - safe to run multiple times)
 npm run db:seed
+# or
+npm run db:sync   # Same thing!
 
-# Test database connection
+# Test database connection and run sanity checks
 npm run db:test
+
+# Verify database contents (debugging)
+npm run db:verify
 
 # Open Drizzle Studio (database GUI)
 npm run db:studio
@@ -57,7 +62,7 @@ The database is configured to connect to PostgreSQL at `localhost:5435` (as spec
 9. **portfolio_images** - Gallery images for portfolio items
    - Multiple images per portfolio item
 
-## Scripts
+## Files in this Directory
 
 ### `schema.ts`
 
@@ -67,18 +72,16 @@ Defines all database tables using Drizzle ORM syntax.
 
 Database connection configuration. Exports `db` instance for queries.
 
-### `seed.ts`
+## Operational Scripts
 
-Seeds the database with sample product data:
+Database operational scripts are located in `/scripts/`:
 
-- 8 products (panels, connectors, controls, kits)
-- 3 Founder Edition variants (500 BLACK, 300 WHITE, 200 RED)
-- Product dependencies and specifications
-- Sample portfolio item
+- **`sync-products.ts`** - Seeds/syncs database from `config/products.json` (UPSERT)
+- **`verify-products.ts`** - Display database contents for debugging
+- **`test-connection.ts`** - Test connectivity and run sanity checks
+- **`reset-test-db.ts`** - Reset test database
 
-### `test-connection.ts`
-
-Tests database connectivity and runs sample queries to verify setup.
+Run these via npm scripts (see Quick Start above or `package.json`).
 
 ## Configuration
 

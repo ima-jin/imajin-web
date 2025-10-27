@@ -1,64 +1,149 @@
 import { HeroSection } from "@/components/home/HeroSection";
-import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductCard } from "@/components/products/ProductCard";
+import { Container } from "@/components/ui/Container";
+import { Heading } from "@/components/ui/Heading";
+import { Text } from "@/components/ui/Text";
+import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 /**
  * Homepage
  *
- * Displays:
- * - Hero section with company value proposition
- * - Featured products section
- * - Call to action to view all products
+ * Matches wireframe design:
+ * - Hero section with black background
+ * - Value props (Ready to Install, Modular Design, 10-Year Warranty)
+ * - Founder Edition showcase
+ * - Lifestyle section
+ * - Browse all products
  */
 export default async function HomePage() {
-  // Fetch featured products from API
+  // Fetch all products
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/products`, {
-    cache: "no-store", // Ensure fresh data on each request
+    cache: "no-store",
   });
 
   const products = await response.json();
 
-  // Show first 4 products as featured
-  const featuredProducts = products.slice(0, 4);
+  // Filter Founder Edition variants (they'll have hasVariants: true)
+  const founderEdition = products.find((p: any) => p.hasVariants === true);
+
+  // Get other products for browse section
+  const browseProducts = products.filter((p: any) => !p.hasVariants).slice(0, 4);
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Featured Products Section */}
-      <section id="featured" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Featured Products
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explore our modular LED system. Build custom fixtures tailored to your needs.
-            </p>
+      {/* Value Props Section */}
+      <section className="bg-white py-16">
+        <Container>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
+                <Text size="caption" color="muted">ICON</Text>
+              </div>
+              <Heading level={3} className="mb-3">Ready to Install</Heading>
+              <Text color="secondary">
+                Pre-assembled fixtures arrive ready to hang. Professional installation available in GTA.
+              </Text>
+            </div>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
+                <Text size="caption" color="muted">ICON</Text>
+              </div>
+              <Heading level={3} className="mb-3">Modular Design</Heading>
+              <Text color="secondary">
+                Expand your fixture over time. Add panels and change configurations as your space evolves.
+              </Text>
+            </div>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
+                <Text size="caption" color="muted">ICON</Text>
+              </div>
+              <Heading level={3} className="mb-3">10-Year Warranty</Heading>
+              <Text color="secondary">
+                Founder Edition units include comprehensive warranty and exclusive ownership certificate.
+              </Text>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Founder Edition Showcase */}
+      <section className="bg-white py-20">
+        <Container>
+          <div className="text-center mb-16">
+            <Heading level={2} className="text-4xl mb-4">Founder Edition Collection</Heading>
+            <Text size="lg" color="secondary" className="max-w-2xl mx-auto">
+              Limited run of 1,000 units. Each includes MJN NFT ownership certificate and 10-year warranty.
+            </Text>
           </div>
 
-          {/* Product Grid */}
-          {featuredProducts.length > 0 ? (
-            <ProductGrid products={featuredProducts} />
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No products available at this time.</p>
+          {founderEdition && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <ProductCard product={founderEdition} />
+              <ProductCard product={founderEdition} />
+              <ProductCard product={founderEdition} />
             </div>
           )}
 
-          {/* View All Products CTA */}
-          {products.length > 4 && (
-            <div className="mt-12 text-center">
-              <Link
-                href="/products"
-                className="inline-block px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                View All Products
-              </Link>
+          <div className="mt-8 text-center">
+            <Link href="/products">
+              <Button variant="primary" size="lg">
+                View Details
+              </Button>
+            </Link>
+          </div>
+        </Container>
+      </section>
+
+      {/* Lifestyle Section */}
+      <section className="bg-white py-20">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="h-[500px] bg-gray-100 flex items-center justify-center rounded">
+              <Text color="muted">Installation Photo - Residential Setting</Text>
             </div>
-          )}
-        </div>
+            <div>
+              <Heading level={2} className="text-4xl md:text-5xl font-light mb-6">
+                Designed in Toronto.<br />Built to Last.
+              </Heading>
+              <Text size="lg" color="secondary" className="mb-5 leading-relaxed">
+                Each Imajin fixture is a sculptural statement piece. Our modular LED panels transform kitchens, dining rooms, and living spaces with warm, even light.
+              </Text>
+              <Text size="lg" color="secondary" className="mb-8 leading-relaxed">
+                Proudly designed and manufactured in Toronto. Limited production runs ensure exceptional quality control.
+              </Text>
+              <Button variant="primary" size="lg">
+                See Our Portfolio
+              </Button>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Browse All Products */}
+      <section className="bg-white py-20">
+        <Container>
+          <div className="text-center mb-12">
+            <Heading level={2} className="text-4xl mb-4">Browse All Products</Heading>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {browseProducts.map((product: any) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link href="/products">
+              <Button variant="secondary" size="lg">
+                View All Products
+              </Button>
+            </Link>
+          </div>
+        </Container>
       </section>
     </div>
   );

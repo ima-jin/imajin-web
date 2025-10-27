@@ -74,10 +74,11 @@ env: {
 ```json
 {
   "scripts": {
-    "seed:db": "tsx scripts/seed-products.ts",
+    "db:seed": "tsx scripts/seed-db.ts",
+    "db:sync": "tsx scripts/sync-products.ts",
     "test:db:create": "docker exec -it imajin-db-local psql -U imajin -d postgres -c 'CREATE DATABASE imajin_test;'",
     "test:db:reset": "tsx scripts/reset-test-db.ts",
-    "test:db:seed": "DATABASE_URL=$DATABASE_URL_TEST npm run seed:db"
+    "test:db:seed": "DATABASE_URL=postgresql://imajin:imajin_dev@localhost:5435/imajin_test tsx scripts/sync-products.ts"
   }
 }
 ```
@@ -242,7 +243,8 @@ describe('mapDbProductToProduct', () => {
 ```json
 {
   "scripts": {
-    "seed:db": "tsx scripts/seed-products.ts"  // Was: sync:products
+    "db:seed": "tsx scripts/seed-db.ts",
+    "db:sync": "tsx scripts/sync-products.ts"
   }
 }
 ```
@@ -614,7 +616,7 @@ export function ProductCard({ product }: { product: Product }) {
 - [ ] `test:db:reset` script working
 - [ ] Mapper layer implemented
 - [ ] Mapper tests passing
-- [ ] `seed:db` script renamed
+- [x] Scripts reorganized (`db:seed`, `db:sync`)
 
 ### Catalog Pages Complete:
 - [ ] Homepage displays featured products

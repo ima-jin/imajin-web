@@ -1,5 +1,7 @@
-import { db } from "./index";
-import { products, variants, productSpecs } from "./schema";
+#!/usr/bin/env tsx
+
+import { db } from "@/db";
+import { products, variants, productSpecs } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 async function testConnection() {

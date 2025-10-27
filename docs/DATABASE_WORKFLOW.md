@@ -78,7 +78,7 @@ Development commands **automatically** use `imajin_local`:
 
 ```bash
 npm run dev               # ✅ Uses imajin_local
-npm run sync:products     # ✅ Syncs to imajin_local
+npm run db:sync           # ✅ Syncs to imajin_local
 npm run db:push           # ✅ Pushes schema to imajin_local
 npm run db:studio         # ✅ Opens studio for imajin_local
 ```
@@ -117,7 +117,7 @@ npm run db:push                    # Pushes to imajin_local (development)
 DB_NAME=imajin_test npm run db:push  # Pushes to imajin_test (Windows)
 
 # 4. Seed development database
-npm run sync:products              # Seeds imajin_local with products
+npm run db:sync                    # Seeds imajin_local with products
 ```
 
 ### Test Database
@@ -155,7 +155,7 @@ afterEach(async () => {
 npm run test:db:drop DB_NAME=imajin_local
 npm run test:db:create
 DB_NAME=imajin_local npm run db:push
-npm run sync:products
+npm run db:sync
 ```
 
 **Reset test database:**
@@ -189,7 +189,7 @@ docker exec imajin-db-local psql -U imajin -d imajin_test -c "SELECT * FROM prod
 
 **To development database:**
 ```bash
-npm run sync:products  # Syncs config/products.json → imajin_local
+npm run db:sync        # Syncs config/products.json → imajin_local
 ```
 
 **To test database:**
@@ -236,10 +236,10 @@ DB_NAME=imajin_test npm run db:push  # Push latest schema to test DB
 **Solution:**
 ```bash
 # Override with explicit DB_NAME
-DB_NAME=imajin_staging npm run sync:products
+DB_NAME=imajin_staging npm run db:sync
 
 # Or with full DATABASE_URL
-DATABASE_URL=postgresql://user:pass@host:port/custom_db npm run sync:products
+DATABASE_URL=postgresql://user:pass@host:port/custom_db npm run db:sync
 ```
 
 ---
