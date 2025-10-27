@@ -8,7 +8,7 @@
 - **Founder**: Experienced dev lead (web since 90s, led 7 teams)
 
 ## Tech Stack
-**Core**: Next.js 16 (App Router), TypeScript, Tailwind CSS, PostgreSQL, Drizzle ORM, Docker
+**Core**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4, PostgreSQL, Drizzle ORM, Docker
 **Services**: Stripe (payments), Cloudinary (images), Cloudflare (CDN)
 **Future**: Solana Pay, NFT minting, visual configurator
 

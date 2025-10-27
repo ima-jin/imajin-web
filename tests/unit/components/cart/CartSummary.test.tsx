@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CartSummary } from '@/components/cart/CartSummary';
+import { mockUIStrings } from '@/tests/helpers/mock-content';
 
 // Mock useCart hook
 const mockUseCart = vi.fn();
@@ -19,7 +20,7 @@ describe('CartSummary', () => {
       itemCount: 0,
     });
 
-    render(<CartSummary />);
+    render(<CartSummary uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/subtotal/i)).toBeInTheDocument();
     expect(screen.getByText(/0.*items/i)).toBeInTheDocument();
@@ -33,7 +34,7 @@ describe('CartSummary', () => {
       itemCount: 1,
     });
 
-    render(<CartSummary />);
+    render(<CartSummary uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/1.*item\b/i)).toBeInTheDocument();
     const prices = screen.getAllByText('$50.00');
@@ -46,7 +47,7 @@ describe('CartSummary', () => {
       itemCount: 3,
     });
 
-    render(<CartSummary />);
+    render(<CartSummary uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/3.*items/i)).toBeInTheDocument();
     const prices = screen.getAllByText('$150.00');
@@ -59,7 +60,7 @@ describe('CartSummary', () => {
       itemCount: 1,
     });
 
-    render(<CartSummary />);
+    render(<CartSummary uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/shipping/i)).toBeInTheDocument();
     expect(screen.getByText(/calculated at checkout/i)).toBeInTheDocument();
@@ -71,7 +72,7 @@ describe('CartSummary', () => {
       itemCount: 2,
     });
 
-    render(<CartSummary />);
+    render(<CartSummary uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/^total$/i)).toBeInTheDocument();
     // Should show subtotal as total since shipping/tax not yet calculated
@@ -85,7 +86,7 @@ describe('CartSummary', () => {
       itemCount: 5,
     });
 
-    render(<CartSummary />);
+    render(<CartSummary uiStrings={mockUIStrings} />);
 
     const amounts = screen.getAllByText('$1,234.56');
     expect(amounts.length).toBeGreaterThanOrEqual(1);

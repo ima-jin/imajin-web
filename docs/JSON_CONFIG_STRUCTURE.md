@@ -19,13 +19,28 @@ Product and portfolio data is managed through JSON configuration files in the `/
 
 ```
 /config
-├── products.json            # All products, variants, and dependencies (single file)
+├── products.json                     # All products, variants, and dependencies
+├── content/                          # UI copy, messaging, and content
+│   ├── site-metadata.json            # SEO, page titles, site info
+│   ├── navigation.json               # Header, footer, breadcrumbs
+│   ├── ui-strings.json               # Buttons, labels, common messages
+│   ├── validation-messages.json      # Error messages, warnings
+│   └── pages/
+│       ├── home.json                 # Homepage content
+│       ├── products-listing.json     # Products page content
+│       └── product-detail.json       # Product detail page content
+├── schema/                           # Zod validation schemas for content
+│   ├── site-metadata-schema.ts
+│   ├── navigation-schema.ts
+│   ├── page-content-schema.ts
+│   ├── ui-strings-schema.ts
+│   └── validation-messages-schema.ts
 ├── portfolio/
-│   ├── installations.json   # Installation projects
-│   └── case-studies.json    # Case studies
-├── default.json             # Default app config
-├── dev.json                 # Dev environment overrides
-└── live.json                # Production overrides
+│   ├── installations.json            # Installation projects
+│   └── case-studies.json             # Case studies
+├── default.json                      # Default app config
+├── dev.json                          # Dev environment overrides
+└── live.json                         # Production overrides
 ```
 
 **Rationale for single products.json:**
@@ -742,6 +757,333 @@ export function validateProductConfig(config: unknown) {
 
 ---
 
+## Content Configuration (Phase 2.3.6)
+
+Starting in Phase 2.3.6, all UI strings, copy, and page content have been externalized to JSON configuration files. This enables non-developers to update site content without touching code.
+
+### Content Directory Structure
+
+```
+/config/content/
+├── site-metadata.json       # SEO tags, site info, page metadata
+├── navigation.json           # Header/footer nav, breadcrumbs
+├── ui-strings.json          # Common UI labels, buttons, messages
+├── validation-messages.json # Error messages, validation text
+└── pages/
+    ├── home.json            # Homepage content
+    ├── products-listing.json # Products page content
+    └── product-detail.json   # Product detail page content
+```
+
+### Schema Definitions
+
+All content files are validated using Zod schemas located in `/config/schema/`:
+
+- `site-metadata-schema.ts` - Site-wide metadata and SEO
+- `navigation-schema.ts` - Navigation structure
+- `page-content-schema.ts` - Page-specific content
+- `ui-strings-schema.ts` - UI labels and messages
+- `validation-messages-schema.ts` - Error and validation messages
+
+### Content Loading System
+
+Content is loaded server-side using async hooks:
+
+```typescript
+// hooks/useSiteMetadata.ts
+export async function getSiteMetadata(): Promise<SiteMetadata> {
+  return loadContentCached('content/site-metadata.json', SiteMetadataSchema);
+}
+```
+
+**Features:**
+- Server-side loading (React Server Components)
+- Automatic caching in production (disabled in dev)
+- Full TypeScript type inference from Zod schemas
+- Validation on load with helpful error messages
+
+### Site Metadata Configuration
+
+```json
+// config/content/site-metadata.json
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "site": {
+    "name": "Imajin",
+    "tagline": "Modular LED Fixtures",
+    "description": "Sculptural LED lighting designed and manufactured in Toronto",
+    "url": "https://www.imajin.ai",
+    "contact_email": "hello@imajin.ai",
+    "support_email": "support@imajin.ai"
+  },
+  "meta": {
+    "default_title": "Imajin - Modular LED Fixtures",
+    "title_template": "{page_title} | Imajin",
+    "default_description": "Sculptural LED lighting designed and manufactured in Toronto",
+    "keywords": ["LED fixtures", "modular lighting", "Toronto", "sculptural lighting"],
+    "og_image": "/images/og-image.jpg",
+    "twitter_handle": "@imajin",
+    "favicon": "/favicon.ico"
+  },
+  "pages": {
+    "home": {
+      "title": "Imajin - Modular LED Fixtures",
+      "description": "Sculptural LED lighting designed and manufactured in Toronto"
+    },
+    "products": {
+      "title": "Shop",
+      "description": "Browse our complete collection of modular LED fixtures"
+    }
+  }
+}
+```
+
+### Navigation Configuration
+
+```json
+// config/content/navigation.json
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "header": {
+    "logo_alt": "Imajin Logo",
+    "nav_items": [
+      {
+        "id": "shop",
+        "label": "Shop",
+        "href": "/products",
+        "aria_label": "Browse all products"
+      }
+    ]
+  },
+  "footer": {
+    "sections": [
+      {
+        "id": "shop",
+        "heading": "Shop",
+        "links": [
+          {
+            "label": "Founder Edition",
+            "href": "/products",
+            "aria_label": "Shop Founder Edition collection"
+          }
+        ]
+      }
+    ],
+    "copyright": "© {year} Imajin. All rights reserved.",
+    "legal_links": [
+      {
+        "label": "Privacy Policy",
+        "href": "/legal/privacy"
+      }
+    ]
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart"
+  }
+}
+```
+
+### UI Strings Configuration
+
+```json
+// config/content/ui-strings.json
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "cart": {
+    "heading": "Shopping Cart",
+    "empty_state": {
+      "heading": "Your cart is empty",
+      "message": "Add some products to get started",
+      "cta_label": "Browse Products"
+    },
+    "item_count": {
+      "singular": "item",
+      "plural": "items"
+    },
+    "summary": {
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "shipping_calculated": "Calculated at checkout",
+      "total": "Total"
+    },
+    "actions": {
+      "checkout": "Checkout",
+      "continue_shopping": "Continue Shopping"
+    }
+  },
+  "cart_item": {
+    "limited_edition_badge": "Limited Edition",
+    "low_stock_template": "Only {quantity} remaining",
+    "quantity_label": "Quantity",
+    "remove_label": "Remove",
+    "aria": {
+      "increase_quantity": "Increase quantity",
+      "decrease_quantity": "Decrease quantity",
+      "remove_item": "Remove item from cart"
+    }
+  },
+  "buttons": {
+    "add_to_cart": "Add to Cart",
+    "adding": "Adding...",
+    "added": "Added!",
+    "checkout": "Checkout",
+    "close": "Close"
+  }
+}
+```
+
+### Page Content Configuration
+
+```json
+// config/content/pages/home.json
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "hero": {
+    "heading": "Sculptural LED Lighting",
+    "subheading": "Modular fixtures designed and manufactured in Toronto",
+    "cta_primary": {
+      "label": "Shop Founder Edition",
+      "href": "/products",
+      "aria_label": "Browse Founder Edition collection"
+    }
+  },
+  "value_props": [
+    {
+      "id": "modular",
+      "heading": "Modular Design",
+      "description": "Build, expand, and reconfigure your lighting installation"
+    }
+  ]
+}
+```
+
+### Validation Messages Configuration
+
+```json
+// config/content/validation-messages.json
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "cart_validation": {
+    "product_unavailable_template": "{product_name} is no longer available",
+    "voltage_mismatch": "Your cart contains both 5v and 24v components. These cannot be mixed in the same fixture.",
+    "quantity_exceeded_template": "{product_name} only has {available_quantity} units remaining"
+  }
+}
+```
+
+### Template String Interpolation
+
+Content supports dynamic template strings using `{variable}` syntax:
+
+```typescript
+import { interpolate, interpolateWithYear } from '@/lib/utils/string-template';
+
+// Basic interpolation
+const message = interpolate(content.low_stock_template, { quantity: 5 });
+// Result: "Only 5 remaining"
+
+// With current year
+const copyright = interpolateWithYear(navigation.footer.copyright);
+// Result: "© 2025 Imajin. All rights reserved."
+```
+
+### Usage Pattern
+
+**Server Components:**
+```typescript
+// app/page.tsx
+import { getHomePageContent } from '@/hooks/usePageContent';
+
+export default async function HomePage() {
+  const content = await getHomePageContent();
+
+  return (
+    <div>
+      <h1>{content.hero.heading}</h1>
+      <HeroSection content={content.hero} />
+    </div>
+  );
+}
+```
+
+**Client Components:**
+```typescript
+// components/cart/CartItem.tsx
+'use client';
+
+interface CartItemProps {
+  item: CartItem;
+  uiStrings: UIStrings;  // Passed from parent server component
+}
+
+export function CartItem({ item, uiStrings }: CartItemProps) {
+  return (
+    <button aria-label={uiStrings.cart_item.aria.remove_item}>
+      {uiStrings.cart_item.remove_label}
+    </button>
+  );
+}
+```
+
+### Content Validation Script
+
+Validate all content files:
+
+```bash
+npm run validate:content
+```
+
+```typescript
+// scripts/validate-content.ts
+import { validateContent } from '@/lib/config/content-loader';
+
+// Validates all 7 content files
+// Returns: All files validated successfully ✓
+```
+
+### Benefits
+
+1. **Non-developer friendly:** Content team can update copy without touching code
+2. **Type-safe:** Full TypeScript inference from Zod schemas
+3. **Version controlled:** All content changes tracked in git
+4. **Validated:** Runtime validation prevents broken content
+5. **Testable:** Mock content available for testing
+6. **Performance:** Server-side loading with caching
+7. **SEO control:** Metadata managed separately from code
+
+### Refactored Components
+
+The following components now use externalized content:
+
+**Critical:**
+- `app/layout.tsx` - Site metadata (generateMetadata)
+- `components/layout/Header.tsx` - Navigation
+- `components/layout/Footer.tsx` - Footer links, copyright
+
+**Pages:**
+- `app/page.tsx` - Homepage content
+- `app/products/page.tsx` - Products listing
+- `app/products/[id]/page.tsx` - Product detail
+
+**Cart:**
+- `components/cart/CartDrawer.tsx` - Cart UI
+- `components/cart/CartSummary.tsx` - Summary labels
+- `components/cart/CartItem.tsx` - Item labels, ARIA
+
+**Products:**
+- `components/home/HeroSection.tsx` - Hero content
+- `components/products/ProductCard.tsx` - Badges
+- `lib/services/cart-validator.ts` - Validation messages
+
+---
+
 ## Future Enhancements
 
 ### CMS Integration (Optional)
@@ -764,6 +1106,91 @@ export function validateProductConfig(config: unknown) {
 
 ---
 
+## Content Configuration (Phase 2.3.6)
+
+### Overview
+
+Content configuration files externalize all UI copy, messaging, and content from code into JSON files with full TypeScript type safety via Zod schemas.
+
+**Benefits:**
+- Content changes without code changes or redeployment
+- Type-safe content access throughout the application
+- Validation at load time (catches errors before runtime)
+- Single source of truth for all UI strings
+- Future-ready for internationalization (i18n)
+
+### Content Loading Pattern
+
+**Server Components:**
+```typescript
+import { getHomePageContent } from '@/hooks/usePageContent';
+
+export default async function HomePage() {
+  const content = await getHomePageContent();
+  return <h1>{content.hero.heading}</h1>;
+}
+```
+
+**Client Components:**
+```typescript
+// Pass content as props from server parent
+export function HeroSection({ content }: { content: HomePageContent['hero'] }) {
+  return <h1>{content.heading}</h1>;
+}
+```
+
+### Content Files Reference
+
+**For detailed content structure and editing guide, see:**
+- **[CONTENT_MANAGEMENT.md](./CONTENT_MANAGEMENT.md)** - Complete guide for content editors
+
+**Content files:**
+- `site-metadata.json` - SEO, page titles, Open Graph data
+- `navigation.json` - Header/footer navigation structure
+- `ui-strings.json` - Buttons, labels, common UI messages
+- `validation-messages.json` - Error messages, cart validation
+- `pages/home.json` - Homepage content sections
+- `pages/products-listing.json` - Product listing page content
+- `pages/product-detail.json` - Product detail page content
+
+### Template String Interpolation
+
+Some content strings use template variables for dynamic values:
+
+```json
+{
+  "low_stock_template": "Only {quantity} remaining",
+  "product_unavailable_template": "{product_name} is no longer available"
+}
+```
+
+**Usage:**
+```typescript
+import { interpolate } from '@/lib/utils/string-template';
+
+const message = interpolate(
+  content.low_stock_template,
+  { quantity: 5 }
+);
+// Result: "Only 5 remaining"
+```
+
+### Validation
+
+All content files are validated against Zod schemas:
+
+```bash
+npm run validate:content
+```
+
+Validation runs automatically in CI/CD and catches:
+- Missing required fields
+- Type mismatches (string vs number)
+- Malformed JSON syntax
+- Invalid structure
+
+---
+
 **Document Created:** 2025-10-22
-**Last Updated:** 2025-10-22
-**Status:** Complete - Ready for implementation
+**Last Updated:** 2025-10-27 (Phase 2.3.6 content configuration added)
+**Status:** Complete and in use

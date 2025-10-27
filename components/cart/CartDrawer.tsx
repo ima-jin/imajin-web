@@ -6,14 +6,18 @@ import { CartSummary } from './CartSummary';
 import { Heading } from '@/components/ui/Heading';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
+import type { UIStrings } from '@/config/schema/ui-strings-schema';
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  uiStrings: UIStrings;
 }
 
-export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+export function CartDrawer({ isOpen, onClose, uiStrings }: CartDrawerProps) {
   const { items, itemCount, updateQuantity, removeItem } = useCart();
+  const cartStrings = uiStrings.cart;
+  const itemCountLabel = itemCount === 1 ? cartStrings.item_count.singular : cartStrings.item_count.plural;
 
   if (!isOpen) return null;
 
@@ -36,12 +40,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <Heading level={2} className="text-lg">
-            Shopping Cart {itemCount > 0 && `(${itemCount} items)`}
+            {cartStrings.heading} {itemCount > 0 && `(${itemCount} ${itemCountLabel})`}
           </Heading>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close cart"
+            aria-label={uiStrings.aria.close_cart}
             className="p-2 text-gray-400 hover:text-gray-600"
           >
             <svg
@@ -78,10 +82,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 />
               </svg>
               <Text size="lg" className="font-medium mb-2">
-                Your cart is empty
+                {cartStrings.empty_state.heading}
               </Text>
               <Text size="sm" color="muted">
-                Add some products to get started
+                {cartStrings.empty_state.message}
               </Text>
             </div>
           </div>
@@ -93,6 +97,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <CartItem
                   key={`${item.productId}-${item.variantId || 'default'}`}
                   item={item}
+                  uiStrings={uiStrings}
                   onUpdateQuantity={updateQuantity}
                   onRemove={removeItem}
                 />
@@ -101,7 +106,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Footer with Summary and Checkout */}
             <div className="border-t p-4 space-y-4">
-              <CartSummary />
+              <CartSummary uiStrings={uiStrings} />
               <Button
                 variant="primary"
                 size="lg"
@@ -111,7 +116,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   console.log('Proceeding to checkout...');
                 }}
               >
-                Checkout
+                {cartStrings.actions.checkout}
               </Button>
             </div>
           </>

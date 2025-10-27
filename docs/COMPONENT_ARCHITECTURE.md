@@ -2,7 +2,7 @@
 
 ## Overview
 
-Next.js 14 App Router uses Server Components (default) + Client Components (`'use client'`) for optimal performance.
+Next.js 16 App Router uses Server Components (default) + Client Components (`'use client'`) for optimal performance.
 
 **Key Principles:**
 - Server Components by default (better performance, smaller bundles)

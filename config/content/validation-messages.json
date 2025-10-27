@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "cart_validation": {
+    "product_unavailable_template": "{product_name} is no longer available",
+    "product_sold_out_template": "{product_name} is sold out",
+    "insufficient_stock_template": "Only {available_quantity} units of {product_name} remaining",
+    "quantity_exceeds_stock_template": "Only {available_quantity} units available",
+    "voltage_mismatch": "Cannot mix 5v and 24v components in the same order. Please choose one voltage system.",
+    "missing_required_component_template": "This product requires {required_product}",
+    "suggested_component_template": "Consider adding {suggested_product}",
+    "incompatible_products_template": "Cannot add {product_name} with {conflicting_product} in cart"
+  },
+  "product_validation": {
+    "invalid_variant": "Please select a valid variant",
+    "invalid_quantity": "Please enter a valid quantity",
+    "quantity_too_low": "Quantity must be at least 1",
+    "quantity_too_high_template": "Maximum quantity is {max_quantity}"
+  },
+  "checkout_validation": {
+    "required_field_template": "{field_name} is required",
+    "invalid_email": "Please enter a valid email address",
+    "invalid_phone": "Please enter a valid phone number",
+    "invalid_postal_code": "Please enter a valid postal code",
+    "invalid_card": "Invalid card number",
+    "card_declined": "Your card was declined. Please try another payment method."
+  },
+  "form_validation": {
+    "required": "This field is required",
+    "email_invalid": "Please enter a valid email address",
+    "min_length_template": "Must be at least {min_length} characters",
+    "max_length_template": "Must be no more than {max_length} characters",
+    "pattern_mismatch": "Please match the requested format"
+  }
+}

@@ -1,16 +1,20 @@
 'use client';
 
 import type { CartItem } from '@/types/cart';
+import type { UIStrings } from '@/config/schema/ui-strings-schema';
 import { formatCurrency } from '@/lib/utils/format';
 import { Badge } from '@/components/ui/Badge';
+import { interpolate } from '@/lib/utils/string-template';
 
 interface CartItemProps {
   item: CartItem;
+  uiStrings: UIStrings;
   onUpdateQuantity: (productId: string, variantId: string | undefined, quantity: number) => void;
   onRemove: (productId: string, variantId: string | undefined) => void;
 }
 
-export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+export function CartItem({ item, uiStrings, onUpdateQuantity, onRemove }: CartItemProps) {
+  const cartItemStrings = uiStrings.cart_item;
   const lineTotal = item.price * item.quantity;
   const isAtMinQuantity = item.quantity <= 1;
   const isAtMaxQuantity = item.isLimitedEdition && item.remainingQuantity !== undefined
@@ -55,7 +59,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
             <div className="flex flex-wrap gap-2 mt-1">
               {item.isLimitedEdition && (
                 <Badge variant="limited" size="sm">
-                  Limited Edition
+                  {cartItemStrings.limited_edition_badge}
                 </Badge>
               )}
               {item.voltage && (
@@ -68,7 +72,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
             {/* Remaining Quantity Warning */}
             {item.isLimitedEdition && item.remainingQuantity !== undefined && item.remainingQuantity <= 10 && (
               <p className="text-xs text-amber-600 mt-1">
-                Only {item.remainingQuantity} remaining
+                {interpolate(cartItemStrings.low_stock_template, { quantity: item.remainingQuantity })}
               </p>
             )}
 
@@ -94,7 +98,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
               type="button"
               onClick={handleDecrement}
               disabled={isAtMinQuantity}
-              aria-label="Decrease quantity"
+              aria-label={cartItemStrings.aria.decrease_quantity}
               className="px-3 py-1 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               −
@@ -105,13 +109,13 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
               value={item.quantity}
               onChange={handleQuantityChange}
               className="w-12 text-center border-x border-gray-300 py-1 text-sm"
-              aria-label="Quantity"
+              aria-label={cartItemStrings.quantity_label}
             />
             <button
               type="button"
               onClick={handleIncrement}
               disabled={isAtMaxQuantity}
-              aria-label="Increase quantity"
+              aria-label={cartItemStrings.aria.increase_quantity}
               className="px-3 py-1 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               +
@@ -122,10 +126,10 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
           <button
             type="button"
             onClick={handleRemove}
-            aria-label="Remove item"
+            aria-label={cartItemStrings.aria.remove_item}
             className="text-sm text-red-600 hover:text-red-700"
           >
-            Remove
+            {cartItemStrings.remove_label}
           </button>
         </div>
       </div>

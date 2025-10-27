@@ -1,0 +1,111 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "hero": {
+    "heading": "Sculptural LED Lighting for Modern Spaces",
+    "subheading": "Pre-made modular fixtures designed in Toronto. Ready to install or expand over time.",
+    "cta_primary": {
+      "label": "Shop Pre-Made Fixtures",
+      "href": "/products",
+      "aria_label": "Browse pre-assembled LED fixtures"
+    },
+    "cta_secondary": {
+      "label": "View Portfolio",
+      "href": "/portfolio",
+      "aria_label": "View installation portfolio"
+    }
+  },
+  "value_props": [
+    {
+      "id": "ready-to-install",
+      "heading": "Ready to Install",
+      "description": "Pre-assembled fixtures arrive ready to hang. Professional installation available in GTA.",
+      "icon": "package"
+    },
+    {
+      "id": "modular-design",
+      "heading": "Modular Design",
+      "description": "Expand your fixture over time. Add panels and change configurations as your space evolves.",
+      "icon": "grid"
+    },
+    {
+      "id": "warranty",
+      "heading": "10-Year Warranty",
+      "description": "Founder Edition units include comprehensive warranty and exclusive ownership certificate.",
+      "icon": "shield"
+    }
+  ],
+  "founder_section": {
+    "heading": "Founder Edition Collection",
+    "description": "Limited run of 1,000 units. Each includes MJN NFT ownership certificate and 10-year warranty.",
+    "colors": [
+      {
+        "id": "black",
+        "label": "Black",
+        "quantity": 500,
+        "quantity_label": "500 Available"
+      },
+      {
+        "id": "white",
+        "label": "White",
+        "quantity": 300,
+        "quantity_label": "300 Available"
+      },
+      {
+        "id": "red",
+        "label": "Red",
+        "quantity": 200,
+        "quantity_label": "200 Available"
+      }
+    ],
+    "cta": {
+      "label": "View Details",
+      "href": "/products/Unit-8x8x8-Founder",
+      "aria_label": "View Founder Edition details"
+    }
+  },
+  "expansion_section": {
+    "heading": "Expand Your Fixture",
+    "description": "Add panels and upgrade components to grow your installation.",
+    "cta": {
+      "label": "Browse Components",
+      "href": "/products",
+      "aria_label": "Browse expansion components"
+    }
+  },
+  "accessories_section": {
+    "heading": "Accessories",
+    "description": "Enhance and customize your fixture's appearance.",
+    "cta": {
+      "label": "Shop Accessories",
+      "href": "/products",
+      "aria_label": "Browse accessories"
+    }
+  },
+  "diy_section": {
+    "heading": "DIY Kits",
+    "description": "For makers who want to assemble themselves. Includes everything you need.",
+    "cta": {
+      "label": "View DIY Kits",
+      "href": "/products",
+      "aria_label": "Browse DIY kits"
+    }
+  },
+  "about_section": {
+    "heading": "Designed in Toronto. Built to Last.",
+    "description": "Each Imajin fixture is a sculptural statement piece. Our modular LED panels transform kitchens, dining rooms, and living spaces with warm, even light. Proudly designed and manufactured in Toronto. Limited production runs ensure exceptional quality control.",
+    "cta": {
+      "label": "See Our Portfolio",
+      "href": "/portfolio",
+      "aria_label": "View installation portfolio"
+    }
+  },
+  "browse_all_section": {
+    "heading": "Browse All Products",
+    "cta": {
+      "label": "View All Products",
+      "href": "/products",
+      "aria_label": "View all products"
+    }
+  }
+}

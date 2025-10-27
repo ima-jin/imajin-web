@@ -1,6 +1,8 @@
 import { db } from '@/db';
 import { products, variants, productDependencies } from '@/db/schema';
 import { inArray } from 'drizzle-orm';
+import { getValidationMessages } from '@/hooks/useValidationMessages';
+import { interpolate } from '@/lib/utils/string-template';
 import type { CartItem, CartValidationResult, CartValidationError, CartWarning } from '@/types/cart';
 
 export async function validateCart(items: CartItem[]): Promise<CartValidationResult> {
@@ -10,6 +12,9 @@ export async function validateCart(items: CartItem[]): Promise<CartValidationRes
   if (items.length === 0) {
     return { valid: true, errors: [], warnings: [] };
   }
+
+  // Load validation messages
+  const messages = await getValidationMessages();
 
   // 1. Check product availability
   const productIds = items.map(item => item.productId);
@@ -27,7 +32,9 @@ export async function validateCart(items: CartItem[]): Promise<CartValidationRes
         productId: item.productId,
         variantId: item.variantId,
         type: 'unavailable',
-        message: `${item.name} is no longer available`,
+        message: interpolate(messages.cart_validation.product_unavailable_template, {
+          product_name: item.name,
+        }),
       });
     }
   }
@@ -52,26 +59,34 @@ export async function validateCart(items: CartItem[]): Promise<CartValidationRes
           productId: item.productId,
           variantId: item.variantId,
           type: 'out_of_stock',
-          message: `${item.name} is sold out`,
+          message: interpolate(messages.cart_validation.product_sold_out_template, {
+            product_name: item.name,
+          }),
         });
       } else if (item.quantity > available) {
         errors.push({
           productId: item.productId,
           variantId: item.variantId,
           type: 'out_of_stock',
-          message: `Only ${available} units of ${item.name} remaining`,
+          message: interpolate(messages.cart_validation.insufficient_stock_template, {
+            available_quantity: available,
+            product_name: item.name,
+          }),
         });
       } else if (available <= 10) {
         warnings.push({
           type: 'low_stock',
-          message: `Only ${available} units of ${item.name} remaining`,
+          message: interpolate(messages.cart_validation.insufficient_stock_template, {
+            available_quantity: available,
+            product_name: item.name,
+          }),
         });
       }
     }
   }
 
   // 3. Check voltage compatibility
-  const voltageValidation = validateVoltageCompatibility(items);
+  const voltageValidation = await validateVoltageCompatibility(items, messages);
   errors.push(...voltageValidation.errors);
   warnings.push(...voltageValidation.warnings);
 
@@ -86,7 +101,10 @@ export async function validateCart(items: CartItem[]): Promise<CartValidationRes
   };
 }
 
-function validateVoltageCompatibility(items: CartItem[]): { errors: CartValidationError[], warnings: CartWarning[] } {
+async function validateVoltageCompatibility(
+  items: CartItem[],
+  messages: Awaited<ReturnType<typeof getValidationMessages>>
+): Promise<{ errors: CartValidationError[], warnings: CartWarning[] }> {
   const errors: CartValidationError[] = [];
   const warnings: CartWarning[] = [];
 
@@ -101,7 +119,7 @@ function validateVoltageCompatibility(items: CartItem[]): { errors: CartValidati
     errors.push({
       productId: '',
       type: 'voltage_mismatch',
-      message: 'Cannot mix 5v and 24v components in the same order. Please choose one voltage system.',
+      message: messages.cart_validation.voltage_mismatch,
     });
   }
 

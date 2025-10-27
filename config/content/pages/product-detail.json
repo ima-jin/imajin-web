@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "sections": {
+    "description": {
+      "heading": "Description"
+    },
+    "specifications": {
+      "heading": "Specifications"
+    },
+    "whats_included": {
+      "heading": "What's Included"
+    },
+    "warranty": {
+      "heading": "Warranty & Support"
+    }
+  },
+  "variant_selector": {
+    "color_label": "Select Color:",
+    "quantity_label": "Quantity:",
+    "out_of_stock_label": "Sold Out",
+    "out_of_stock_suffix": "- Sold Out"
+  },
+  "badges": {
+    "limited_edition": "Limited Edition",
+    "sold_out": "Sold Out",
+    "requires_assembly": "Requires Assembly",
+    "multiple_colors": "Multiple colors available",
+    "low_stock_template": "Only {quantity} remaining",
+    "in_stock": "In Stock"
+  },
+  "assembly": {
+    "notice": "Assembly Required: This product requires assembly."
+  },
+  "cta": {
+    "add_to_cart": "Add to Cart",
+    "adding": "Adding...",
+    "added": "Added!",
+    "sold_out": "Sold Out",
+    "notify_me": "Notify When Available"
+  },
+  "shipping": {
+    "estimate": "Ships within 7-14 business days",
+    "free_shipping_notice": "Free shipping on orders over $500"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "cart": {
+    "heading": "Shopping Cart",
+    "empty_state": {
+      "heading": "Your cart is empty",
+      "message": "Add some products to get started",
+      "cta_label": "Browse Products"
+    },
+    "item_count": {
+      "singular": "item",
+      "plural": "items"
+    },
+    "summary": {
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "shipping_calculated": "Calculated at checkout",
+      "total": "Total"
+    },
+    "actions": {
+      "checkout": "Checkout",
+      "continue_shopping": "Continue Shopping",
+      "update_cart": "Update Cart",
+      "clear_cart": "Clear Cart"
+    }
+  },
+  "cart_item": {
+    "limited_edition_badge": "Limited Edition",
+    "low_stock_template": "Only {quantity} remaining",
+    "quantity_label": "Quantity",
+    "remove_label": "Remove",
+    "update_label": "Update",
+    "aria": {
+      "increase_quantity": "Increase quantity",
+      "decrease_quantity": "Decrease quantity",
+      "remove_item": "Remove item from cart"
+    }
+  },
+  "buttons": {
+    "add_to_cart": "Add to Cart",
+    "adding": "Adding...",
+    "added": "Added!",
+    "buy_now": "Buy Now",
+    "checkout": "Checkout",
+    "continue": "Continue",
+    "back": "Back",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "learn_more": "Learn More",
+    "view_details": "View Details",
+    "shop_now": "Shop Now"
+  },
+  "forms": {
+    "required_field": "Required",
+    "optional_field": "Optional",
+    "select_placeholder": "Select an option",
+    "search_placeholder": "Search..."
+  },
+  "loading": {
+    "loading": "Loading...",
+    "please_wait": "Please wait..."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Check your connection and try again.",
+    "not_found": "The page you're looking for doesn't exist."
+  },
+  "aria": {
+    "close_dialog": "Close dialog",
+    "close_cart": "Close cart",
+    "open_cart": "Open cart",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "skip_to_content": "Skip to content"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "site": {
+    "name": "Imajin",
+    "tagline": "Sculptural LED Lighting for Modern Spaces",
+    "description": "Modular LED fixtures designed and manufactured in Toronto. Pre-assembled units and DIY kits for residential and commercial installations.",
+    "url": "https://www.imajin.ai",
+    "contact_email": "hello@imajin.ai",
+    "support_email": "support@imajin.ai"
+  },
+  "meta": {
+    "default_title": "Imajin | Modular LED Fixtures",
+    "title_template": "%s | Imajin",
+    "default_description": "Sculptural LED lighting designed in Toronto. Modular fixtures for modern spaces. Pre-assembled units with 10-year warranty and expandable DIY kits.",
+    "keywords": [
+      "LED fixtures",
+      "modular lighting",
+      "sculptural lighting",
+      "Toronto design",
+      "custom LED installation",
+      "addressable LEDs"
+    ],
+    "og_image": "/og-image.jpg",
+    "twitter_handle": "@imajin",
+    "favicon": "/favicon.ico"
+  },
+  "pages": {
+    "home": {
+      "title": "Imajin | Modular LED Fixtures",
+      "description": "Sculptural LED lighting designed in Toronto. Pre-assembled fixtures and expandable DIY kits for modern spaces."
+    },
+    "products": {
+      "title": "Shop Pre-Made Fixtures",
+      "description": "Browse our collection of modular LED fixtures. Limited edition Founder Collection and expandable component systems."
+    },
+    "productDetail": {
+      "title_template": "%s | Imajin",
+      "description_template": "%s - Modular LED fixture designed in Toronto. Available now at Imajin."
+    },
+    "cart": {
+      "title": "Shopping Cart | Imajin"
+    },
+    "checkout": {
+      "title": "Checkout | Imajin"
+    }
+  }
+}

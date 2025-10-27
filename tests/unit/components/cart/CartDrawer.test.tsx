@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { mockUIStrings } from '@/tests/helpers/mock-content';
 import type { CartItem } from '@/types/cart';
 
 // Mock useCart hook
@@ -32,7 +33,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/shopping cart/i)).toBeInTheDocument();
   });
@@ -46,7 +47,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={false} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={false} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     // Should not display cart content when closed
     expect(screen.queryByText(/shopping cart/i)).not.toBeInTheDocument();
@@ -61,7 +62,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     const closeButton = screen.getByLabelText(/close/i);
     expect(closeButton).toBeInTheDocument();
@@ -76,7 +77,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     const closeButton = screen.getByLabelText(/close/i);
     fireEvent.click(closeButton);
@@ -93,7 +94,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     expect(screen.getByText(/your cart is empty/i)).toBeInTheDocument();
   });
@@ -124,7 +125,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     expect(screen.getByText('Test Product 1')).toBeInTheDocument();
     expect(screen.getByText('Test Product 2')).toBeInTheDocument();
@@ -149,7 +150,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     const checkoutButton = screen.getByRole('button', { name: /checkout/i });
     expect(checkoutButton).toBeInTheDocument();
@@ -164,7 +165,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     const checkoutButton = screen.queryByRole('button', { name: /checkout/i });
     expect(checkoutButton).not.toBeInTheDocument();
@@ -189,7 +190,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     // CartSummary should display subtotal
     expect(screen.getByText(/subtotal/i)).toBeInTheDocument();
@@ -204,7 +205,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     // Find and click the overlay (backdrop)
     const overlay = document.querySelector('[data-testid="cart-drawer-overlay"]');
@@ -223,7 +224,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     // Clicking the drawer content should not close it
     const drawerContent = document.querySelector('[data-testid="cart-drawer-content"]');
@@ -252,7 +253,7 @@ describe('CartDrawer', () => {
       removeItem: mockRemoveItem,
     });
 
-    render(<CartDrawer isOpen={true} onClose={mockOnClose} />);
+    render(<CartDrawer isOpen={true} onClose={mockOnClose} uiStrings={mockUIStrings} />);
 
     // Text appears in both header and summary, so use getAllByText
     const itemCountTexts = screen.getAllByText(/3.*items/i);

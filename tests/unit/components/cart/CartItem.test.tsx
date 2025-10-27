@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CartItem as CartItemComponent } from '@/components/cart/CartItem';
+import { mockUIStrings } from '@/tests/helpers/mock-content';
 import type { CartItem } from '@/types/cart';
 
 describe('CartItem', () => {
@@ -23,6 +24,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -37,6 +39,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -49,6 +52,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -62,6 +66,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -75,6 +80,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -90,6 +96,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -107,6 +114,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={singleItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -120,6 +128,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -135,6 +144,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -150,6 +160,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={baseItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -171,6 +182,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={variantItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -188,6 +200,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={limitedItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -205,6 +218,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={voltageItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -223,6 +237,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={limitedItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -242,6 +257,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={limitedItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />
@@ -261,6 +277,7 @@ describe('CartItem', () => {
     render(
       <CartItemComponent
         item={expensiveItem}
+        uiStrings={mockUIStrings}
         onUpdateQuantity={mockUpdateQuantity}
         onRemove={mockRemoveItem}
       />

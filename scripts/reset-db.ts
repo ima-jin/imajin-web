@@ -9,7 +9,6 @@
  *   npm run db:reset
  */
 
-import { db } from "@/db";
 import postgres from "postgres";
 import { getDatabaseConnectionString } from "@/lib/config/database";
 

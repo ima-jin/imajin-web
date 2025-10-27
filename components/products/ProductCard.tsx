@@ -5,9 +5,11 @@ import { Price } from "@/components/ui/Price";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import type { Product } from "@/types/product";
+import type { ProductDetailContent } from "@/config/schema/page-content-schema";
 
 interface ProductCardProps {
   product: Product;
+  content?: ProductDetailContent;
 }
 
 /**
@@ -23,7 +25,7 @@ interface ProductCardProps {
  *
  * Links to product detail page on click
  */
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, content }: ProductCardProps) {
   return (
     <Link href={`/products/${product.id}`} className="block">
       <Card hover noPadding>
@@ -41,7 +43,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Badge>
             {product.requiresAssembly && (
               <Badge variant="warning" size="sm">
-                Requires Assembly
+                {content?.badges.requires_assembly || "Requires Assembly"}
               </Badge>
             )}
           </div>
@@ -66,7 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Variants Indicator */}
           {product.hasVariants && (
             <Text size="caption" color="muted">
-              Multiple colors available
+              {content?.badges.multiple_colors || "Multiple colors available"}
             </Text>
           )}
         </div>

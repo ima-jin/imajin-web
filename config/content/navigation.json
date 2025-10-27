@@ -1,0 +1,159 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "header": {
+    "logo_alt": "Imajin Logo",
+    "nav_items": [
+      {
+        "id": "shop",
+        "label": "Shop",
+        "href": "/products",
+        "aria_label": "Browse all products"
+      },
+      {
+        "id": "collections",
+        "label": "Collections",
+        "href": "/collections",
+        "aria_label": "View product collections"
+      },
+      {
+        "id": "portfolio",
+        "label": "Portfolio",
+        "href": "/portfolio",
+        "aria_label": "View installation portfolio"
+      },
+      {
+        "id": "about",
+        "label": "About",
+        "href": "/about",
+        "aria_label": "Learn about Imajin"
+      }
+    ]
+  },
+  "footer": {
+    "sections": [
+      {
+        "id": "shop",
+        "heading": "Shop",
+        "links": [
+          {
+            "label": "Founder Edition",
+            "href": "/products",
+            "aria_label": "Shop Founder Edition collection"
+          },
+          {
+            "label": "Expansion Panels",
+            "href": "/products",
+            "aria_label": "Shop expansion panels"
+          },
+          {
+            "label": "Controllers",
+            "href": "/products",
+            "aria_label": "Shop control units"
+          },
+          {
+            "label": "Accessories",
+            "href": "/products",
+            "aria_label": "Shop accessories and diffusers"
+          }
+        ]
+      },
+      {
+        "id": "company",
+        "heading": "Company",
+        "links": [
+          {
+            "label": "About Us",
+            "href": "/about",
+            "aria_label": "Learn about Imajin"
+          },
+          {
+            "label": "Portfolio",
+            "href": "/portfolio",
+            "aria_label": "View our installation work"
+          },
+          {
+            "label": "Contact",
+            "href": "/contact",
+            "aria_label": "Get in touch"
+          },
+          {
+            "label": "Press",
+            "href": "/press",
+            "aria_label": "Press and media resources"
+          }
+        ]
+      },
+      {
+        "id": "support",
+        "heading": "Support",
+        "links": [
+          {
+            "label": "Installation Guide",
+            "href": "/installation",
+            "aria_label": "Installation instructions"
+          },
+          {
+            "label": "Warranty",
+            "href": "/warranty",
+            "aria_label": "Warranty information"
+          },
+          {
+            "label": "Returns",
+            "href": "/returns",
+            "aria_label": "Return policy"
+          },
+          {
+            "label": "FAQ",
+            "href": "/faq",
+            "aria_label": "Frequently asked questions"
+          }
+        ]
+      },
+      {
+        "id": "follow",
+        "heading": "Follow",
+        "links": [
+          {
+            "label": "Instagram",
+            "href": "https://instagram.com",
+            "aria_label": "Follow us on Instagram",
+            "external": true
+          },
+          {
+            "label": "Facebook",
+            "href": "https://facebook.com",
+            "aria_label": "Follow us on Facebook",
+            "external": true
+          },
+          {
+            "label": "LinkedIn",
+            "href": "https://linkedin.com",
+            "aria_label": "Follow us on LinkedIn",
+            "external": true
+          }
+        ]
+      }
+    ],
+    "copyright": "© {year} Imajin. All rights reserved.",
+    "legal_links": [
+      {
+        "label": "Privacy Policy",
+        "href": "/legal/privacy"
+      },
+      {
+        "label": "Terms of Service",
+        "href": "/legal/terms"
+      }
+    ]
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "products": "Products",
+    "collections": "Collections",
+    "portfolio": "Portfolio",
+    "about": "About",
+    "cart": "Cart",
+    "checkout": "Checkout"
+  }
+}

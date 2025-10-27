@@ -1,0 +1,131 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-27",
+  "page": {
+    "heading": "Shop Pre-Made Fixtures",
+    "subheading": "Sculptural LED lighting ready for your home. Limited production runs, designed in Toronto."
+  },
+  "filters": {
+    "heading": "Filter By",
+    "sections": [
+      {
+        "id": "product_type",
+        "label": "Product Type",
+        "options": [
+          {
+            "value": "fixtures",
+            "label": "Complete Fixtures",
+            "description": "Pre-assembled ready-to-install units"
+          },
+          {
+            "value": "material",
+            "label": "Expansion Panels",
+            "description": "Individual panels for growing your fixture"
+          },
+          {
+            "value": "control",
+            "label": "Controllers",
+            "description": "Control units and power supplies"
+          },
+          {
+            "value": "diffuser",
+            "label": "Accessories",
+            "description": "Diffusion caps and connectors"
+          }
+        ]
+      },
+      {
+        "id": "availability",
+        "label": "Availability",
+        "options": [
+          {
+            "value": "in_stock",
+            "label": "In Stock",
+            "description": "Ships within 7-14 days"
+          },
+          {
+            "value": "limited_edition",
+            "label": "Limited Edition",
+            "description": "Founder Edition collection"
+          }
+        ]
+      },
+      {
+        "id": "color",
+        "label": "Color",
+        "options": [
+          {
+            "value": "BLACK",
+            "label": "Black",
+            "description": "Matte black PCB"
+          },
+          {
+            "value": "WHITE",
+            "label": "White",
+            "description": "White PCB finish"
+          },
+          {
+            "value": "RED",
+            "label": "Red",
+            "description": "Red PCB accent"
+          }
+        ]
+      },
+      {
+        "id": "price",
+        "label": "Price Range",
+        "options": [
+          {
+            "value": "0-50000",
+            "label": "Under $500",
+            "description": "Budget-friendly options"
+          },
+          {
+            "value": "50000-150000",
+            "label": "$500 - $1,500",
+            "description": "Mid-range fixtures"
+          },
+          {
+            "value": "150000-300000",
+            "label": "$1,500 - $3,000",
+            "description": "Premium fixtures"
+          },
+          {
+            "value": "300000-999999999",
+            "label": "$3,000+",
+            "description": "High-end installations"
+          }
+        ]
+      }
+    ],
+    "clear_filters_label": "Clear All Filters",
+    "active_filters_label": "Active Filters"
+  },
+  "loading_states": {
+    "loading_products": "Loading products...",
+    "no_products": "No products found matching your filters.",
+    "try_again": "Try adjusting your filters or browse all products."
+  },
+  "product_sections": [
+    {
+      "id": "founder",
+      "heading": "Founder Edition Collection",
+      "description": "Limited run of 1,000 units worldwide. Each includes 8 LED panels, 24v controller, 10-year warranty, and MJN NFT ownership certificate."
+    },
+    {
+      "id": "expansion",
+      "heading": "Expand Your Fixture",
+      "description": "Add panels and upgrade components to customize your installation."
+    },
+    {
+      "id": "accessories",
+      "heading": "Accessories",
+      "description": "Enhance and customize your fixture's appearance."
+    },
+    {
+      "id": "diy",
+      "heading": "DIY Kits",
+      "description": "For makers who want to assemble themselves. Requires technical knowledge."
+    }
+  ]
+}

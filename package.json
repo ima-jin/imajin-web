@@ -35,7 +35,8 @@
     "test:smoke:ci": "vitest run tests/smoke --reporter=verbose",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "validate:content": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.7",

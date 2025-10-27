@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useLayoutEffect, ReactNode } from 'react';
 import type { CartItem } from '@/types/cart';
 
 interface CartContextValue {
@@ -23,23 +23,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Track if component has mounted (for SSR/hydration)
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load from localStorage and mark as hydrated after mount (client-side only)
-  useEffect(() => {
+  // Load from localStorage synchronously after mount to avoid hydration mismatch
+  // useLayoutEffect runs synchronously after DOM mutations but before browser paint
+  useLayoutEffect(() => {
     if (typeof window !== 'undefined') {
       // Load cart from localStorage
       const stored = localStorage.getItem('imajin_cart');
+      let initialItems: CartItem[] = [];
+
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            setItems(parsed);
+            initialItems = parsed;
           }
         } catch (error) {
           console.error('Failed to parse cart from localStorage:', error);
           localStorage.removeItem('imajin_cart');
         }
       }
-      // Mark as hydrated
+
+      // Update state once with both items and hydration status
+      if (initialItems.length > 0) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration is standard pattern
+        setItems(initialItems);
+      }
       setIsHydrated(true);
     }
   }, []);

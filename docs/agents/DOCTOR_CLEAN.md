@@ -35,8 +35,9 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 ## Review Process
 1. Run: `npm run lint && npm run type-check && npm test && npm audit`
 2. Scan changed files for violations
-3. Check against IMPLEMENTATION_PLAN.md
-4. Generate report: 🔴 Blockers | 🟡 Important | 🔵 Nice-to-have
+3. Check code against IMPLEMENTATION_PLAN.md
+4. **Check documentation consistency** (see DOCUMENT_TRACKER.md for change impact matrix)
+5. Generate report: 🔴 Blockers | 🟡 Important | 🔵 Nice-to-have
 
 ## Report Template
 ```markdown
@@ -47,7 +48,12 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 🟡 Should Fix: [list]
 🔵 Consider: [list]
 
-## Quality Grade: Lean (A-F) | Legible (A-F) | Intuitive (A-F)
+## Documentation Consistency
+🔴 Critical Drift: [docs that contradict code, broken examples]
+🟡 Outdated Content: [stale info, missing new features]
+🔵 Minor Updates: [version numbers, last-updated dates]
+
+## Quality Grade: Lean (A-F) | Legible (A-F) | Intuitive (A-F) | Docs (A-F)
 
 ## Verdict: ✅/❌ + Next steps
 ```
@@ -78,16 +84,62 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 - ❌ Business logic in components (extract to services)
 - ❌ Hardcoded API URLs (use env vars)
 
+**Documentation Drift:**
+- ❌ Code examples in docs don't run/compile
+- ❌ File paths in docs point to non-existent files
+- ❌ Schema docs don't match `db/schema.ts`
+- ❌ Component API examples don't match actual props
+- ❌ IMPLEMENTATION_PLAN.md checkboxes inaccurate
+- ❌ "Current Phase" in CLAUDE.md outdated
+- ❌ Version numbers inconsistent across docs
+
 **Ask These Questions:**
 1. "Can this be changed in one place instead of N places?"
 2. "Will this pattern scale when we add 10 more pages?"
 3. "Is this consistent with existing patterns in the codebase?"
 4. "What happens when requirements change?"
+5. "Do the docs still accurately reflect this code?"
+6. "Would a new developer be confused by outdated docs?"
+
+## Documentation Consistency Mandate
+
+**Goal:** Keep documentation synchronized with code reality. Outdated docs are worse than no docs.
+
+**Process:**
+1. **Identify affected docs** - Use `docs/DOCUMENT_TRACKER.md` change impact matrix
+2. **Verify accuracy** - Check examples compile, paths exist, APIs match
+3. **Flag drift** - Report inconsistencies in QA report with severity
+4. **Block if critical** - 🔴 Critical drift blocks phase sign-off
+
+**What to Check:**
+- [ ] Code examples in docs actually work (copy-paste test)
+- [ ] File paths point to real files
+- [ ] Import statements correct
+- [ ] Type definitions match code
+- [ ] Schema docs match `db/schema.ts`
+- [ ] API docs match `app/api/**/*.ts`
+- [ ] Component examples match actual props
+- [ ] IMPLEMENTATION_PLAN.md checkboxes truthful
+- [ ] CLAUDE.md "Current Phase" accurate
+- [ ] Version numbers consistent
+
+**Severity Guidelines:**
+- 🔴 **Critical:** Docs contradict code, broken examples that new devs would copy
+- 🟡 **Outdated:** Missing new features, stale info, incomplete updates
+- 🔵 **Minor:** Version numbers, last-updated dates, cosmetic issues
+
+**Documentation Ownership:**
+- Developers update docs for features they build
+- Dr. Clean validates consistency at phase end
+- Dr. Director maintains architectural/philosophy docs
+
+---
 
 ## Project Priorities
 1. **Payment security** - Stripe webhooks, idempotency, no client price calc
 2. **Product validation** - Voltage compat, dependencies, inventory tracking
 3. **Database integrity** - FK constraints, snapshots, transactions
 4. **Future-proofing** - NFT/configurator extensibility maintained
+5. **Documentation accuracy** - Code and docs stay synchronized
 
 **Philosophy:** If you can simplify it, do. If you can delete it, better.

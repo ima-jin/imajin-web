@@ -4,7 +4,9 @@ import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
+import { getHomePageContent } from "@/hooks/usePageContent";
 import Link from "next/link";
+import type { Product } from "@/types/product";
 
 /**
  * Homepage
@@ -17,55 +19,42 @@ import Link from "next/link";
  * - Browse all products
  */
 export default async function HomePage() {
+  // Load content
+  const content = await getHomePageContent();
+
   // Fetch all products
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/products`, {
     cache: "no-store",
   });
 
-  const products = await response.json();
+  const products = (await response.json()) as Product[];
 
   // Filter Founder Edition variants (they'll have hasVariants: true)
-  const founderEdition = products.find((p: any) => p.hasVariants === true);
+  const founderEdition = products.find((p) => p.hasVariants === true);
 
   // Get other products for browse section
-  const browseProducts = products.filter((p: any) => !p.hasVariants).slice(0, 4);
+  const browseProducts = products.filter((p) => !p.hasVariants).slice(0, 4);
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <HeroSection />
+      <HeroSection content={content.hero} />
 
       {/* Value Props Section */}
       <section className="bg-white py-16">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
-                <Text size="caption" color="muted">ICON</Text>
+            {content.value_props.map((prop) => (
+              <div key={prop.id} className="text-center">
+                <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
+                  <Text size="caption" color="muted">ICON</Text>
+                </div>
+                <Heading level={3} className="mb-3">{prop.heading}</Heading>
+                <Text color="secondary">
+                  {prop.description}
+                </Text>
               </div>
-              <Heading level={3} className="mb-3">Ready to Install</Heading>
-              <Text color="secondary">
-                Pre-assembled fixtures arrive ready to hang. Professional installation available in GTA.
-              </Text>
-            </div>
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
-                <Text size="caption" color="muted">ICON</Text>
-              </div>
-              <Heading level={3} className="mb-3">Modular Design</Heading>
-              <Text color="secondary">
-                Expand your fixture over time. Add panels and change configurations as your space evolves.
-              </Text>
-            </div>
-            <div className="text-center">
-              <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-5 flex items-center justify-center">
-                <Text size="caption" color="muted">ICON</Text>
-              </div>
-              <Heading level={3} className="mb-3">10-Year Warranty</Heading>
-              <Text color="secondary">
-                Founder Edition units include comprehensive warranty and exclusive ownership certificate.
-              </Text>
-            </div>
+            ))}
           </div>
         </Container>
       </section>
@@ -74,9 +63,9 @@ export default async function HomePage() {
       <section className="bg-white py-20">
         <Container>
           <div className="text-center mb-16">
-            <Heading level={2} className="text-4xl mb-4">Founder Edition Collection</Heading>
+            <Heading level={2} className="text-4xl mb-4">{content.founder_section.heading}</Heading>
             <Text size="lg" color="secondary" className="max-w-2xl mx-auto">
-              Limited run of 1,000 units. Each includes MJN NFT ownership certificate and 10-year warranty.
+              {content.founder_section.description}
             </Text>
           </div>
 
@@ -89,9 +78,9 @@ export default async function HomePage() {
           )}
 
           <div className="mt-8 text-center">
-            <Link href="/products">
-              <Button variant="primary" size="lg">
-                View Details
+            <Link href={content.founder_section.cta.href}>
+              <Button variant="primary" size="lg" aria-label={content.founder_section.cta.aria_label}>
+                {content.founder_section.cta.label}
               </Button>
             </Link>
           </div>
@@ -107,17 +96,16 @@ export default async function HomePage() {
             </div>
             <div>
               <Heading level={2} className="text-4xl md:text-5xl font-light mb-6">
-                Designed in Toronto.<br />Built to Last.
+                {content.about_section.heading}
               </Heading>
-              <Text size="lg" color="secondary" className="mb-5 leading-relaxed">
-                Each Imajin fixture is a sculptural statement piece. Our modular LED panels transform kitchens, dining rooms, and living spaces with warm, even light.
-              </Text>
               <Text size="lg" color="secondary" className="mb-8 leading-relaxed">
-                Proudly designed and manufactured in Toronto. Limited production runs ensure exceptional quality control.
+                {content.about_section.description}
               </Text>
-              <Button variant="primary" size="lg">
-                See Our Portfolio
-              </Button>
+              <Link href={content.about_section.cta.href}>
+                <Button variant="primary" size="lg" aria-label={content.about_section.cta.aria_label}>
+                  {content.about_section.cta.label}
+                </Button>
+              </Link>
             </div>
           </div>
         </Container>
@@ -127,19 +115,19 @@ export default async function HomePage() {
       <section className="bg-white py-20">
         <Container>
           <div className="text-center mb-12">
-            <Heading level={2} className="text-4xl mb-4">Browse All Products</Heading>
+            <Heading level={2} className="text-4xl mb-4">{content.browse_all_section.heading}</Heading>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {browseProducts.map((product: any) => (
+            {browseProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
           <div className="mt-12 text-center">
-            <Link href="/products">
-              <Button variant="secondary" size="lg">
-                View All Products
+            <Link href={content.browse_all_section.cta.href}>
+              <Button variant="secondary" size="lg" aria-label={content.browse_all_section.cta.aria_label}>
+                {content.browse_all_section.cta.label}
               </Button>
             </Link>
           </div>
