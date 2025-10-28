@@ -5,8 +5,11 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { getHomePageContent } from "@/hooks/usePageContent";
+import { apiGet } from "@/lib/utils/api-client";
+import { API_ENDPOINTS } from "@/lib/config/api";
+import { ProductSchema } from "@/types/product";
+import { z } from "zod";
 import Link from "next/link";
-import type { Product } from "@/types/product";
 
 /**
  * Homepage
@@ -22,12 +25,13 @@ export default async function HomePage() {
   // Load content
   const content = await getHomePageContent();
 
-  // Fetch all products
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/products`, {
-    cache: "no-store",
-  });
-
-  const products = (await response.json()) as Product[];
+  // Fetch all products with validation
+  // Errors will be caught by error boundary (app/error.tsx)
+  const products = await apiGet(
+    API_ENDPOINTS.PRODUCTS,
+    z.array(ProductSchema),
+    { cache: "no-store" }
+  );
 
   // Filter Founder Edition variants (they'll have hasVariants: true)
   const founderEdition = products.find((p) => p.hasVariants === true);

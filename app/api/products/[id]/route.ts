@@ -1,5 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getProductWithVariants } from "@/lib/services/product-service";
+import {
+  successResponse,
+  notFoundResponse,
+  handleUnknownError,
+} from "@/lib/utils/api-response";
+import { HTTP_STATUS } from "@/lib/config/api";
 
 /**
  * GET /api/products/[id]
@@ -25,28 +31,12 @@ export async function GET(
     const product = await getProductWithVariants(id);
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return notFoundResponse("Product");
     }
 
-    // Return product with variants and specs as JSON
-    return NextResponse.json(product, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // Return standardized success response
+    return successResponse(product, HTTP_STATUS.OK);
   } catch (error) {
-    console.error("Error fetching product:", error);
-
-    return NextResponse.json(
-      {
-        error: "Failed to fetch product",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    return handleUnknownError(error, 'Failed to fetch product');
   }
 }

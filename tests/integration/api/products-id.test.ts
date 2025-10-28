@@ -131,7 +131,8 @@ describe.sequential("GET /api/products/[id]", () => {
 
   it("returns product with correct structure", async () => {
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "api-prod-detail-1" }) });
-    const data = (await response.json()) as ProductWithVariants;
+    const json = await response.json();
+    const data = json.data as ProductWithVariants;
 
     expect(data).toHaveProperty("id");
     expect(data).toHaveProperty("name");
@@ -150,7 +151,8 @@ describe.sequential("GET /api/products/[id]", () => {
 
   it("returns product with empty variants array when hasVariants is false", async () => {
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "api-prod-detail-1" }) });
-    const data = (await response.json()) as ProductWithVariants;
+    const json = await response.json();
+    const data = json.data as ProductWithVariants;
 
     expect(data.id).toBe("api-prod-detail-1");
     expect(data.hasVariants).toBe(false);
@@ -160,7 +162,8 @@ describe.sequential("GET /api/products/[id]", () => {
 
   it("returns product with variants when hasVariants is true", async () => {
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "api-prod-detail-variants" }) });
-    const data = (await response.json()) as ProductWithVariants;
+    const json = await response.json();
+    const data = json.data as ProductWithVariants;
 
     expect(data.id).toBe("api-prod-detail-variants");
     expect(data.hasVariants).toBe(true);
@@ -180,7 +183,8 @@ describe.sequential("GET /api/products/[id]", () => {
 
   it("returns product with specs in correct order", async () => {
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "api-prod-detail-1" }) });
-    const data = (await response.json()) as ProductWithVariants;
+    const json = await response.json();
+    const data = json.data as ProductWithVariants;
 
     expect(data.specs).toHaveLength(2);
     expect(data.specs[0].specKey).toBe("led_count");
@@ -189,7 +193,8 @@ describe.sequential("GET /api/products/[id]", () => {
 
   it("returns correct data types", async () => {
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "api-prod-detail-1" }) });
-    const data = (await response.json()) as ProductWithVariants;
+    const json = await response.json();
+    const data = json.data as ProductWithVariants;
 
     expect(typeof data.id).toBe("string");
     expect(typeof data.name).toBe("string");
@@ -213,17 +218,19 @@ describe.sequential("GET /api/products/[id]", () => {
 
   it("returns 404 with error message for non-existent product", async () => {
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "nonexistent-id" }) });
-    const data = await response.json();
+    const json = await response.json();
 
     expect(response.status).toBe(404);
-    expect(data).toHaveProperty("error");
-    expect(data.error).toBe("Product not found");
+    expect(json.success).toBe(false);
+    expect(json.error).toHaveProperty("message");
+    expect(json.error.message).toContain("not found");
   });
 
   it("returns inactive product when accessed by ID", async () => {
     // Unlike the list endpoint, detail endpoint should return any product by ID
     const response = await GET({} as NextRequest, { params: Promise.resolve({ id: "api-prod-detail-inactive" }) });
-    const data = await response.json();
+    const json = await response.json();
+    const data = json.data;
 
     expect(response.status).toBe(200);
     expect(data.id).toBe("api-prod-detail-inactive");

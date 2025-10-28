@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from './CartProvider';
+import { useToast } from '@/components/toast/ToastProvider';
 import { Button } from '@/components/ui/Button';
 import type { CartItem } from '@/types/cart';
 
@@ -21,6 +22,7 @@ export function AddToCartButton({
   className = '',
 }: AddToCartButtonProps) {
   const { addItem } = useCart();
+  const { showSuccess: showToastSuccess, showError } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -35,6 +37,9 @@ export function AddToCartButton({
       setIsLoading(false);
       setShowSuccess(true);
 
+      // Show success toast
+      showToastSuccess(`${product.name} added to cart`);
+
       // Reset success state after 2 seconds
       setTimeout(() => {
         setShowSuccess(false);
@@ -42,6 +47,9 @@ export function AddToCartButton({
     } catch (error) {
       console.error('Failed to add item to cart:', error);
       setIsLoading(false);
+
+      // Show error toast
+      showError('Failed to add item to cart. Please try again.');
     }
   };
 

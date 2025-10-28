@@ -11,6 +11,19 @@ vi.mock('@/components/cart/CartProvider', () => ({
   }),
 }));
 
+// Mock useToast hook
+const mockShowSuccess = vi.fn();
+const mockShowError = vi.fn();
+vi.mock('@/components/toast/ToastProvider', () => ({
+  useToast: () => ({
+    showSuccess: mockShowSuccess,
+    showError: mockShowError,
+    showWarning: vi.fn(),
+    showInfo: vi.fn(),
+    showToast: vi.fn(),
+  }),
+}));
+
 describe('AddToCartButton', () => {
   const baseProduct: Omit<CartItem, 'quantity'> = {
     productId: 'test-product',
@@ -21,6 +34,7 @@ describe('AddToCartButton', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAddItem.mockResolvedValue(undefined);
   });
 
   it('renders add to cart button', () => {
@@ -29,25 +43,29 @@ describe('AddToCartButton', () => {
     expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
   });
 
-  it('calls addItem when clicked', () => {
+  it('calls addItem when clicked', async () => {
     render(<AddToCartButton product={baseProduct} />);
 
     const button = screen.getByRole('button', { name: /add to cart/i });
     fireEvent.click(button);
 
-    expect(mockAddItem).toHaveBeenCalledWith({ ...baseProduct, quantity: 1 });
+    await waitFor(() => {
+      expect(mockAddItem).toHaveBeenCalledWith({ ...baseProduct, quantity: 1 });
+    });
   });
 
-  it('adds specified quantity', () => {
+  it('adds specified quantity', async () => {
     render(<AddToCartButton product={baseProduct} quantity={3} />);
 
     const button = screen.getByRole('button', { name: /add to cart/i });
     fireEvent.click(button);
 
-    expect(mockAddItem).toHaveBeenCalledWith({ ...baseProduct, quantity: 3 });
+    await waitFor(() => {
+      expect(mockAddItem).toHaveBeenCalledWith({ ...baseProduct, quantity: 3 });
+    });
   });
 
-  it('handles variant products', () => {
+  it('handles variant products', async () => {
     const variantProduct: Omit<CartItem, 'quantity'> = {
       ...baseProduct,
       variantId: 'variant-black',
@@ -59,7 +77,9 @@ describe('AddToCartButton', () => {
     const button = screen.getByRole('button', { name: /add to cart/i });
     fireEvent.click(button);
 
-    expect(mockAddItem).toHaveBeenCalledWith({ ...variantProduct, quantity: 1 });
+    await waitFor(() => {
+      expect(mockAddItem).toHaveBeenCalledWith({ ...variantProduct, quantity: 1 });
+    });
   });
 
   it('shows loading state while adding', async () => {

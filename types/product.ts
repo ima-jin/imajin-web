@@ -5,6 +5,8 @@
  * after being loaded from the database. They map to the database schema in db/schema.ts
  */
 
+import { z } from 'zod';
+
 /**
  * Product category enum
  */
@@ -141,3 +143,57 @@ export interface VariantAvailability {
   maxQuantity: number | null;
   soldQuantity: number;
 }
+
+/**
+ * Zod Schemas for Runtime Validation
+ */
+
+export const ProductCategorySchema = z.enum(['material', 'connector', 'control', 'diffuser', 'kit', 'interface']);
+
+export const ProductSpecSchema = z.object({
+  id: z.number(),
+  productId: z.string(),
+  specKey: z.string(),
+  specValue: z.string(),
+  specUnit: z.string().nullable(),
+  displayOrder: z.number().nullable(),
+});
+
+export const ProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  category: z.string(),
+  devStatus: z.number(),
+  basePrice: z.number(),
+  isActive: z.boolean().nullable(),
+  requiresAssembly: z.boolean().nullable(),
+  hasVariants: z.boolean().nullable(),
+  createdAt: z.coerce.date().nullable(),
+  updatedAt: z.coerce.date().nullable(),
+});
+
+export const VariantSchema = z.object({
+  id: z.string(),
+  productId: z.string(),
+  stripeProductId: z.string(),
+  variantType: z.string(),
+  variantValue: z.string(),
+  priceModifier: z.number().nullable(),
+  isLimitedEdition: z.boolean().nullable(),
+  maxQuantity: z.number().nullable(),
+  soldQuantity: z.number().nullable(),
+  availableQuantity: z.number().nullable(),
+  isAvailable: z.boolean().nullable(),
+  metadata: z.unknown(),
+  createdAt: z.coerce.date().nullable(),
+  updatedAt: z.coerce.date().nullable(),
+});
+
+export const ProductWithSpecsSchema = ProductSchema.extend({
+  specs: z.array(ProductSpecSchema),
+});
+
+export const ProductWithVariantsSchema = ProductWithSpecsSchema.extend({
+  variants: z.array(VariantSchema),
+});

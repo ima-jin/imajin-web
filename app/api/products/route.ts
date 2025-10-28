@@ -1,6 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getAllProducts } from "@/lib/services/product-service";
-import type { ProductCategory } from "@/types/product";
+import {
+  successResponse,
+  handleUnknownError,
+} from "@/lib/utils/api-response";
+import { validateProductCategory } from "@/lib/validation/query-params";
+import { HTTP_STATUS } from "@/lib/config/api";
 
 /**
  * GET /api/products
@@ -16,7 +21,10 @@ export async function GET(request?: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = request?.nextUrl.searchParams;
-    const category = searchParams?.get("category") as ProductCategory | null | undefined;
+    const categoryParam = searchParams?.get("category");
+
+    // Validate category parameter
+    const category = validateProductCategory(categoryParam);
 
     // Build filters
     const filters = category ? { category } : undefined;
@@ -24,22 +32,9 @@ export async function GET(request?: NextRequest) {
     // Get products using service layer
     const products = await getAllProducts(filters);
 
-    // Return products as JSON
-    return NextResponse.json(products, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // Return standardized success response
+    return successResponse(products, HTTP_STATUS.OK);
   } catch (error) {
-    console.error("Error fetching products:", error);
-
-    return NextResponse.json(
-      {
-        error: "Failed to fetch products",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    return handleUnknownError(error, 'Failed to fetch products');
   }
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/components/cart/CartProvider";
+import { ToastProvider } from "@/components/toast/ToastProvider";
+import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getSiteMetadata } from "@/hooks/useSiteMetadata";
@@ -66,11 +68,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <CartProvider>
-          <Header navigation={navigation} uiStrings={uiStrings} />
-          {children}
-          <Footer navigation={navigation} />
-        </CartProvider>
+        <ErrorBoundary>
+          <ToastProvider>
+            <CartProvider>
+              <Header navigation={navigation} uiStrings={uiStrings} />
+              {children}
+              <Footer navigation={navigation} />
+            </CartProvider>
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

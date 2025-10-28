@@ -4,7 +4,10 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Badge } from "@/components/ui/Badge";
 import { getProductsListingContent } from "@/hooks/usePageContent";
-import type { Product } from "@/types/product";
+import { apiGet } from "@/lib/utils/api-client";
+import { API_ENDPOINTS } from "@/lib/config/api";
+import { ProductSchema } from "@/types/product";
+import { z } from "zod";
 
 /**
  * Product Listing Page
@@ -19,17 +22,13 @@ export default async function ProductsPage() {
   // Load content
   const content = await getProductsListingContent();
 
-  // Fetch products server-side
-  let products: Product[] = [];
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/products`,
-      { cache: "no-store" }
-    );
-    products = await response.json();
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
+  // Fetch products server-side with validation
+  // Errors will be caught by error boundary (app/products/error.tsx)
+  const products = await apiGet(
+    API_ENDPOINTS.PRODUCTS,
+    z.array(ProductSchema),
+    { cache: "no-store" }
+  );
 
   // Categorize products
   const founderEdition = products.find(p => p.hasVariants === true);

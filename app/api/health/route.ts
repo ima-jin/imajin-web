@@ -1,6 +1,10 @@
-import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { products } from "@/db/schema";
+import { sql } from "drizzle-orm";
+import {
+  successResponse,
+  errorResponse,
+} from "@/lib/utils/api-response";
+import { ERROR_CODES, HTTP_STATUS } from "@/lib/config/api";
 
 /**
  * Health check endpoint
@@ -8,34 +12,26 @@ import { products } from "@/db/schema";
  */
 export async function GET() {
   try {
-    // Test database connection by querying products
-    await db.select().from(products).limit(1);
+    // Test database connection
+    await db.execute(sql`SELECT 1`);
 
-    // Check environment variables are loaded
-    const envCheck = {
-      nodeEnv: process.env.NODE_ENV || "unknown",
-      publicEnv: process.env.NEXT_PUBLIC_ENV || "unknown",
-      hasDatabaseUrl: !!process.env.DATABASE_URL || !!process.env.DB_HOST,
-    };
-
-    return NextResponse.json({
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      database: "connected",
-      environment: envCheck,
-      version: process.env.npm_package_version || "0.1.0",
-    });
-  } catch (error) {
-    console.error("Health check failed:", error);
-
-    return NextResponse.json(
+    return successResponse(
       {
-        status: "error",
+        status: "healthy",
         timestamp: new Date().toISOString(),
-        database: "disconnected",
-        error: error instanceof Error ? error.message : "Unknown error",
+        database: "connected",
       },
-      { status: 503 }
+      HTTP_STATUS.OK
+    );
+  } catch (error) {
+    return errorResponse(
+      ERROR_CODES.DATABASE_CONNECTION_ERROR,
+      "Health check failed - database connection error",
+      HTTP_STATUS.SERVICE_UNAVAILABLE,
+      {
+        database: "disconnected",
+        error: error instanceof Error ? error.message : String(error),
+      }
     );
   }
 }

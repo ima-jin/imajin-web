@@ -63,14 +63,16 @@ describe.sequential("GET /api/products", () => {
 
   it("returns array of products", async () => {
     const response = await GET();
-    const data = await response.json();
+    const json = await response.json();
 
-    expect(Array.isArray(data)).toBe(true);
+    expect(json.success).toBe(true);
+    expect(Array.isArray(json.data)).toBe(true);
   });
 
   it("returns only active products with dev_status = 5 by default", async () => {
     const response = await GET();
-    const data = (await response.json()) as Product[];
+    const json = await response.json();
+    const data = json.data as Product[];
 
     // Should include api-products-active
     const activeProduct = data.find((p) => p.id === "api-products-active");
@@ -89,7 +91,8 @@ describe.sequential("GET /api/products", () => {
 
   it("returns products with correct structure", async () => {
     const response = await GET();
-    const data = (await response.json()) as Product[];
+    const json = await response.json();
+    const data = json.data as Product[];
 
     const testProduct = data.find((p) => p.id === "api-products-active");
     expect(testProduct).toBeDefined();
@@ -114,7 +117,8 @@ describe.sequential("GET /api/products", () => {
       nextUrl: url,
     } as unknown as NextRequest;
     const response = await GET(request);
-    const data = (await response.json()) as Product[];
+    const json = await response.json();
+    const data = json.data as Product[];
 
     // All returned products should be in material category
     data.forEach((product) => {
@@ -126,16 +130,18 @@ describe.sequential("GET /api/products", () => {
     expect(materialProduct).toBeDefined();
   });
 
-  it("returns empty array when no products match filters", async () => {
+  it("returns all products when invalid category provided (per new spec)", async () => {
     const url = new URL("http://localhost:3000/api/products?category=nonexistent");
     const request = {
       nextUrl: url,
     } as unknown as NextRequest;
     const response = await GET(request);
-    const data = (await response.json()) as Product[];
+    const json = await response.json();
+    const data = json.data as Product[];
 
+    // New behavior: invalid category returns all products (ignores invalid filter)
     expect(Array.isArray(data)).toBe(true);
-    expect(data).toHaveLength(0);
+    expect(data.length).toBeGreaterThan(0); // Should return all active products
   });
 
   it("returns correct content type", async () => {
@@ -147,7 +153,8 @@ describe.sequential("GET /api/products", () => {
 
   it("returns valid product data types", async () => {
     const response = await GET();
-    const data = (await response.json()) as Product[];
+    const json = await response.json();
+    const data = json.data as Product[];
 
     const testProduct = data.find((p) => p.id === "api-products-active");
     if (testProduct) {

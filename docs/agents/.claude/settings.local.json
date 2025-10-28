@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/Projects/imajin/imajin-ai/web/docs/**)",
+      "Read(//d/Projects/imajin/imajin-ai/web/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

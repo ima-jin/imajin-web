@@ -9,42 +9,34 @@ describe("GET /api/health", () => {
 
   it("returns proper JSON structure", async () => {
     const response = await GET();
-    const data = await response.json();
+    const json = await response.json();
 
-    // Verify response structure
-    expect(data).toHaveProperty("status");
-    expect(data).toHaveProperty("timestamp");
-    expect(data).toHaveProperty("database");
-    expect(data).toHaveProperty("environment");
-    expect(data).toHaveProperty("version");
+    // Verify standardized response structure
+    expect(json).toHaveProperty("success");
+    expect(json).toHaveProperty("data");
+    expect(json).toHaveProperty("meta");
+    expect(json.success).toBe(true);
+
+    // Verify data structure
+    expect(json.data).toHaveProperty("status");
+    expect(json.data).toHaveProperty("timestamp");
+    expect(json.data).toHaveProperty("database");
   });
 
   it("reports database as connected", async () => {
     const response = await GET();
-    const data = await response.json();
+    const json = await response.json();
 
-    expect(data.status).toBe("ok");
-    expect(data.database).toBe("connected");
-  });
-
-  it("includes environment information", async () => {
-    const response = await GET();
-    const data = await response.json();
-
-    expect(data.environment).toHaveProperty("nodeEnv");
-    expect(data.environment).toHaveProperty("publicEnv");
-    expect(data.environment).toHaveProperty("hasDatabaseUrl");
-
-    // Should have at least node environment set
-    expect(data.environment.nodeEnv).toBeDefined();
+    expect(json.data.status).toBe("healthy");
+    expect(json.data.database).toBe("connected");
   });
 
   it("includes valid timestamp", async () => {
     const response = await GET();
-    const data = await response.json();
+    const json = await response.json();
 
     // Verify timestamp is valid ISO string
-    const timestamp = new Date(data.timestamp);
+    const timestamp = new Date(json.data.timestamp);
     expect(timestamp.toString()).not.toBe("Invalid Date");
 
     // Timestamp should be recent (within last minute)
@@ -58,14 +50,5 @@ describe("GET /api/health", () => {
     const contentType = response.headers.get("content-type");
 
     expect(contentType).toContain("application/json");
-  });
-
-  it("includes version number", async () => {
-    const response = await GET();
-    const data = await response.json();
-
-    expect(data.version).toBeDefined();
-    expect(typeof data.version).toBe("string");
-    expect(data.version).toMatch(/^\d+\.\d+\.\d+$/); // Matches semver pattern
   });
 });

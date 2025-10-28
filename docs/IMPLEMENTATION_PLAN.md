@@ -4,18 +4,17 @@
 
 **Completed:** 2025-10-24
 
-### 1.1 Docker Environment ✅
+### 1.1 Local Development Environment ✅
 - [x] `docker/docker-compose.local.yml` (PostgreSQL on port 5435)
 - [x] `.env.local.example` template
 - [x] Test Docker startup (container running 12+ hours, healthy)
-- [ ] `docker-compose.dev.yml`, `docker-compose.prod.yml` - **DEFERRED to Phase 4**
-- [ ] Dockerfiles for Next.js, `.dockerignore` - **DEFERRED to Phase 4**
+- [x] Cloud deployment strategy documented (Vercel + Neon) - **No Docker compose needed for cloud**
 
 ### 1.2 Next.js Initialization ✅
 - [x] Next.js 16 with App Router, TypeScript, Tailwind CSS v4
 - [x] Project structure (`/app`, `/components`, `/lib`, `/db`, `/config`, `/types`)
 - [x] Basic layout components (header, footer)
-- [ ] Cloudflare integration - **DEFERRED to Phase 4**
+- [x] Cloudflare integration - **Not needed (Vercel includes CDN)**
 
 ### 1.3 Database Setup ✅
 - [x] Drizzle ORM with schema (`/db/schema.ts`)
@@ -35,7 +34,9 @@
 - [x] Test scripts: `test`, `test:unit`, `test:integration`, `test:e2e`, `test:smoke`, `test:coverage`
 
 ### 1.6 CI/CD Setup
-- [ ] GitHub Actions - **DEFERRED (servers not ready)**
+- [ ] GitHub Actions workflow for tests - **Ready to implement (`.github/workflows/test.yml`)**
+- [ ] Vercel project setup - **Ready to implement (connect GitHub repo)**
+- [ ] Neon PostgreSQL databases - **Ready to provision (staging + production)**
 
 ### 1.7 Phase 1 Testing ✅
 - [x] `tests/integration/db/connection.test.ts`
@@ -478,55 +479,47 @@ npm run test:e2e
 ```
 
 ### Deployment
-- Self-hosted Linux server
-- Docker Compose per environment
-- Separate DB containers
-- GitHub Actions:
-  - `develop` → `www-dev.imajin.ai`
-  - `main` → `www.imajin.ai` (manual approval)
-- Cloudflare DNS + CDN
-- SSL via Cloudflare (auto-managed)
-- PostgreSQL backups to Synology NAS
-- Env vars in plaintext (600 permissions) → migrate to vault later
+
+**Platform**: Vercel + Neon PostgreSQL
+**Cost**: ~$40/month (Vercel Hobby $20 + Neon Scale $19)
+
+**Environments**:
+- **Local**: Docker PostgreSQL + Next.js dev server
+- **Staging**: Vercel (free tier) + Neon (free tier) - Auto-deploy from `main`
+- **Production**: Vercel (Hobby) + Neon (Scale) - Manual promotion
+
+**CI/CD**:
+- GitHub Actions: Run tests on every PR/push
+- Vercel: Auto-deploy staging on merge to `main`
+- Production: Manual promotion via Vercel dashboard
+
+**Domain**: `www.imajin.ai` (custom domain in Vercel)
+
+**Backups**: Neon automatic daily backups (7-day retention)
+
+**See [ENVIRONMENTS.md](./ENVIRONMENTS.md) and [DOCTOR_DEVOPS.md](./agents/DOCTOR_DEVOPS.md) for complete setup.**
 
 ---
 
 ## Environment Variables
 
-### Local (`.env.local`)
+**Storage**:
+- **Local**: `.env.local` file (gitignored)
+- **Staging/Production**: Vercel Dashboard → Environment Variables
+
+**Required Variables**:
 ```env
-NODE_ENV=development
-NEXT_PUBLIC_ENV=local
-NEXT_PUBLIC_SITE_URL=https://www-local.imajin.ai
-DATABASE_URL=postgresql://imajin:imajin_dev@imajin-db-local:5435/imajin_local
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-CLOUDINARY_CLOUD_NAME=imajin-dev
-LOG_LEVEL=debug
+NODE_ENV=development|production
+DATABASE_URL=postgresql://...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...|pk_live_...
+STRIPE_SECRET_KEY=sk_test_...|sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+CLOUDINARY_CLOUD_NAME=imajin
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
 ```
 
-### Dev (`.env.dev`)
-```env
-NODE_ENV=production
-NEXT_PUBLIC_ENV=dev
-NEXT_PUBLIC_SITE_URL=https://www-dev.imajin.ai
-DATABASE_URL=postgresql://imajin:SECURE_PASSWORD@imajin-db-dev:5433/imajin_dev
-CF_ENABLED=true
-```
-
-### Production (`.env.production`)
-```env
-NODE_ENV=production
-NEXT_PUBLIC_ENV=live
-NEXT_PUBLIC_SITE_URL=https://www.imajin.ai
-DATABASE_URL=postgresql://imajin:VERY_SECURE_PASSWORD@imajin-db-prod:5432/imajin_production
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_live_...
-STRIPE_SECRET_KEY=sk_live_...
-CF_ENABLED=true
-SESSION_SECRET=CRYPTOGRAPHICALLY_SECURE_RANDOM_STRING
-```
-
-See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for complete configuration.
+**See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for detailed configuration.**
 
 ---
 

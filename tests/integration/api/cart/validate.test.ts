@@ -73,7 +73,7 @@ describe('POST /api/cart/validate', () => {
     await db.delete(products).where(eq(products.id, 'test-founder'));
   });
 
-  it('validates empty cart as valid', async () => {
+  it('validates empty cart as error (per new spec)', async () => {
     const request = new NextRequest('http://localhost:3000/api/cart/validate', {
       method: 'POST',
       body: JSON.stringify({ items: [] }),
@@ -82,12 +82,10 @@ describe('POST /api/cart/validate', () => {
     const response = await POST(request);
     const data = await response.json();
 
-    expect(response.status).toBe(200);
-    expect(data).toMatchObject({
-      valid: true,
-      errors: [],
-      warnings: [],
-    });
+    // New behavior: empty cart returns 400 error
+    expect(response.status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(data.error.message).toBe('Cart is empty');
   });
 
   it('detects unavailable products', async () => {
@@ -107,12 +105,13 @@ describe('POST /api/cart/validate', () => {
     });
 
     const response = await POST(request);
-    const data = await response.json();
+    const responseData = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.valid).toBe(false);
-    expect(data.errors).toHaveLength(1);
-    expect(data.errors[0]).toMatchObject({
+    expect(responseData.success).toBe(true);
+    expect(responseData.data.valid).toBe(false);
+    expect(responseData.data.errors).toHaveLength(1);
+    expect(responseData.data.errors[0]).toMatchObject({
       productId: 'test-unavailable',
       type: 'unavailable',
     });
@@ -144,12 +143,13 @@ describe('POST /api/cart/validate', () => {
     });
 
     const response = await POST(request);
-    const data = await response.json();
+    const responseData = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.valid).toBe(false);
-    expect(data.errors).toHaveLength(1);
-    expect(data.errors[0]).toMatchObject({
+    expect(responseData.success).toBe(true);
+    expect(responseData.data.valid).toBe(false);
+    expect(responseData.data.errors).toHaveLength(1);
+    expect(responseData.data.errors[0]).toMatchObject({
       type: 'voltage_mismatch',
     });
   });
@@ -172,11 +172,12 @@ describe('POST /api/cart/validate', () => {
     });
 
     const response = await POST(request);
-    const data = await response.json();
+    const responseData = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.valid).toBe(true);
-    expect(data.errors).toHaveLength(0);
+    expect(responseData.success).toBe(true);
+    expect(responseData.data.valid).toBe(true);
+    expect(responseData.data.errors).toHaveLength(0);
   });
 
   it('warns about low stock', async () => {
@@ -198,12 +199,13 @@ describe('POST /api/cart/validate', () => {
     });
 
     const response = await POST(request);
-    const data = await response.json();
+    const responseData = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.valid).toBe(true);
-    expect(data.warnings).toHaveLength(1);
-    expect(data.warnings[0]).toMatchObject({
+    expect(responseData.success).toBe(true);
+    expect(responseData.data.valid).toBe(true);
+    expect(responseData.data.warnings).toHaveLength(1);
+    expect(responseData.data.warnings[0]).toMatchObject({
       type: 'low_stock',
     });
   });
@@ -227,12 +229,13 @@ describe('POST /api/cart/validate', () => {
     });
 
     const response = await POST(request);
-    const data = await response.json();
+    const responseData = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.valid).toBe(false);
-    expect(data.errors).toHaveLength(1);
-    expect(data.errors[0]).toMatchObject({
+    expect(responseData.success).toBe(true);
+    expect(responseData.data.valid).toBe(false);
+    expect(responseData.data.errors).toHaveLength(1);
+    expect(responseData.data.errors[0]).toMatchObject({
       type: 'out_of_stock',
     });
   });
@@ -247,6 +250,7 @@ describe('POST /api/cart/validate', () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
+    expect(data.success).toBe(false);
     expect(data).toHaveProperty('error');
   });
 });
