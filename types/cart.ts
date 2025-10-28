@@ -5,11 +5,13 @@ export interface CartItem {
   variantId?: string;
   name: string;
   price: number; // In cents
+  stripeProductId: string; // Stripe Price ID for checkout
   image: string;
   quantity: number;
   voltage?: '5v' | '24v'; // For dependency validation
   isLimitedEdition?: boolean;
   remainingQuantity?: number; // If limited edition
+  variantName?: string; // For display in checkout
 }
 
 export interface CartValidationResult {

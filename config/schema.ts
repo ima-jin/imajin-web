@@ -26,6 +26,7 @@ export const ProductConfigSchema = z.object({
   stripe_product_id: z.string().min(1),
   has_variants: z.boolean(),
   requires_assembly: z.boolean().optional(),
+  max_quantity: z.number().int().positive().nullable().optional(),
   images: z.array(z.string()),
   specs: z.array(ProductSpecSchema),
   metadata: z.record(z.string(), z.unknown()).optional(),

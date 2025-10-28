@@ -71,6 +71,8 @@ async function syncProducts() {
           isActive: true,
           requiresAssembly: product.requires_assembly || false,
           hasVariants: product.has_variants,
+          maxQuantity: product.max_quantity ?? null,
+          soldQuantity: 0,
         })
         .onConflictDoUpdate({
           target: products.id,
@@ -82,6 +84,8 @@ async function syncProducts() {
             basePrice: product.base_price,
             requiresAssembly: product.requires_assembly || false,
             hasVariants: product.has_variants,
+            maxQuantity: product.max_quantity ?? null,
+            // NOTE: We do NOT overwrite soldQuantity on sync!
             updatedAt: new Date(),
           },
         });

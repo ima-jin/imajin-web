@@ -112,8 +112,8 @@ export function CartDrawer({ isOpen, onClose, uiStrings }: CartDrawerProps) {
                 size="lg"
                 fullWidth
                 onClick={() => {
-                  // TODO: Navigate to checkout page (Phase 2.4)
-                  console.log('Proceeding to checkout...');
+                  onClose(); // Close cart drawer
+                  window.location.href = '/checkout'; // Navigate to checkout
                 }}
               >
                 {cartStrings.actions.checkout}

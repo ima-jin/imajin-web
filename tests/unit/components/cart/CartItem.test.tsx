@@ -12,6 +12,7 @@ describe('CartItem', () => {
     productId: 'test-product',
     name: 'Test Product',
     price: 5000, // $50.00
+    stripeProductId: 'price_test',
     image: '/test-image.jpg',
     quantity: 2,
   };

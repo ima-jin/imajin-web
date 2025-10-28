@@ -29,6 +29,7 @@ describe('AddToCartButton', () => {
     productId: 'test-product',
     name: 'Test Product',
     price: 5000,
+    stripeProductId: 'price_test',
     image: '/test.jpg',
   };
 

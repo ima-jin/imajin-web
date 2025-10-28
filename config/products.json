@@ -68,6 +68,7 @@
       "stripe_product_id": "prod_TFqJ6019ONDct2",
       "has_variants": false,
       "requires_assembly": false,
+      "max_quantity": null,
       "images": [],
       "specs": [
         {
@@ -584,6 +585,7 @@
       "stripe_product_id": "prod_founder_base",
       "has_variants": true,
       "requires_assembly": false,
+      "max_quantity": 1000,
       "images": [],
       "specs": [
         {

@@ -16,6 +16,8 @@ export const API_ENDPOINTS = {
   PRODUCTS: '/api/products',
   PRODUCT_BY_ID: (id: string) => `/api/products/${id}`,
   CART_VALIDATE: '/api/cart/validate',
+  CHECKOUT_SESSION: '/api/checkout/session',
+  ORDER_LOOKUP: '/api/orders/lookup',
   HEALTH: '/api/health',
 } as const;
 

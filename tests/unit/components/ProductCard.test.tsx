@@ -14,6 +14,10 @@ describe("ProductCard", () => {
     isActive: true,
     requiresAssembly: false,
     hasVariants: false,
+    maxQuantity: null,
+    soldQuantity: 0,
+    availableQuantity: null,
+    isAvailable: true,
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),
   };
@@ -28,6 +32,10 @@ describe("ProductCard", () => {
     isActive: true,
     requiresAssembly: true,
     hasVariants: true,
+    maxQuantity: 1000,
+    soldQuantity: 0,
+    availableQuantity: 1000,
+    isAvailable: true,
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),
   };

@@ -22,6 +22,10 @@ export interface DbProduct {
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
+  maxQuantity: number | null;
+  soldQuantity: number;
+  availableQuantity: number | null;
+  isAvailable: boolean | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -39,6 +43,10 @@ export interface Product {
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
+  maxQuantity: number | null;
+  soldQuantity: number;
+  availableQuantity: number | null;
+  isAvailable: boolean | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -70,6 +78,10 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     isActive: dbProduct.isActive,
     requiresAssembly: dbProduct.requiresAssembly,
     hasVariants: dbProduct.hasVariants,
+    maxQuantity: dbProduct.maxQuantity,
+    soldQuantity: dbProduct.soldQuantity,
+    availableQuantity: dbProduct.availableQuantity,
+    isAvailable: dbProduct.isAvailable,
     createdAt: dbProduct.createdAt,
     updatedAt: dbProduct.updatedAt,
   };

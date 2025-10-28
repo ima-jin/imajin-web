@@ -24,6 +24,17 @@ export const products = pgTable(
     isActive: boolean("is_active").default(true),
     requiresAssembly: boolean("requires_assembly").default(false),
     hasVariants: boolean("has_variants").default(false),
+
+    // Inventory tracking (product level)
+    maxQuantity: integer("max_quantity"), // NULL = unlimited inventory
+    soldQuantity: integer("sold_quantity").default(0).notNull(), // Total units sold (all variants combined)
+    availableQuantity: integer("available_quantity").generatedAlwaysAs(
+      sql`CASE WHEN max_quantity IS NULL THEN NULL ELSE max_quantity - sold_quantity END`
+    ),
+    isAvailable: boolean("is_available").generatedAlwaysAs(
+      sql`max_quantity IS NULL OR sold_quantity < max_quantity`
+    ),
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -31,6 +42,7 @@ export const products = pgTable(
     categoryIdx: index("idx_products_category").on(table.category),
     devStatusIdx: index("idx_products_dev_status").on(table.devStatus),
     activeIdx: index("idx_products_active").on(table.isActive),
+    availableIdx: index("idx_products_available").on(table.isAvailable),
   })
 );
 

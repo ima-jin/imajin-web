@@ -50,6 +50,13 @@ export interface Product {
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
+
+  // Inventory tracking (product level)
+  maxQuantity: number | null; // NULL = unlimited inventory
+  soldQuantity: number; // Total units sold (all variants combined)
+  availableQuantity: number | null; // Auto-calculated: max - sold
+  isAvailable: boolean | null; // Auto-calculated: is stock available?
+
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -169,6 +176,13 @@ export const ProductSchema = z.object({
   isActive: z.boolean().nullable(),
   requiresAssembly: z.boolean().nullable(),
   hasVariants: z.boolean().nullable(),
+
+  // Inventory tracking (product level)
+  maxQuantity: z.number().nullable(),
+  soldQuantity: z.number(),
+  availableQuantity: z.number().nullable(),
+  isAvailable: z.boolean().nullable(),
+
   createdAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date().nullable(),
 });

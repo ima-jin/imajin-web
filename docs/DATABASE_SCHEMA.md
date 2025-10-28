@@ -46,6 +46,20 @@ CREATE TABLE products (
   is_active BOOLEAN DEFAULT true,
   requires_assembly BOOLEAN DEFAULT false,
   has_variants BOOLEAN DEFAULT false,
+
+  -- Inventory tracking (product level)
+  max_quantity INTEGER,                   -- NULL = unlimited inventory
+  sold_quantity INTEGER DEFAULT 0,        -- Total units sold (all variants combined)
+  available_quantity INTEGER GENERATED ALWAYS AS (
+    CASE
+      WHEN max_quantity IS NULL THEN NULL  -- Unlimited = no availability calc
+      ELSE max_quantity - sold_quantity
+    END
+  ) STORED,
+  is_available BOOLEAN GENERATED ALWAYS AS (
+    max_quantity IS NULL OR sold_quantity < max_quantity
+  ) STORED,
+
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -53,21 +67,35 @@ CREATE TABLE products (
 CREATE INDEX idx_products_category ON products(category);
 CREATE INDEX idx_products_dev_status ON products(dev_status);
 CREATE INDEX idx_products_active ON products(is_active);
+CREATE INDEX idx_products_available ON products(is_available);
 ```
 
 **Example:**
 
 ```sql
-INSERT INTO products (id, name, category, dev_status, base_price, has_variants) VALUES
-('Material-8x8-V', '8x8 Void Panel', 'material', 5, 3500, false),
-('Unit-8x8x8-Founder', 'Founder Edition Cube', 'kit', 5, 99500, true);
+-- Unlimited inventory product (standard stock item)
+INSERT INTO products (id, name, category, dev_status, base_price, has_variants, max_quantity) VALUES
+('Material-8x8-V', '8x8 Void Panel', 'material', 5, 3500, false, NULL);  -- NULL = unlimited
+
+-- Limited inventory product with variants (Founder Edition)
+INSERT INTO products (id, name, category, dev_status, base_price, has_variants, max_quantity) VALUES
+('Unit-8x8x8-Founder', 'Founder Edition Cube', 'kit', 5, 99500, true, 1000);  -- Total across all variants
 ```
+
+**Notes:**
+- `sold_quantity` tracks ALL sales for this product (sum of all variant sales if applicable)
+- `max_quantity = NULL` means unlimited inventory
+- `max_quantity = number` means total inventory cap (for limited editions, sum across variants)
+- `available_quantity` and `is_available` auto-calculated
+- For products with variants, product-level `sold_quantity` = sum of variant `sold_quantity`
 
 ---
 
 ### `variants`
 
-Product variants (colors, options). Only used when `products.has_variants = true`.
+Product variants (colors, sizes, voltage options). Only used when `products.has_variants = true`.
+
+**Key Change:** Inventory tracking moved to product level. Variants track per-option sales for analytics/display but product enforces total inventory cap.
 
 ```sql
 CREATE TABLE variants (
@@ -77,11 +105,20 @@ CREATE TABLE variants (
   variant_type TEXT NOT NULL,             -- "color", "voltage", "size"
   variant_value TEXT NOT NULL,            -- "BLACK", "WHITE", "RED"
   price_modifier INTEGER DEFAULT 0,
-  is_limited_edition BOOLEAN DEFAULT false,
-  max_quantity INTEGER,                   -- NULL = unlimited
-  sold_quantity INTEGER DEFAULT 0,
-  available_quantity INTEGER GENERATED ALWAYS AS (max_quantity - sold_quantity) STORED,
-  is_available BOOLEAN GENERATED ALWAYS AS (max_quantity IS NULL OR sold_quantity < max_quantity) STORED,
+
+  -- Per-variant inventory (for limited editions with color options)
+  max_quantity INTEGER,                   -- Per-variant limit (e.g., 500 BLACK units)
+  sold_quantity INTEGER DEFAULT 0,        -- Units sold of THIS variant
+  available_quantity INTEGER GENERATED ALWAYS AS (
+    CASE
+      WHEN max_quantity IS NULL THEN NULL
+      ELSE max_quantity - sold_quantity
+    END
+  ) STORED,
+  is_available BOOLEAN GENERATED ALWAYS AS (
+    max_quantity IS NULL OR sold_quantity < max_quantity
+  ) STORED,
+
   metadata JSONB,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
@@ -97,14 +134,19 @@ CREATE UNIQUE INDEX idx_variants_stripe ON variants(stripe_product_id);
 **Example:**
 
 ```sql
-INSERT INTO variants (id, product_id, stripe_product_id, variant_type, variant_value, is_limited_edition, max_quantity) VALUES
-('Unit-8x8x8-Founder-Black', 'Unit-8x8x8-Founder', 'prod_stripe_founder_black', 'color', 'BLACK', true, 500),
-('Unit-8x8x8-Founder-White', 'Unit-8x8x8-Founder', 'prod_stripe_founder_white', 'color', 'WHITE', true, 300);
+-- Founder Edition: Product has max_quantity=1000, variants split it up
+INSERT INTO variants (id, product_id, stripe_product_id, variant_type, variant_value, max_quantity) VALUES
+('Unit-8x8x8-Founder-Black', 'Unit-8x8x8-Founder', 'prod_stripe_founder_black', 'color', 'BLACK', 500),
+('Unit-8x8x8-Founder-White', 'Unit-8x8x8-Founder', 'prod_stripe_founder_white', 'color', 'WHITE', 300),
+('Unit-8x8x8-Founder-Red', 'Unit-8x8x8-Founder', 'prod_stripe_founder_red', 'color', 'RED', 200);
+-- Note: 500 + 300 + 200 = 1000 (matches product.max_quantity)
 ```
 
 **Notes:**
-- `available_quantity` and `is_available` are computed columns (automatic)
-- Decrement `sold_quantity` on successful order
+- Variants with `max_quantity = NULL` are unlimited (but still need product-level check)
+- When order is placed, BOTH `variant.sold_quantity` AND `product.sold_quantity` increment
+- Product-level `sold_quantity` = sum of all variant `sold_quantity`
+- For display: "5 BLACK remaining" comes from variant, "20 total remaining" from product
 
 ---
 

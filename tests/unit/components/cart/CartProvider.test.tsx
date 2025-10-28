@@ -34,6 +34,7 @@ describe('CartProvider', () => {
     productId: 'test-product-1',
     name: 'Test Product',
     price: 5000,
+    stripeProductId: 'price_test',
     image: '/test-image.jpg',
   };
 
