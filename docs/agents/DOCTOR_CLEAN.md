@@ -7,6 +7,12 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 
 ## Quick Checklist
 
+**Pre-Launch Phase Rules** (CRITICAL - We're not launched yet!)
+- ❌ **No backward compatibility code** - Delete old properties, don't keep deprecated fields
+- ❌ **No implementation date comments** - No "Added in Phase 2.3" or version markers
+- ❌ **No migration snapshots** - Clean init from scratch only, no historical data preservation
+- ❌ **No console.log/error/warn** anywhere - Use `logger` utility exclusively (except React error boundaries if needed)
+
 **Code Quality**
 - No `any` types, unused vars, dead code, secrets
 - Functions <20 lines, clear names, no clever tricks
@@ -68,6 +74,12 @@ Systematic review: catch leaks, enforce consistency, prevent debt. Champion simp
 **Do:** Specific fixes, prioritize by impact, champion simplicity first
 
 ## Red Flags to Call Out
+
+**Pre-Launch Phase Violations:** (Flag as 🔴 Blocker)
+- ❌ Backward compatibility code (deprecated fields, old property names kept around)
+- ❌ Implementation date comments ("Added in Phase 2.3", "TODO: Remove after v1.0")
+- ❌ Migration/snapshot code for historical data preservation
+- ❌ console.log/error/warn in production code (app/, components/, lib/ - not tests/scripts)
 
 **Architectural Debt:**
 - ❌ No design system (scattered inline styles)

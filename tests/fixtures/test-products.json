@@ -1,0 +1,52 @@
+{
+  "products": [
+    {
+      "id": "independent-media-parent",
+      "name": "Parent",
+      "description": "Test",
+      "category": "kit",
+      "dev_status": 5,
+      "base_price": 10000,
+      "has_variants": true,
+      "requires_assembly": false,
+      "sell_status": "for-sale",
+      "media": [
+        {
+          "local_path": "independent-media-parent/main.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "Parent main",
+          "category": "main",
+          "order": 1
+        }
+      ],
+      "specs": [],
+      "stripe_product_id": "prod_test123",
+      "last_synced_at": "2025-10-29T16:20:18.286Z"
+    }
+  ],
+  "variants": [
+    {
+      "id": "independent-media-parent-red",
+      "product_id": "independent-media-parent",
+      "variant_type": "color",
+      "variant_value": "RED",
+      "price_modifier": 0,
+      "is_limited_edition": false,
+      "media": [
+        {
+          "local_path": "independent-media-parent/RED/main.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "Red variant main",
+          "category": "main",
+          "order": 1,
+          "cloudinary_public_id": "media/products/product-3/main",
+          "uploaded_at": "2025-10-29T16:20:18.286Z"
+        }
+      ],
+      "specs": [],
+      "stripe_product_id": "prod_test123"
+    }
+  ]
+}

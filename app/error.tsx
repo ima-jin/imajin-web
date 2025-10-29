@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { ErrorDisplay } from '@/components/error/ErrorDisplay';
+import { logger } from '@/lib/utils/logger';
 
 export default function Error({
   error,
@@ -11,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Root error:', error);
+    logger.error('Root error boundary triggered', error, { digest: error.digest });
   }, [error]);
 
   return (

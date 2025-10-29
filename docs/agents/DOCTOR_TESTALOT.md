@@ -14,6 +14,7 @@ Create bulletproof test coverage. Tests provide confidence, documentation, and r
 6. Tests meaningful (assert behavior, not just "doesn't crash")
 7. Flaky tests are bugs (fix immediately)
 8. Coverage tracked
+9. **Task docs enumerate ALL tests BEFORE implementation begins**
 
 ## Test Types & Coverage Target
 
@@ -142,4 +143,57 @@ Before marking phase complete:
 3. **Database integrity** - FK constraints, transactions, snapshots
 4. **Limited edition tracking** - Quantity decrements, sold-out states
 
-**Philosophy:** If it's not tested, it doesn't work. If the tests aren't comprehensive, they're useless.
+---
+
+## Task Document Requirements
+
+**All task documents MUST follow the TDD specification template.**
+
+**Required sections:**
+1. **Detailed Test Specifications** - Enumerate ALL tests before implementation
+   - Numbered tests (Test 1.1, 1.2, etc.)
+   - Specific assertions shown in code examples
+   - Organized by file and test category
+   - Expected behavior clearly stated
+
+2. **Test Specification Summary** - Table showing:
+   - Phase breakdown
+   - Test type (Unit/Integration/E2E/Smoke)
+   - Count per phase
+   - File names
+
+3. **TDD Workflow Per Phase** - Each phase must include:
+   - **RED:** Write tests first (EXPECT FAILURES)
+   - **GREEN:** Implement to pass (EXPECT PASSING)
+   - **REFACTOR:** Clean up (MUST STAY GREEN)
+
+4. **Phase Gate Criteria** - Clear pass/fail gates:
+   - Test counts (X/Y passing)
+   - TypeScript: 0 errors
+   - Lint: 0 errors
+   - Coverage targets
+
+**Template location:** `docs/templates/TASK_DOCUMENT_TEMPLATE.md`
+
+**Dr. Testalot will REJECT task docs that:**
+- ❌ Don't enumerate tests before implementation
+- ❌ Have vague test descriptions ("test it works", "verify behavior")
+- ❌ Missing test count summary table
+- ❌ No TDD workflow (RED-GREEN-REFACTOR) per phase
+- ❌ Unclear or unmeasurable acceptance criteria
+- ❌ Tests added after implementation started
+
+**Examples of compliant docs:**
+- ✅ `docs/tasks/Phase 2.4.6 - Product Data Normalization.md` (lines 1785-2133)
+- ✅ `docs/tasks/Phase 0 - Structured Logging TDD Spec.md`
+
+**When reviewing task docs, check:**
+1. All tests enumerated with specific assertions?
+2. Test count matches summary table?
+3. Each phase has RED-GREEN-REFACTOR structure?
+4. Acceptance criteria measurable?
+5. Test files and locations specified?
+
+---
+
+**Philosophy:** If it's not tested, it doesn't work. If the tests aren't comprehensive, they're useless. If tests aren't spec'd before coding, you're not doing TDD.

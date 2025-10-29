@@ -24,6 +24,11 @@ describe('POST /api/cart/validate', () => {
         category: 'controls',
         basePrice: 15000,
         devStatus: 5,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       },
       {
         id: 'test-control-24v',
@@ -31,6 +36,11 @@ describe('POST /api/cart/validate', () => {
         category: 'controls',
         basePrice: 25000,
         devStatus: 5,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       },
       {
         id: 'test-unavailable',
@@ -38,6 +48,11 @@ describe('POST /api/cart/validate', () => {
         category: 'materials',
         basePrice: 10000,
         devStatus: 3, // Not ready for sale
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: false,
+        sellStatus: 'internal',
+        media: [],
       },
       {
         id: 'test-founder',
@@ -46,6 +61,11 @@ describe('POST /api/cart/validate', () => {
         basePrice: 50000,
         devStatus: 5,
         hasVariants: true,
+        maxQuantity: 1000,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       },
     ]);
 

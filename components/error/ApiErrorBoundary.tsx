@@ -3,6 +3,7 @@
 import React from 'react';
 import { ApiErrorDisplay } from './ApiErrorDisplay';
 import { ApiClientError } from '@/lib/utils/api-client';
+import { logger } from '@/lib/utils/logger';
 
 interface ApiErrorBoundaryProps {
   children: React.ReactNode;
@@ -29,7 +30,7 @@ export class ApiErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ApiErrorBoundary caught error:', error, errorInfo);
+    logger.error('ApiErrorBoundary caught error', error, { componentStack: errorInfo.componentStack });
   }
 
   handleRetry = () => {

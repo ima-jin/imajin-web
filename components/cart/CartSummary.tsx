@@ -14,7 +14,7 @@ export function CartSummary({ uiStrings }: CartSummaryProps) {
   const itemCountStrings = uiStrings.cart.item_count;
   const itemCountLabel = itemCount === 1 ? itemCountStrings.singular : itemCountStrings.plural;
 
-  // Tax/shipping calculated at checkout (Phase 2.4)
+  // Tax/shipping calculated at checkout
 
   return (
     <div className="space-y-2">

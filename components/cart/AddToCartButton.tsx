@@ -5,6 +5,7 @@ import { useCart } from './CartProvider';
 import { useToast } from '@/components/toast/ToastProvider';
 import { Button } from '@/components/ui/Button';
 import type { CartItem } from '@/types/cart';
+import { logger } from '@/lib/utils/logger';
 
 interface AddToCartButtonProps {
   product: Omit<CartItem, 'quantity'>;
@@ -45,7 +46,7 @@ export function AddToCartButton({
         setShowSuccess(false);
       }, 2000);
     } catch (error) {
-      console.error('Failed to add item to cart:', error);
+      logger.error('Failed to add item to cart', error as Error, { productId: product.productId, variantId: product.variantId });
       setIsLoading(false);
 
       // Show error toast

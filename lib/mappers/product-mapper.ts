@@ -8,6 +8,9 @@
  * so this mapper primarily provides validation and type safety rather than case conversion.
  */
 
+import { MediaItem, SellStatus } from '@/types/product';
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Database product type (from Drizzle schema - camelCase TypeScript properties)
  * Drizzle ORM returns camelCase property names, even though DB columns are snake_case
@@ -26,6 +29,15 @@ export interface DbProduct {
   soldQuantity: number;
   availableQuantity: number | null;
   isAvailable: boolean | null;
+
+  isLive: boolean;
+  costCents: number | null;
+  wholesalePriceCents: number | null;
+  sellStatus: string;
+  sellStatusNote: string | null;
+  lastSyncedAt: Date | null;
+  media: unknown;
+
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -47,6 +59,15 @@ export interface Product {
   soldQuantity: number;
   availableQuantity: number | null;
   isAvailable: boolean | null;
+
+  isLive: boolean;
+  costCents?: number;
+  wholesalePriceCents?: number;
+  sellStatus: SellStatus;
+  sellStatusNote?: string;
+  lastSyncedAt?: Date;
+  media: MediaItem[];
+
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -68,6 +89,35 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     throw new Error("Missing required numeric fields");
   }
 
+  // Parse media JSONB field (array of MediaItem objects with full metadata)
+  interface DbMediaItem {
+    localPath?: string;
+    local_path?: string;
+    cloudinaryPublicId?: string;
+    cloudinary_public_id?: string;
+    type?: string;
+    mimeType?: string;
+    mime_type?: string;
+    alt?: string;
+    category?: string;
+    order?: number;
+    uploadedAt?: string;
+    uploaded_at?: string;
+  }
+
+  const media: MediaItem[] = Array.isArray(dbProduct.media)
+    ? (dbProduct.media as DbMediaItem[]).map((item: DbMediaItem) => ({
+        localPath: item.localPath || item.local_path || '',
+        cloudinaryPublicId: item.cloudinaryPublicId || item.cloudinary_public_id,
+        type: (item.type as MediaItem['type']) || 'image',
+        mimeType: item.mimeType || item.mime_type || '',
+        alt: item.alt || '',
+        category: (item.category as MediaItem['category']) || 'main',
+        order: item.order || 0,
+        uploadedAt: (item.uploadedAt || item.uploaded_at) ? new Date(item.uploadedAt || item.uploaded_at!) : undefined,
+      }))
+    : [];
+
   return {
     id: dbProduct.id,
     name: dbProduct.name,
@@ -82,6 +132,15 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     soldQuantity: dbProduct.soldQuantity,
     availableQuantity: dbProduct.availableQuantity,
     isAvailable: dbProduct.isAvailable,
+
+    isLive: dbProduct.isLive,
+    costCents: dbProduct.costCents ?? undefined,
+    wholesalePriceCents: dbProduct.wholesalePriceCents ?? undefined,
+    sellStatus: dbProduct.sellStatus as SellStatus,
+    sellStatusNote: dbProduct.sellStatusNote ?? undefined,
+    lastSyncedAt: dbProduct.lastSyncedAt ?? undefined,
+    media,
+
     createdAt: dbProduct.createdAt,
     updatedAt: dbProduct.updatedAt,
   };
@@ -102,7 +161,9 @@ export function mapDbProductsToProducts(dbProducts: DbProduct[]): Product[] {
       products.push(mapDbProductToProduct(dbProduct));
     } catch (error) {
       // Skip invalid products and continue mapping
-      console.error(`Failed to map product ${dbProduct?.id || "unknown"}:`, error);
+      logger.error('Failed to map product', error as Error, {
+        productId: dbProduct?.id || 'unknown',
+      });
       continue;
     }
   }

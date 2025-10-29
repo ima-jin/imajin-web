@@ -4,12 +4,13 @@ import { verifyWebhookSignature } from '@/lib/services/stripe-service';
 import { createOrder } from '@/lib/services/order-service';
 import { successResponse, errorResponse } from '@/lib/utils/api-response';
 import { ERROR_CODES, HTTP_STATUS } from '@/lib/config/api';
+import { logger } from '@/lib/utils/logger';
 import type Stripe from 'stripe';
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
 
 if (!WEBHOOK_SECRET) {
-  console.error('WARNING: STRIPE_WEBHOOK_SECRET environment variable is not set');
+  logger.error('STRIPE_WEBHOOK_SECRET environment variable is not set');
 }
 
 /**
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     try {
       event = verifyWebhookSignature(body, signature, WEBHOOK_SECRET);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+      logger.error('Webhook signature verification failed', err as Error);
       return errorResponse(
         ERROR_CODES.BAD_REQUEST,
         'Invalid webhook signature',
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
 
       case 'payment_intent.payment_failed':
         // Log failure but don't create order
-        console.error('Payment failed:', {
+        logger.error('Payment failed', undefined, {
           paymentIntentId: (event.data.object as Stripe.PaymentIntent).id,
           error: (event.data.object as Stripe.PaymentIntent).last_payment_error,
         });
@@ -69,12 +70,12 @@ export async function POST(request: NextRequest) {
 
       // Add more event handlers as needed
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.info('Unhandled webhook event type', { eventType: event.type });
     }
 
     return successResponse({ received: true }, HTTP_STATUS.OK);
   } catch (error) {
-    console.error('Webhook error:', error);
+    logger.error('Webhook processing error', error as Error);
     return errorResponse(
       ERROR_CODES.INTERNAL_ERROR,
       'Webhook processing failed',
@@ -137,9 +138,9 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       shippingAddress,
     });
 
-    console.log(`✅ Order created successfully for session ${session.id}`);
+    logger.info('Order created successfully from webhook', { sessionId: session.id });
   } catch (error) {
-    console.error('Failed to create order from webhook:', error);
+    logger.error('Failed to create order from webhook', error as Error, { sessionId: session.id });
     throw error;
   }
 }

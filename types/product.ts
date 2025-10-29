@@ -24,6 +24,27 @@ export type DevStatus = 0 | 1 | 2 | 3 | 4 | 5;
 export type DependencyType = "requires" | "suggests" | "incompatible" | "voltage_match";
 
 /**
+ * Sell status enum
+ */
+export type SellStatus = "for-sale" | "pre-order" | "sold-out" | "internal";
+
+/**
+ * Media Item
+ * Represents a media file (image, video, PDF) associated with a product
+ * Stored as JSONB in database, includes all metadata needed for SEO, display, etc.
+ */
+export interface MediaItem {
+  localPath: string; // Path in config/content/media/
+  cloudinaryPublicId?: string; // Set after upload
+  type: "image" | "video" | "pdf" | "other";
+  mimeType: string; // e.g., "image/jpeg"
+  alt: string; // Alt text for accessibility/SEO
+  category: "main" | "detail" | "lifestyle" | "dimension" | "spec";
+  order: number; // Display order
+  uploadedAt?: Date; // When uploaded to Cloudinary
+}
+
+/**
  * Product Spec
  * Technical specification for a product
  */
@@ -52,10 +73,18 @@ export interface Product {
   hasVariants: boolean | null;
 
   // Inventory tracking (product level)
-  maxQuantity: number | null; // NULL = unlimited inventory
-  soldQuantity: number; // Total units sold (all variants combined)
-  availableQuantity: number | null; // Auto-calculated: max - sold
-  isAvailable: boolean | null; // Auto-calculated: is stock available?
+  maxQuantity: number | null;
+  soldQuantity: number;
+  availableQuantity: number | null;
+  isAvailable: boolean | null;
+
+  isLive: boolean;
+  costCents?: number;
+  wholesalePriceCents?: number;
+  sellStatus: SellStatus;
+  sellStatusNote?: string;
+  lastSyncedAt?: Date;
+  media: MediaItem[];
 
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -83,9 +112,10 @@ export interface Variant {
   isLimitedEdition: boolean | null;
   maxQuantity: number | null;
   soldQuantity: number | null;
-  availableQuantity: number | null; // Auto-calculated
-  isAvailable: boolean | null; // Auto-calculated
-  metadata: unknown; // JSONB field from DB
+  availableQuantity: number | null;
+  isAvailable: boolean | null;
+  media: MediaItem[];
+  metadata: unknown;
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -157,6 +187,17 @@ export interface VariantAvailability {
 
 export const ProductCategorySchema = z.enum(['material', 'connector', 'control', 'diffuser', 'kit', 'interface']);
 
+export const MediaItemSchema = z.object({
+  localPath: z.string(),
+  cloudinaryPublicId: z.string().optional(),
+  type: z.enum(['image', 'video', 'pdf', 'other']),
+  mimeType: z.string(),
+  alt: z.string(),
+  category: z.enum(['main', 'detail', 'lifestyle', 'dimension', 'spec']),
+  order: z.number(),
+  uploadedAt: z.coerce.date().optional(),
+});
+
 export const ProductSpecSchema = z.object({
   id: z.number(),
   productId: z.string(),
@@ -183,6 +224,15 @@ export const ProductSchema = z.object({
   availableQuantity: z.number().nullable(),
   isAvailable: z.boolean().nullable(),
 
+  // Product visibility and sync tracking
+  isLive: z.boolean(),
+  costCents: z.number().optional(),
+  wholesalePriceCents: z.number().optional(),
+  sellStatus: z.enum(['for-sale', 'pre-order', 'sold-out', 'internal']),
+  sellStatusNote: z.string().optional(),
+  lastSyncedAt: z.coerce.date().optional(),
+  media: z.array(MediaItemSchema),
+
   createdAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date().nullable(),
 });
@@ -199,6 +249,7 @@ export const VariantSchema = z.object({
   soldQuantity: z.number().nullable(),
   availableQuantity: z.number().nullable(),
   isAvailable: z.boolean().nullable(),
+  media: z.array(MediaItemSchema),
   metadata: z.unknown(),
   createdAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date().nullable(),

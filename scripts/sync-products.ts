@@ -15,11 +15,12 @@
 import { db } from "@/db";
 import { products, variants, productSpecs, productDependencies } from "@/db/schema";
 import { ProductsJsonSchema } from "@/config/schema";
+import { logger } from "@/lib/utils/logger";
 import { readFileSync } from "fs";
 import { join } from "path";
 
 // Config file path
-const configFile = join(process.cwd(), "config", "products.json");
+const configFile = join(process.cwd(), "config", "content", "products.json");
 
 /**
  * Load and validate products.json
@@ -31,8 +32,9 @@ function loadProductsJson() {
   const validation = ProductsJsonSchema.safeParse(jsonData);
 
   if (!validation.success) {
-    console.error(`❌ Validation failed for products.json:`);
-    console.error(validation.error.format());
+    logger.error('Validation failed for products.json', undefined, {
+      validationErrors: validation.error.format(),
+    });
     throw new Error(`Invalid products.json file`);
   }
 
@@ -43,7 +45,7 @@ function loadProductsJson() {
  * Sync products to database
  */
 async function syncProducts() {
-  console.log("🔄 Syncing products to database...\n");
+  logger.syncStart('product_sync');
 
   let totalProducts = 0;
   let totalVariants = 0;
@@ -52,12 +54,12 @@ async function syncProducts() {
 
   try {
     // Load products.json
-    console.log(`📄 Loading config/products.json...`);
+    logger.info('Loading config/products.json');
     const data = loadProductsJson();
-    console.log(`  ✅ Loaded ${data.products.length} products\n`);
+    logger.info('Loaded products', { productCount: data.products.length });
 
     // Upsert products
-    console.log(`📦 Syncing products...`);
+    logger.info('Syncing products to database');
     for (const product of data.products) {
       await db
         .insert(products)
@@ -73,6 +75,13 @@ async function syncProducts() {
           hasVariants: product.has_variants,
           maxQuantity: product.max_quantity ?? null,
           soldQuantity: 0,
+          isLive: product.sell_status === 'for-sale',
+          sellStatus: product.sell_status || 'internal',
+          sellStatusNote: product.sell_status_note || null,
+          costCents: product.cost_cents || null,
+          wholesalePriceCents: product.wholesale_price_cents || null,
+          media: product.media || null,
+          lastSyncedAt: new Date(),
         })
         .onConflictDoUpdate({
           target: products.id,
@@ -86,6 +95,13 @@ async function syncProducts() {
             hasVariants: product.has_variants,
             maxQuantity: product.max_quantity ?? null,
             // NOTE: We do NOT overwrite soldQuantity on sync!
+            isLive: product.sell_status === 'for-sale',
+            sellStatus: product.sell_status || 'internal',
+            sellStatusNote: product.sell_status_note || null,
+            costCents: product.cost_cents || null,
+            wholesalePriceCents: product.wholesale_price_cents || null,
+            media: product.media || null,
+            lastSyncedAt: new Date(),
             updatedAt: new Date(),
           },
         });
@@ -115,12 +131,18 @@ async function syncProducts() {
         totalSpecs++;
       }
     }
-    console.log(`  ✅ Synced ${totalProducts} products with ${totalSpecs} specs\n`);
+    logger.info('Products synced', { totalProducts, totalSpecs });
 
     // Upsert variants if present
     if (data.variants && data.variants.length > 0) {
-      console.log(`🎨 Syncing variants...`);
+      logger.info('Syncing variants', { variantCount: data.variants.length });
       for (const variant of data.variants) {
+        // Skip variants without required IDs
+        if (!variant.id || !variant.product_id || !variant.stripe_product_id) {
+          logger.warn('Skipping variant with missing ID fields', { variantId: variant.id });
+          continue;
+        }
+
         await db
           .insert(variants)
           .values({
@@ -133,6 +155,7 @@ async function syncProducts() {
             isLimitedEdition: variant.is_limited_edition,
             maxQuantity: variant.max_quantity || null,
             soldQuantity: 0, // Don't overwrite existing soldQuantity
+            media: variant.media || null,
             metadata: variant.metadata || null,
           })
           .onConflictDoUpdate({
@@ -144,6 +167,7 @@ async function syncProducts() {
               priceModifier: variant.price_modifier || 0,
               isLimitedEdition: variant.is_limited_edition,
               maxQuantity: variant.max_quantity || null,
+              media: variant.media || null,
               metadata: variant.metadata || null,
               updatedAt: new Date(),
             },
@@ -151,12 +175,12 @@ async function syncProducts() {
 
         totalVariants++;
       }
-      console.log(`  ✅ Synced ${totalVariants} variants\n`);
+      logger.info('Variants synced', { totalVariants });
     }
 
     // Sync dependencies if present
     if (data.dependencies && data.dependencies.length > 0) {
-      console.log(`🔗 Syncing dependencies...`);
+      logger.info('Syncing dependencies', { dependencyCount: data.dependencies.length });
 
       // Clear existing dependencies and insert new ones
       // Note: We delete and re-insert because dependencies don't have a unique constraint
@@ -173,20 +197,18 @@ async function syncProducts() {
 
         totalDependencies++;
       }
-      console.log(`  ✅ Synced ${totalDependencies} dependencies\n`);
+      logger.info('Dependencies synced', { totalDependencies });
     }
 
     // Summary
-    console.log("✅ Sync complete!\n");
-    console.log("📊 Summary:");
-    console.log(`   Products: ${totalProducts}`);
-    console.log(`   Variants: ${totalVariants}`);
-    console.log(`   Specs: ${totalSpecs}`);
-    console.log(`   Dependencies: ${totalDependencies}`);
-    console.log(`\n💡 Database has been updated with latest product configuration.`);
+    logger.syncComplete('product_sync', {
+      totalProducts,
+      totalVariants,
+      totalSpecs,
+      totalDependencies,
+    });
   } catch (error) {
-    console.error("\n❌ Error during sync:");
-    console.error(error);
+    logger.syncError('product_sync', error as Error);
     process.exit(1);
   }
 

@@ -35,6 +35,14 @@ export const products = pgTable(
       sql`max_quantity IS NULL OR sold_quantity < max_quantity`
     ),
 
+    isLive: boolean("is_live").default(false).notNull(),
+    costCents: integer("cost_cents"),
+    wholesalePriceCents: integer("wholesale_price_cents"),
+    sellStatus: text("sell_status").default("internal").notNull(),
+    sellStatusNote: text("sell_status_note"),
+    lastSyncedAt: timestamp("last_synced_at"),
+    media: jsonb("media"),
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -43,6 +51,8 @@ export const products = pgTable(
     devStatusIdx: index("idx_products_dev_status").on(table.devStatus),
     activeIdx: index("idx_products_active").on(table.isActive),
     availableIdx: index("idx_products_available").on(table.isAvailable),
+    liveIdx: index("idx_products_live").on(table.isLive),
+    sellStatusIdx: index("idx_products_sell_status").on(table.sellStatus),
   })
 );
 
@@ -68,6 +78,7 @@ export const variants = pgTable(
     isAvailable: boolean("is_available").generatedAlwaysAs(
       sql`(max_quantity IS NULL OR sold_quantity < max_quantity)`
     ),
+    media: jsonb("media"),
     metadata: jsonb("metadata"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

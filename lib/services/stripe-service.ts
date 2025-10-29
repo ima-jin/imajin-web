@@ -123,3 +123,117 @@ export async function createRefund(
     ...(amount && { amount }),
   });
 }
+
+/**
+ * Fetches all active products from Stripe
+ *
+ * @returns List of active Stripe products
+ */
+export async function fetchStripeProducts(): Promise<Stripe.Product[]> {
+  const stripe = getStripeInstance();
+
+  const products: Stripe.Product[] = [];
+  let hasMore = true;
+  let startingAfter: string | undefined;
+
+  while (hasMore) {
+    const response = await stripe.products.list({
+      active: true,
+      limit: 100,
+      ...(startingAfter && { starting_after: startingAfter }),
+    });
+
+    products.push(...response.data);
+    hasMore = response.has_more;
+
+    if (hasMore && response.data.length > 0) {
+      startingAfter = response.data[response.data.length - 1].id;
+    }
+  }
+
+  return products;
+}
+
+/**
+ * Fetches a single product from Stripe by ID
+ *
+ * @param productId - Stripe Product ID
+ * @returns Stripe product
+ */
+export async function fetchStripeProduct(productId: string): Promise<Stripe.Product> {
+  const stripe = getStripeInstance();
+  return stripe.products.retrieve(productId);
+}
+
+/**
+ * Fetches all active prices from Stripe
+ *
+ * @returns List of active Stripe prices
+ */
+export async function fetchStripePrices(): Promise<Stripe.Price[]> {
+  const stripe = getStripeInstance();
+
+  const prices: Stripe.Price[] = [];
+  let hasMore = true;
+  let startingAfter: string | undefined;
+
+  while (hasMore) {
+    const response = await stripe.prices.list({
+      active: true,
+      limit: 100,
+      ...(startingAfter && { starting_after: startingAfter }),
+    });
+
+    prices.push(...response.data);
+    hasMore = response.has_more;
+
+    if (hasMore && response.data.length > 0) {
+      startingAfter = response.data[response.data.length - 1].id;
+    }
+  }
+
+  return prices;
+}
+
+/**
+ * Fetches prices for a specific product
+ *
+ * @param productId - Stripe Product ID
+ * @returns List of prices for the product
+ */
+export async function fetchPricesForProduct(productId: string): Promise<Stripe.Price[]> {
+  const stripe = getStripeInstance();
+
+  const prices: Stripe.Price[] = [];
+  let hasMore = true;
+  let startingAfter: string | undefined;
+
+  while (hasMore) {
+    const response = await stripe.prices.list({
+      product: productId,
+      active: true,
+      limit: 100,
+      ...(startingAfter && { starting_after: startingAfter }),
+    });
+
+    prices.push(...response.data);
+    hasMore = response.has_more;
+
+    if (hasMore && response.data.length > 0) {
+      startingAfter = response.data[response.data.length - 1].id;
+    }
+  }
+
+  return prices;
+}
+
+/**
+ * Fetches a single price from Stripe by ID
+ *
+ * @param priceId - Stripe Price ID
+ * @returns Stripe price
+ */
+export async function fetchStripePrice(priceId: string): Promise<Stripe.Price> {
+  const stripe = getStripeInstance();
+  return stripe.prices.retrieve(priceId);
+}

@@ -39,6 +39,7 @@
     "validate:content": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
+    "cloudinary": "^2.8.0",
     "drizzle-orm": "^0.44.7",
     "next": "16.0.0",
     "postgres": "^3.4.7",

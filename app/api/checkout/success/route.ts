@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { redirect } from 'next/navigation';
 import { getCheckoutSession } from '@/lib/services/stripe-service';
+import { logger } from '@/lib/utils/logger';
 
 /**
  * GET /api/checkout/success?session_id={CHECKOUT_SESSION_ID}
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
     // Redirect to order confirmation page
     return redirect(`/checkout/success?order_id=${session.id}`);
   } catch (error) {
-    console.error('Checkout success error:', error);
+    logger.error('Checkout success validation failed', error as Error);
     return redirect('/checkout?error=unknown');
   }
 }

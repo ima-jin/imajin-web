@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import type { Product } from "@/types/product";
+import { createMockProduct } from "@/tests/fixtures/product-fixtures";
 
 describe("ProductGrid", () => {
-  const mockProducts: Product[] = [
-    {
+  const mockProducts = [
+    createMockProduct({
       id: "product-1",
       name: "Product 1",
       description: "First product",
@@ -21,8 +21,8 @@ describe("ProductGrid", () => {
       isAvailable: true,
       createdAt: new Date("2025-01-01"),
       updatedAt: new Date("2025-01-01"),
-    },
-    {
+    }),
+    createMockProduct({
       id: "product-2",
       name: "Product 2",
       description: "Second product",
@@ -38,8 +38,8 @@ describe("ProductGrid", () => {
       isAvailable: true,
       createdAt: new Date("2025-01-01"),
       updatedAt: new Date("2025-01-01"),
-    },
-    {
+    }),
+    createMockProduct({
       id: "product-3",
       name: "Product 3",
       description: "Third product",
@@ -55,7 +55,7 @@ describe("ProductGrid", () => {
       isAvailable: true,
       createdAt: new Date("2025-01-01"),
       updatedAt: new Date("2025-01-01"),
-    },
+    }),
   ];
 
   it("renders all products in a grid", () => {

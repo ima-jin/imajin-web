@@ -10,6 +10,7 @@ import {
   getCartItemCount,
   getCartSubtotal,
 } from '@/lib/services/cart-service';
+import { logger } from '@/lib/utils/logger';
 
 interface CartContextValue {
   items: CartItem[];
@@ -46,7 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             initialItems = parsed;
           }
         } catch (error) {
-          console.error('Failed to parse cart from localStorage:', error);
+          logger.error('Failed to parse cart from localStorage', error as Error);
           localStorage.removeItem('imajin_cart');
         }
       }

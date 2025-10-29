@@ -58,354 +58,139 @@
 ### 2.1 Product Data Management ✅
 - [x] JSON config structure (`/config/products.json`)
 - [x] Product data model (aligned with Stripe)
-- [x] Seed script (`npm run db:seed`)
-- [x] Product CRUD utilities
-
-**Phase 2.2 Improvements:**
-- [x] Scripts reorganized: `db:seed`, `db:sync`, `db:verify`
-- [x] Configure separate test database (`imajin_test`)
-- [x] Update tests to use test database
-- [x] Add type mapper/validator layer (Dr. Clean rec)
+- [x] Type mapper/validator layer (product-mapper, variant-mapper)
+- [x] Seed/sync scripts (`db:seed`, `db:sync`, `db:verify`)
+- [x] Separate test database (`imajin_test`)
 
 ### 2.2 Product Catalog Pages ✅
-**Pre-work:**
-- [x] Create `.env.test` with test database URL
-- [x] Update test config for test database
-- [x] Add `test:db:reset` script
-- [x] Document test DB setup in TESTING_STRATEGY.md
+- [x] API Routes: GET /api/products, GET /api/products/[id]
+- [x] Components: ProductCard, ProductGrid, CategoryFilter, LimitedEditionBadge, ProductSpecs, HeroSection
+- [x] Pages: Homepage, Product listing, Product detail
+- [x] Type safety with Zod validation
+- [x] 47 integration tests, 44 unit tests
 
-**Type Safety Layer:**
-- [x] Create `lib/mappers/product-mapper.ts`
-- [x] Create `lib/mappers/variant-mapper.ts`
-- [x] Add Zod validation for all DB queries
-- [x] Handle JSON fields with parsing/validation
-- [x] Create mapper tests (13 tests for product-mapper, 7 tests for variant-mapper)
+### 2.3 Shopping Cart ✅
+- [x] Cart state management (Context API with localStorage)
+- [x] Components: CartProvider, CartDrawer, CartItem, CartButton, AddToCartButton, CartSummary, CartValidation
+- [x] Services: cart-validator, /api/cart/validate
+- [x] Business rules: Voltage compatibility, limited edition tracking, dependency validation
+- [x] 100 tests (80 unit + 20 integration)
 
-**API Routes:**
-- [x] GET /api/products (with category filtering)
-- [x] GET /api/products/[id] (with variants and specs)
-- [x] Integration tests for both endpoints (47 tests total)
+### 2.3.5 Design System & Style Architecture ✅
+- [x] Design token system (`app/globals.css`)
+- [x] UI component library: Button, Card, Badge, Heading, Text, Price, Container, Section
+- [x] Form components: Label, Input, Select, Textarea, Checkbox (119 tests)
+- [x] Refactored all existing components to use UI library
+- [x] Documentation: DESIGN_SYSTEM.md, STYLE_GUIDE.md
+- [x] 94 UI library tests, 365 total tests passing
 
-**Shared Components:**
-- [x] ProductCard component (12 tests)
-- [x] ProductGrid component (6 tests)
-- [x] CategoryFilter component (9 tests)
-- [x] LimitedEditionBadge component (9 tests)
-- [x] ProductSpecs component (8 tests)
-- [x] HeroSection component
+### 2.4 Checkout Flow ✅
+- [x] Checkout page with shipping address form (all 50 US states)
+- [x] Stripe embedded checkout integration
+- [x] Webhook handling (checkout.session.completed)
+- [x] Order creation with atomic transactions
+- [x] Order confirmation and tracking
+- [x] Services: stripe-service, order-service
+- [x] Validation schemas (Zod)
+- [x] 126 Phase 2.4 tests + 119 form tests = 245 new tests
+- [x] 775/778 tests passing (99.6%)
 
-**Pages:**
-- [x] Homepage with featured products (app/page.tsx)
-- [x] Product listing page (app/products/page.tsx)
-- [x] Product detail page with variants, specs, badges (app/products/[id]/page.tsx)
-- [x] Limited Edition badges
-- [ ] Dependency warnings UI - **DEFERRED to Phase 2.3**
+### 2.4.5 Product-Level Inventory Tracking ✅
+- [x] Schema: Products table with max_quantity, sold_quantity, available_quantity, is_available
+- [x] Generated columns for auto-calculated availability
+- [x] Dual-level inventory (product + variant sold quantities)
+- [x] Order service: Increment both levels atomically
+- [x] NULL max_quantity = unlimited inventory
+- [x] Updated all test fixtures and mocks
+- [x] 775/778 tests passing (99.6%)
 
-### 2.3 Shopping Cart ✅ COMPLETE
+### 2.4.6 Product Data Normalization & Multi-System Sync
 
-**Technical Debt Identified:** Styling architecture needs refactoring. See Phase 2.3.5 below.
+**Phase 0: Structured Logging (1-2h) - PREREQUISITE**
+- [ ] Create lib/utils/logger.ts (structured logger class)
+- [ ] Write logger tests (15 tests)
+- [ ] Replace all console.log/error in existing code
+- [ ] Document logging patterns
+- [ ] Clean up logging mess before continuing
 
+**Phase 1: Connection Setup (2-3h)**
+- [ ] Install Cloudinary SDK
+- [ ] Create cloudinary-service.ts with upload/check/delete
+- [ ] Create tools/test-cloudinary.ts script
+- [ ] Create stripe-sync-service.ts with create/update/archive
+- [ ] Create tools/test-stripe.ts script
+- [ ] Validate both services with manual tests
+- [ ] 25 connection tests passing
 
-- [x] Cart state (Context API with CartProvider)
-- [x] Cart storage (localStorage + server sync)
-- [x] Add/remove/update operations
-- [x] Cart UI (slide-out drawer with CartDrawer)
-- [x] Cart validation (including voltage compatibility - 5v/24v cannot mix)
-- [x] Total calculation (CartSummary component)
-- [x] Dependency warnings UI (CartValidation component)
+**Phase 2: Schema Migration (3-4h)**
+- [ ] Move products.json to config/content/
+- [ ] Update schemas: Zod, TypeScript, PostgreSQL
+- [ ] Add new fields: is_live, cost_cents, wholesale_price_cents, sell_status, sell_status_note, last_synced_at, media
+- [ ] Create database migration
+- [ ] Update mappers for new fields
+- [ ] Add default values to products.json
+- [ ] All existing tests passing (775+)
 
-**Components Built:**
-- CartProvider (18 tests) - State management with localStorage
-- CartSummary (6 tests) - Displays totals and item count
-- CartValidation (9 tests) - Shows errors and warnings
-- CartItem (16 tests) - Individual cart item display with quantity controls
-- CartButton (9 tests) - Cart icon with item count badge
-- CartDrawer (12 tests) - Slide-out cart panel
-- AddToCartButton (10 tests) - Product add-to-cart button
-- ProductAddToCart - Product page integration component
-- Header - Navigation with cart button
+**Phase 3: Cloudinary Integration (3-4h)**
+- [ ] Create cloudinary helper utility (URL generation)
+- [ ] Create upload-media.ts test script
+- [ ] Add placeholder images to config/content/media/
+- [ ] Update ProductCard to display Cloudinary images
+- [ ] 15 new tests passing
 
-**Services:**
-- cart-validator.ts (13 tests) - Business logic validation
-- /api/cart/validate (7 tests) - Validation API endpoint
-- formatCurrency utility - Price formatting
+**Phase 4: Stripe Sync (3-4h)**
+- [ ] Enhance stripe-sync-service with full logic
+- [ ] Handle all sell_status scenarios
+- [ ] Handle Stripe Price immutability
+- [ ] Test with Founder Edition variants
+- [ ] 30 new tests passing
 
-**Business Rules Implemented:**
-- ✅ Voltage compatibility (cannot mix 5v and 24v)
-- ✅ Limited edition quantity tracking
-- ✅ Product dependency validation (requires/suggests)
-- ✅ Stock availability checking
-- ✅ Cart persistence across sessions
+**Phase 5: Enhanced Sync Script (4-5h)**
+- [ ] Create sync-products-enhanced.ts
+- [ ] Implement full sync flow (Media → Stripe → DB)
+- [ ] Implement media cleanup logic
+- [ ] Test idempotency
+- [ ] Update products.json with generated IDs
+- [ ] 30 integration tests passing
 
-**Test Coverage:** 100 tests passing (80 unit + 20 integration)
-**Total Project Tests:** 271 passing
+**Phase 6: Product Display Logic (2-3h)**
+- [ ] Create product-filters.ts (shouldShowProduct, getProductDisplayStatus)
+- [ ] Update ProductCard with sell_status badges
+- [ ] Update AddToCartButton for sold-out/pre-order
+- [ ] Update product API routes to filter by is_live
+- [ ] 25 new tests passing
 
-**Dr. Clean Reminders:**
-- ⚠️ Keep mapper pattern consistent (create `cart-mapper.ts` if needed)
-- ⚠️ Be cautious with localStorage + server sync (race conditions, stale data)
-- ⚠️ Validate dependency rules carefully (voltage matching: cannot mix 5v/24v)
-- ⚠️ Maintain test coverage ratio (1.5:1)
+**Phase 7: Testing & Documentation (3-4h)**
+- [ ] Write end-to-end sync test (30 tests)
+- [ ] Manual testing checklist (12 scenarios)
+- [ ] Update DATABASE_SCHEMA.md
+- [ ] Update JSON_CONFIG_STRUCTURE.md
+- [ ] 835+ tests passing total
 
-### 2.3.5 Design System & Style Architecture ✅ COMPLETE
+**Total:** 22-29 hours (3-4 days)
 
-**Type:** Architecture refactoring
-**Priority:** HIGH - Should complete BEFORE Phase 2.4
-**Reason:** Styling tightly coupled via inline Tailwind classes. No design system or theme variables.
-
-**Tasks:**
-- [x] Create design token system in `app/globals.css` (colors, typography, spacing, etc.)
-- [x] Build UI component library: `/components/ui/`
-  - [x] Button (variants: primary, secondary, ghost, link, danger)
-  - [x] Card (with CardHeader, CardContent, CardFooter)
-  - [x] Badge (variants: default, limited, warning, error, success, voltage, danger)
-  - [ ] Input, Select, Textarea (consistent form styling) - **DEFERRED to Phase 2.4**
-  - [x] Heading, Text (semantic typography components)
-  - [x] Price (consistent price formatting)
-  - [x] Container, Section (layout components)
-- [x] Refactor existing components to use UI library:
-  - [x] All product components (ProductCard, ProductGrid, ProductSpecs, LimitedEditionBadge)
-  - [x] All cart components (CartDrawer, CartItem, CartButton, AddToCartButton)
-  - [x] Layout components (Header, HeroSection)
-  - [x] All pages (Homepage, Product Listing, Product Detail)
-- [x] Write tests for UI library (~80 new tests) - 94 tests written
-- [x] Create documentation:
-  - [x] `/docs/DESIGN_SYSTEM.md` - Component usage, theme variables
-  - [x] `/docs/STYLE_GUIDE.md` - Brand guidelines, UI patterns
-- [x] Validation:
-  - [x] All existing tests pass (no regressions) - 365/365 passing
-  - [x] No visual regressions (pages look the same)
-  - [x] Theme variables easily changeable
-  - [x] Consistent UI patterns across all pages
-
-**Benefits:**
-- Separation of concerns (presentation vs markup)
-- Maintainability (change design once, not 50 files)
-- Consistency (all buttons/cards/etc look/behave the same)
-- Velocity (build new pages faster from component library)
-- Flexibility (rebrand/redesign = update theme tokens)
-
-**Timeline:** 2-3 days (Completed: 2025-10-26)
-
-**See:** `/docs/tasks/Phase 2.3.5 - Design System & Decoupling.md` for full specification
-
-**Gate Criteria:**
-- [x] Design token system implemented
-- [x] Core UI library built and tested (8 components, 94 tests)
-- [x] All existing components refactored (29 UI component imports)
-- [x] All tests passing (365/365)
-- [x] Documentation complete
-
-### 2.4 Checkout Flow ✅ COMPLETE
-
-**Completed:** 2025-10-28 (Verified by Dr. Testalot)
-
-**Pre-requisite:** Build form UI components from design system (Input, Select, Textarea) - deferred from Phase 2.3.5
-
-- [x] Build form UI components:
-  - [x] `/components/ui/Label.tsx` (10 tests)
-  - [x] `/components/ui/Input.tsx` (with error states, helper text) (25 tests)
-  - [x] `/components/ui/Select.tsx` (consistent styling) (26 tests)
-  - [x] `/components/ui/Textarea.tsx` (with character count) (26 tests)
-  - [x] `/components/ui/Checkbox.tsx` (18 tests)
-  - [x] Tests for form components (119 tests total)
-- [x] Checkout page/form (`/app/checkout/page.tsx`)
-- [x] Customer info collection (email)
-- [x] Shipping address form (all 50 US states)
-- [x] Order review screen (`OrderSummary` component)
-- [x] Stripe embedded checkout:
-  - [x] Create Checkout Session API route (`/api/checkout/session`)
-  - [x] Handle variants in Stripe (stripeProductId from variants table)
-  - [x] Redirect to Stripe hosted checkout
-- [x] Stripe webhooks:
-  - [x] `checkout.session.completed` handler
-  - [x] Create order in DB with transaction
-  - [x] Decrement limited edition quantities atomically
-  - [x] Webhook route (`/api/webhooks/stripe`)
-- [x] Order confirmation page (`/app/checkout/success/page.tsx`)
-- [x] Order tracking lookup (`/api/orders/lookup`)
-- [x] Validation schemas (Zod - shipping, checkout, order lookup)
-- [x] Stripe service wrapper (sessions, webhooks, refunds)
-- [x] Order service (create, get, lookup, updateStatus)
-- [x] CartItem type updates (stripeProductId, variantName)
-- [x] CartDrawer checkout button wired up
-
-**Phase 2.4 Test Coverage:**
-- New test files: 7 (3,034 lines of test code)
-- New tests: 129 (126 Phase 2.4 specific + 119 form components)
-- Phase 2.4 tests: 126/126 passing (100%)
-- Coverage: Stripe service, order service, validation schemas, API routes, integration flows
-
-**Test Results:**
-- Total tests: 778
-- Passing: 775 (99.6%)
-- Skipped: 3
-- TypeScript: ✅ 0 errors
-- Lint: ✅ 0 errors (100 warnings in test mocks - acceptable)
-- Duration: ~64 seconds
-
-**Critical Functionality Verified:**
-- ✅ Stripe checkout session creation
-- ✅ Webhook signature verification
-- ✅ Payment processing
-- ✅ Order creation with transactions
-- ✅ Variant quantity decrements
-- ✅ Full checkout integration (cart → payment → order)
-
-**See:** `/docs/tasks/Phase 2.4 - Checkout Flow.md` for detailed specification
-
-### 2.4.5 Product-Level Inventory Tracking ✅ COMPLETE
-
-**Completed:** 2025-10-28 (Verified by Dr. Testalot)
-
-**Type:** Database Schema Refactoring + Code Updates
-**Priority:** HIGH - Prerequisite for Phase 2.5
-**Actual Effort:** 2 hours
-
-**Tasks:**
-- [x] Update `/config/products.json` - Add `max_quantity` to Founder Edition
-- [x] Update `/config/schema.ts` - Add validation for `max_quantity` field
-- [x] Update `/scripts/sync-products.ts` - Import product-level inventory
-- [x] Update `/lib/mappers/product-mapper.ts` - Map inventory fields
-- [x] Update `/lib/services/order-service.ts` - Increment both product + variant levels
-- [x] Update all test fixtures - Add inventory fields to mocks (5 files fixed)
-- [x] Drop database and re-import - Clean slate with new schema
-- [x] Run full test suite - All tests passing
-
-**Schema Changes Implemented:**
-- ✅ Products table: Added 4 inventory columns (max_quantity, sold_quantity, available_quantity, is_available)
-- ✅ Generated columns: available_quantity and is_available auto-calculated
-- ✅ Order service: Dual increment (both product.soldQuantity and variant.soldQuantity)
-- ✅ NULL handling: max_quantity = NULL means unlimited inventory
-
-**Test Fixture Updates:**
-- ✅ ProductCard.test.tsx - Added 4 inventory fields to 2 mocks
-- ✅ ProductGrid.test.tsx - Added 4 inventory fields to 3 mocks
-- ✅ stripe-webhook.test.ts - Fixed Stripe CustomerDetails type (added business_name, individual_name)
-- ✅ full-checkout-flow.test.ts - Fixed Stripe Session types (changed to `any` for flexible mocking)
-
-**Test Results:**
-- Total tests: 778
-- Passing: 775 (99.6%)
-- Skipped: 3
-- TypeScript: ✅ 0 errors
-- Lint: ✅ 0 errors (100 warnings in test mocks - acceptable)
-
-**Critical Functionality Verified:**
-- ✅ Product-level inventory tracking (Founder Edition maxQuantity = 1000)
-- ✅ Dual-level sold quantity increments (product + variant)
-- ✅ Generated columns auto-calculating availability
-- ✅ Order service transaction atomicity
-- ✅ NULL max_quantity handling (unlimited inventory)
-- ✅ All test fixtures compatible with new schema
-
-**See:** `/docs/tasks/Phase 2.4.5 - Add Product-Level Inventory.md` for detailed specification
-
-**Gate Criteria:**
-- [x] products.json includes inventory data
-- [x] Sync script handles product-level inventory
-- [x] Product mapper includes inventory fields
-- [x] Order service increments both levels
-- [x] All test fixtures updated
-- [x] All tests passing (775/778 = 99.6%)
-- [x] Database re-imported successfully
-- [x] TypeScript compiles cleanly (0 errors)
+**See:** `/docs/tasks/Phase 2.4.6 - Product Data Normalization.md` for detailed specification
 
 ### 2.5 Real-Time Inventory Management
+- [ ] Inventory service and API endpoint (GET /api/inventory/:productId)
+- [ ] Polling hook (useInventory with 10s intervals)
+- [ ] Stock indicator components (StockIndicator, LowStockWarning, SoldOutBadge)
+- [ ] Update ProductCard and ProductAddToCart with real-time availability
+- [ ] 60+ tests
 
-**Type:** Feature Enhancement - User Experience
-**Priority:** HIGH - Improves trust and conversion
-**Estimated Effort:** 8-12 hours (1-2 days)
-**Dependencies:** Phase 2.4.5 complete
+**See:** `/docs/tasks/Phase 2.5 - Real-Time Inventory Management.md`
 
-**Tasks:**
-- [ ] Create inventory service (business logic)
-- [ ] Create inventory API endpoint (GET /api/inventory/:productId)
-- [ ] Build polling hook (useInventory with 10s intervals)
-- [ ] Create stock indicator components (StockIndicator, LowStockWarning, SoldOutBadge)
-- [ ] Update ProductCard with real-time inventory
-- [ ] Update ProductAddToCart with availability checks
-- [ ] Write comprehensive tests (60+ tests)
+### 2.6 E2E & Smoke Tests
+- [ ] E2E tests: checkout.spec.ts, product-browsing.spec.ts, shopping-cart.spec.ts
+- [ ] Smoke test: phase2-ecommerce.spec.ts
+- [ ] Validate no Phase 1 regressions
+- [ ] Full Phase 2 coverage verification
 
-**See:** `/docs/tasks/Phase 2.5 - Real-Time Inventory Management.md` for full specification
-
-**Gate Criteria:**
-- [ ] Inventory API returns real-time data
-- [ ] Polling hook updates every 10 seconds
-- [ ] "Sold Out" badges display correctly
-- [ ] Low stock warnings show for limited items
-- [ ] Add to Cart disabled when sold out
-- [ ] All tests passing (810+ total)
-
-### 2.6 Phase 2 Testing & Smoke Test Generation
-
-**Purpose:** Create comprehensive smoke test suite that validates entire Phase 2 after all sub-phases complete.
-
-**Tasks:**
-- [ ] Write `tests/smoke/phase2-ecommerce.spec.ts` - Phase 2 smoke test suite
-- [ ] Verify all Phase 2 unit/integration tests passing
-- [ ] Run smoke tests against all Phase 2 features
-- [ ] Validate no regressions in Phase 1 smoke tests
-
-**Smoke Test Coverage (phase2-ecommerce.spec.ts):**
-```typescript
-// Product browsing
-- Products API returns data
-- Product listing page loads
-- Product detail page renders
-- Category filtering works
-
-// Shopping cart
-- Add to cart functionality
-- Cart persists in localStorage
-- Update quantities
-- Remove items
-- Cart total calculation
-
-// Variants & dependencies
-- Variant selector works
-- Limited edition badges display
-- Dependency warnings show
-- Voltage compatibility validation
-```
-
-**Existing Tests (from sub-phases):**
-- [x] `tests/integration/api/products.test.ts` (10 tests) - Phase 2.1/2.2
-- [x] `tests/integration/api/products-id.test.ts` (10 tests) - Phase 2.2
-- [x] `tests/unit/lib/mappers/product-mapper.test.ts` (13 tests) - Phase 2.2
-- [x] `tests/unit/lib/mappers/variant-mapper.test.ts` (7 tests) - Phase 2.2
-- [x] `tests/unit/components/ProductCard.test.tsx` (12 tests) - Phase 2.2
-- [x] `tests/unit/components/ProductGrid.test.tsx` (6 tests) - Phase 2.2
-- [x] `tests/unit/components/CategoryFilter.test.tsx` (9 tests) - Phase 2.2
-- [x] `tests/unit/components/LimitedEditionBadge.test.tsx` (9 tests) - Phase 2.2
-- [x] `tests/unit/components/ProductSpecs.test.tsx` (8 tests) - Phase 2.2
-- [x] `tests/unit/components/cart/CartItem.test.tsx` (21 tests) - Phase 2.3
-- [x] `tests/unit/components/cart/CartDrawer.test.tsx` (21 tests) - Phase 2.3
-- [x] `tests/unit/components/cart/CartProvider.test.tsx` (35 tests) - Phase 2.3
-- [x] `tests/unit/components/cart/AddToCartButton.test.tsx` (15 tests) - Phase 2.3
-- [x] `tests/unit/lib/services/cart-service.test.ts` (19 tests) - Phase 2.3
-- [x] `tests/unit/lib/services/cart-validator.test.ts` (33 tests) - Phase 2.3
-- [x] `tests/unit/components/ui/Label.test.tsx` (10 tests) - Phase 2.4
-- [x] `tests/unit/components/ui/Input.test.tsx` (25 tests) - Phase 2.4
-- [x] `tests/unit/components/ui/Select.test.tsx` (26 tests) - Phase 2.4
-- [x] `tests/unit/components/ui/Textarea.test.tsx` (22 tests) - Phase 2.4
-- [x] `tests/unit/components/ui/Checkbox.test.tsx` (17 tests) - Phase 2.4
-- [ ] `tests/e2e/checkout.spec.ts` - **Phase 2.6 (deferred)**
-- [ ] `tests/e2e/product-browsing.spec.ts` - **Phase 2.6 (deferred)**
-- [ ] `tests/e2e/shopping-cart.spec.ts` - **Phase 2.6 (deferred)**
-- [ ] `tests/smoke/phase2-ecommerce.spec.ts` - **Phase 2.6 (deferred)**
-
-**Gate Criteria (Phase 2.2):**
-- [x] Phase 1 tests still pass (153 total tests passing)
-- [x] Products API returns expected data
-- [x] Product pages render correctly
-- [x] Limited Edition badges display correctly
-- [ ] Cart operations work - **Phase 2.3**
-- [ ] Cart persists in localStorage - **Phase 2.3**
-- [ ] Variant selector updates correctly - **Phase 2.3**
-- [ ] Dependency validation works - **Phase 2.3**
-- [ ] Phase 2 smoke tests pass - **After Phase 2 complete**
-
-**Run:** `npm run test:smoke -- phase1 phase2`
+**Gate Criteria (Phase 2 Complete):**
+- [ ] 810+ tests passing
+- [ ] E2E checkout flow works end-to-end
+- [ ] All smoke tests pass
+- [ ] TypeScript: 0 errors, Lint: 0 errors
 
 ---
 

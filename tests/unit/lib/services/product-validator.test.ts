@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { validateProductJson, validateVariantAvailability } from "@/lib/services/product-validator";
+import { createMockVariant } from "@/tests/fixtures/product-fixtures";
 
 describe("product-validator", () => {
   describe("validateProductJson", () => {
@@ -88,22 +89,16 @@ describe("product-validator", () => {
 
   describe("validateVariantAvailability", () => {
     it("should return available for unlimited variant", () => {
-      const variant = {
+      const variant = createMockVariant({
         id: "Material-8x8-V-Black",
         productId: "Material-8x8-V",
         stripeProductId: "prod_material_black",
-        variantType: "color",
         variantValue: "BLACK",
-        priceModifier: 0,
         isLimitedEdition: false,
         maxQuantity: null,
         soldQuantity: 0,
         availableQuantity: null,
-        isAvailable: true,
-        metadata: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      });
 
       const result = validateVariantAvailability(variant);
 
@@ -112,22 +107,16 @@ describe("product-validator", () => {
     });
 
     it("should return available for limited edition with stock", () => {
-      const variant = {
+      const variant = createMockVariant({
         id: "Unit-8x8x8-Founder-Black",
         productId: "Unit-8x8x8-Founder",
         stripeProductId: "prod_founder_black",
-        variantType: "color",
         variantValue: "BLACK",
-        priceModifier: 0,
         isLimitedEdition: true,
         maxQuantity: 500,
         soldQuantity: 100,
         availableQuantity: 400,
-        isAvailable: true,
-        metadata: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      });
 
       const result = validateVariantAvailability(variant);
 
@@ -138,22 +127,17 @@ describe("product-validator", () => {
     });
 
     it("should return unavailable for sold out variant", () => {
-      const variant = {
+      const variant = createMockVariant({
         id: "Unit-8x8x8-Founder-Black",
         productId: "Unit-8x8x8-Founder",
         stripeProductId: "prod_founder_black",
-        variantType: "color",
         variantValue: "BLACK",
-        priceModifier: 0,
         isLimitedEdition: true,
         maxQuantity: 500,
         soldQuantity: 500,
         availableQuantity: 0,
         isAvailable: false,
-        metadata: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      });
 
       const result = validateVariantAvailability(variant);
 
@@ -162,22 +146,16 @@ describe("product-validator", () => {
     });
 
     it("should handle variant with remaining stock correctly", () => {
-      const variant = {
+      const variant = createMockVariant({
         id: "Unit-8x8x8-Founder-White",
         productId: "Unit-8x8x8-Founder",
         stripeProductId: "prod_founder_white",
-        variantType: "color",
         variantValue: "WHITE",
-        priceModifier: 0,
         isLimitedEdition: true,
         maxQuantity: 300,
         soldQuantity: 295,
         availableQuantity: 5,
-        isAvailable: true,
-        metadata: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      });
 
       const result = validateVariantAvailability(variant);
 

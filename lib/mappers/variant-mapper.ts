@@ -8,6 +8,9 @@
  * so this mapper primarily provides validation and type safety rather than case conversion.
  */
 
+import { MediaItem } from '@/types/product';
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Database variant type (from Drizzle schema - camelCase TypeScript properties)
  * Drizzle ORM returns camelCase property names, even though DB columns are snake_case
@@ -24,7 +27,8 @@ export interface DbVariant {
   soldQuantity: number | null;
   availableQuantity: number | null; // Generated column
   isAvailable: boolean | null; // Generated column
-  metadata: unknown; // JSONB field
+  media: unknown;
+  metadata: unknown;
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -44,6 +48,7 @@ export interface Variant {
   soldQuantity: number | null;
   availableQuantity: number | null;
   isAvailable: boolean | null;
+  media: MediaItem[];
   metadata: unknown;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -70,6 +75,35 @@ export function mapDbVariantToVariant(dbVariant: DbVariant): Variant {
     throw new Error("Missing required numeric fields");
   }
 
+  // Parse media JSONB field (array of MediaItem objects with full metadata)
+  interface DbMediaItem {
+    localPath?: string;
+    local_path?: string;
+    cloudinaryPublicId?: string;
+    cloudinary_public_id?: string;
+    type?: string;
+    mimeType?: string;
+    mime_type?: string;
+    alt?: string;
+    category?: string;
+    order?: number;
+    uploadedAt?: string;
+    uploaded_at?: string;
+  }
+
+  const media: MediaItem[] = Array.isArray(dbVariant.media)
+    ? (dbVariant.media as DbMediaItem[]).map((item: DbMediaItem) => ({
+        localPath: item.localPath || item.local_path || '',
+        cloudinaryPublicId: item.cloudinaryPublicId || item.cloudinary_public_id,
+        type: (item.type as MediaItem['type']) || 'image',
+        mimeType: item.mimeType || item.mime_type || '',
+        alt: item.alt || '',
+        category: (item.category as MediaItem['category']) || 'main',
+        order: item.order || 0,
+        uploadedAt: (item.uploadedAt || item.uploaded_at) ? new Date(item.uploadedAt || item.uploaded_at!) : undefined,
+      }))
+    : [];
+
   return {
     id: dbVariant.id,
     productId: dbVariant.productId,
@@ -82,6 +116,7 @@ export function mapDbVariantToVariant(dbVariant: DbVariant): Variant {
     soldQuantity: dbVariant.soldQuantity,
     availableQuantity: dbVariant.availableQuantity,
     isAvailable: dbVariant.isAvailable,
+    media,
     metadata: dbVariant.metadata,
     createdAt: dbVariant.createdAt,
     updatedAt: dbVariant.updatedAt,
@@ -103,7 +138,9 @@ export function mapDbVariantsToVariants(dbVariants: DbVariant[]): Variant[] {
       variants.push(mapDbVariantToVariant(dbVariant));
     } catch (error) {
       // Skip invalid variants and continue mapping
-      console.error(`Failed to map variant ${dbVariant?.id || "unknown"}:`, error);
+      logger.error('Failed to map variant', error as Error, {
+        variantId: dbVariant?.id || 'unknown',
+      });
       continue;
     }
   }

@@ -383,6 +383,37 @@ The `web/` folder is a **monorepo** containing:
 - [../README.md](../README.md) - Multi-repo structure explanation
 - [README.md](./README.md) - Web platform monorepo overview
 
+### Documentation Philosophy
+
+**IMPLEMENTATION_PLAN.md is a progress tracker, not a detailed specification.**
+
+- **High-level summaries only**: Phase objectives, key deliverables, completion status
+- **Checkbox-driven**: Quick visual scan of what's done and what's next
+- **Test counts**: Brief summary (e.g., "775/778 passing")
+- **Links to detailed specs**: Reference `/docs/tasks/` files for deep dives
+
+**Detailed specifications belong in `/docs/tasks/` files:**
+
+- Phase task files (e.g., `Phase 2.4 - Checkout Flow.md`)
+- Step-by-step implementation details
+- Technical rationale and decision logs
+- Comprehensive acceptance criteria
+- Detailed test coverage breakdowns
+
+**Why this separation?**
+
+- Prevents IMPLEMENTATION_PLAN.md from becoming bloated and unreadable
+- Reduces duplication (don't maintain same details in two places)
+- Makes it easy to scan overall project progress
+- Detailed specs remain available when needed for deep work
+
+**When updating progress:**
+
+1. Mark checkboxes in IMPLEMENTATION_PLAN.md
+2. Update test counts (concise)
+3. Keep detailed notes in corresponding task file
+4. Link to task file if extensive details exist
+
 ---
 
 ## Future Repositories
@@ -461,14 +492,51 @@ Inspired by Fusion 360 Python scripting:
 
 ### During Active Development (Current)
 
+**Before Starting ANY New Phase/Feature:**
+
+**Step 1: Draft Task Document (1-2 hours)**
+- [ ] Create task document from `docs/templates/TASK_DOCUMENT_TEMPLATE.md`
+- [ ] Enumerate ALL tests in "Detailed Test Specifications" section
+- [ ] Create test summary table with counts per phase
+- [ ] Define TDD workflow (RED-GREEN-REFACTOR) for each phase
+- [ ] Mark status: "Ready for Grooming 🟡"
+
+**Step 2: Grooming Session (24-48 hours)**
+- [ ] Initiate grooming with all 5 doctors (see `TASK_GROOMING_PROCESS.md`)
+- [ ] Wait for all doctor reviews (parallel)
+- [ ] Address feedback and concerns
+- [ ] Update task doc based on feedback
+- [ ] Get unanimous approval from all doctors ✅
+
+**Step 3: Authorization (before coding)**
+- [ ] Verify all 5 doctors approved
+- [ ] Change status to "Approved for Implementation 🟢"
+- [ ] **DO NOT START CODING** until all approvals received ⚠️
+
+**Grooming participants (all required):**
+- Dr. Testalot (QA) - Testing review
+- Dr. Clean (Quality) - Architecture review
+- Dr. LeanDev (Implementation) - Feasibility review
+- Dr. DevOps (Operations) - Deployment review
+- Dr. Git (Version Control) - Change impact review
+
+**During Implementation:**
 - Review all docs in `/docs` folder first
 - Use TodoWrite for complex tasks
 - Follow implementation plan phases (see IMPLEMENTATION_PLAN.md)
+- Follow TDD: RED (write tests) → GREEN (implement) → REFACTOR (clean up)
 - Test in Docker environment
 - Commit frequently with clear messages
 - Update IMPLEMENTATION_PLAN.md checkboxes as tasks complete
 - Run full test suite before phase sign-off
 - Invoke Dr. Clean for QA validation at end of each phase
+
+**Task Document Requirements:**
+- All tests enumerated BEFORE implementation
+- Specific assertions with code examples
+- Test count summary table
+- Clear acceptance criteria
+- See Phase 2.4.6 (lines 1785-2133) or Phase 0 TDD Spec for examples
 
 ### If Debugging/Maintenance Phase
 
@@ -481,4 +549,4 @@ Inspired by Fusion 360 Python scripting:
 
 **This file should be updated as context evolves. Keep it current!**
 
-Last Updated: 2025-10-27
+Last Updated: 2025-10-28

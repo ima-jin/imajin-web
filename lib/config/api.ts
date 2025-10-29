@@ -72,11 +72,11 @@ export const ERROR_CODES = {
   CART_VALIDATION_ERROR: 'CART_VALIDATION_ERROR',
   CART_EMPTY: 'CART_EMPTY',
 
-  // Future: Payment errors (for Phase 2.4)
+  // Payment errors
   PAYMENT_ERROR: 'PAYMENT_ERROR',
   STRIPE_ERROR: 'STRIPE_ERROR',
 
-  // Future: Order errors (for Phase 2.4)
+  // Order errors
   ORDER_CREATION_ERROR: 'ORDER_CREATION_ERROR',
 } as const;
 

@@ -9,6 +9,8 @@ import { getDatabaseConnectionString } from "@/lib/config/database";
 // Mock environment variables for tests
 // Note: Vitest sets NODE_ENV automatically, we just ensure other env vars
 process.env.NEXT_PUBLIC_ENV = "test";
+process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = "imajin-ai";
+process.env.CLOUDINARY_CLOUD_NAME = "imajin-ai";
 
 // Global test database connection
 let testClient: postgres.Sql | null = null;

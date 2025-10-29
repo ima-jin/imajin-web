@@ -24,6 +24,11 @@ describe.sequential("GET /api/products/[id]", () => {
         isActive: true,
         requiresAssembly: false,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       },
       {
         id: "api-prod-detail-variants",
@@ -35,6 +40,11 @@ describe.sequential("GET /api/products/[id]", () => {
         isActive: true,
         requiresAssembly: true,
         hasVariants: true,
+        maxQuantity: 1000,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       },
       {
         id: "api-prod-detail-inactive",
@@ -46,6 +56,11 @@ describe.sequential("GET /api/products/[id]", () => {
         isActive: false,
         requiresAssembly: false,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: false,
+        sellStatus: 'internal',
+        media: [],
       },
     ]);
 
@@ -61,6 +76,7 @@ describe.sequential("GET /api/products/[id]", () => {
         isLimitedEdition: true,
         maxQuantity: 500,
         soldQuantity: 50,
+        media: [],
       },
       {
         id: "api-variant-white",
@@ -72,6 +88,7 @@ describe.sequential("GET /api/products/[id]", () => {
         isLimitedEdition: true,
         maxQuantity: 300,
         soldQuantity: 30,
+        media: [],
       },
     ]);
 

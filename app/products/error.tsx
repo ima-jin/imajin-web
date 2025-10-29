@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { ErrorDisplay } from '@/components/error/ErrorDisplay';
+import { logger } from '@/lib/utils/logger';
 
 export default function ProductsError({
   error,
@@ -11,7 +12,7 @@ export default function ProductsError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Products page error:', error);
+    logger.error('Products page error boundary triggered', error, { digest: error.digest });
   }, [error]);
 
   return (

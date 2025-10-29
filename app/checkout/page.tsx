@@ -14,6 +14,7 @@ import { Card } from '@/components/ui/Card';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { apiPost } from '@/lib/utils/api-client';
 import { API_ENDPOINTS } from '@/lib/config/api';
+import { logger } from '@/lib/utils/logger';
 import { z } from 'zod';
 
 const US_STATES = [
@@ -137,7 +138,7 @@ export default function CheckoutPage() {
         window.location.href = session.url;
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      logger.error('Checkout session creation failed', error as Error);
       showError('Failed to create checkout session. Please try again.');
       setIsLoading(false);
     }

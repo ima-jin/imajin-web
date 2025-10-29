@@ -1,9 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Price } from "@/components/ui/Price";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { getBestImageUrl } from "@/lib/utils/cloudinary";
+import { getProductDisplayStatus, getSellStatusLabel, getSellStatusBadgeVariant } from "@/lib/utils/product-display";
 import type { Product } from "@/types/product";
 import type { ProductDetailContent } from "@/config/schema/page-content-schema";
 
@@ -26,24 +29,37 @@ interface ProductCardProps {
  * Links to product detail page on click
  */
 export function ProductCard({ product, content }: ProductCardProps) {
+  const displayStatus = getProductDisplayStatus(product);
+
   return (
     <Link href={`/products/${product.id}`} className="block">
       <Card hover noPadding>
-        {/* Product Image Placeholder */}
-        <div className="aspect-square bg-gray-100 flex items-center justify-center">
-          <Text size="sm" color="muted">Image</Text>
+        {/* Product Image */}
+        <div className="aspect-square bg-gray-100 relative overflow-hidden">
+          <Image
+            src={getBestImageUrl(product.media, 'main', { width: 400, height: 400 })}
+            alt={product.name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
         </div>
 
         {/* Product Info */}
         <div className="p-4 space-y-2">
-          {/* Category Badge */}
-          <div className="flex items-center gap-2">
+          {/* Category Badge + Sell Status */}
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant="default" size="sm">
               {product.category}
             </Badge>
             {product.requiresAssembly && (
               <Badge variant="warning" size="sm">
                 {content?.badges.requires_assembly || "Requires Assembly"}
+              </Badge>
+            )}
+            {displayStatus.badge && (
+              <Badge variant={displayStatus.badge.variant} size="sm">
+                {displayStatus.badge.text}
               </Badge>
             )}
           </div>

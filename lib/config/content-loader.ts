@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import fs from 'fs/promises';
 import path from 'path';
+import { logger } from '@/lib/utils/logger';
 
 /**
  * Content Loader Utility
@@ -26,7 +27,9 @@ export async function loadContent<T>(
     return schema.parse(json);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error(`Content validation failed for ${filePath}:`, error.issues);
+      logger.error(`Content validation failed for ${filePath}`, error as unknown as Error, {
+        issues: error.issues
+      });
       throw new Error(`Invalid content structure in ${filePath}: ${error.message}`);
     }
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {

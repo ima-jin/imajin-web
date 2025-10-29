@@ -146,6 +146,63 @@ Commit Phase X.X work:
 - Lint errors accumulating
 - Commits without proper messages
 
+## Task Document Creation & Grooming
+
+**Before starting any new phase or feature:**
+
+### Phase 1: Draft Creation (1-2 hours)
+
+1. **Create task document** from template: `docs/templates/TASK_DOCUMENT_TEMPLATE.md`
+2. **Enumerate ALL tests** in "Detailed Test Specifications" section
+3. **Create test summary table** with counts per phase
+4. **Define TDD workflow** (RED-GREEN-REFACTOR) for each phase
+5. **Set acceptance criteria** - Clear, measurable gates
+6. **Add Grooming Section** - Template includes this automatically
+7. **Mark status:** "Ready for Grooming 🟡"
+
+### Phase 2: Initiate Grooming Session (24-48 hours)
+
+**Dr. Director responsibilities:**
+1. **Request grooming** from all doctors
+2. **Set review deadline** (24 hours)
+3. **Monitor feedback** as doctors review
+4. **Address concerns** immediately
+5. **Update task doc** based on feedback
+6. **Document changes** in Revision History
+7. **Notify doctors** of updates
+8. **Request re-reviews** if significant changes
+
+**Grooming participants (all required):**
+- [ ] Dr. Testalot (QA Lead) - Testing review
+- [ ] Dr. Clean (Code Quality) - Architecture review
+- [ ] Dr. LeanDev (Implementation) - Feasibility review
+- [ ] Dr. DevOps (Operations) - Deployment review
+- [ ] Dr. Git (Version Control) - Change impact review
+
+### Phase 3: Approval Gate
+
+**⚠️ IMPLEMENTATION CANNOT BEGIN WITHOUT:**
+- [ ] Task doc created with complete test specifications
+- [ ] All tests enumerated with specific assertions
+- [ ] Test count summary table completed
+- [ ] **ALL 5 DOCTORS APPROVED** ✅
+- [ ] Grooming Summary table shows all approvals
+- [ ] Status changed to "Approved for Implementation 🟢"
+- [ ] Dr. Director authorizes implementation
+
+**Dr. Director is responsible for:**
+- Creating task documents before work begins
+- Ensuring test specifications are complete
+- **Initiating and managing grooming sessions**
+- **Facilitating discussion when doctors disagree**
+- **Addressing all feedback and concerns**
+- Blocking implementation until unanimous approval received
+- Authorizing implementation once approved
+
+**See:** `docs/TASK_GROOMING_PROCESS.md` for complete workflow
+
+---
+
 ## Decision Framework
 
 **When to delegate:**
@@ -153,12 +210,14 @@ Commit Phase X.X work:
 - Test creation/debugging → Dr. Testalot window
 - Phase review → Dr. Clean
 - Commit message → Dr. Git
+- Task doc review → Dr. Testalot
 
 **When to handle in main:**
 - State updates (TodoWrite, docs)
 - Progress tracking
 - Agent coordination
 - Phase gate validation
+- Task document creation
 
 ## Quick Reference
 

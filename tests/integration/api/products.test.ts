@@ -23,6 +23,11 @@ describe.sequential("GET /api/products", () => {
         isActive: true,
         requiresAssembly: false,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       },
       {
         id: "api-products-inactive",
@@ -34,6 +39,11 @@ describe.sequential("GET /api/products", () => {
         isActive: false,
         requiresAssembly: false,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: false,
+        sellStatus: 'internal',
+        media: [],
       },
       {
         id: "api-products-dev",
@@ -45,6 +55,11 @@ describe.sequential("GET /api/products", () => {
         isActive: true,
         requiresAssembly: false,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: false,
+        sellStatus: 'internal',
+        media: [],
       },
     ]);
   });

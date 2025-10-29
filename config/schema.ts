@@ -1,6 +1,21 @@
 import { z } from "zod";
 
 /**
+ * Media Item Schema
+ * Defines media files (images, videos, PDFs) for products
+ */
+export const MediaItemSchema = z.object({
+  local_path: z.string(),
+  cloudinary_public_id: z.string().optional(),
+  type: z.enum(["image", "video", "pdf", "other"]),
+  mime_type: z.string(),
+  alt: z.string(),
+  category: z.enum(["main", "detail", "lifestyle", "dimension", "spec"]),
+  order: z.number().int().positive(),
+  uploaded_at: z.string().datetime().optional(),
+});
+
+/**
  * Product Spec Schema
  * Defines technical specifications for products
  */
@@ -23,11 +38,19 @@ export const ProductConfigSchema = z.object({
   category: z.enum(["material", "connector", "control", "diffuser", "kit", "interface"]),
   dev_status: z.number().int().min(0).max(5),
   base_price: z.number().int().positive(),
-  stripe_product_id: z.string().min(1),
+  stripe_product_id: z.string().min(1).optional(),
   has_variants: z.boolean(),
   requires_assembly: z.boolean().optional(),
   max_quantity: z.number().int().positive().nullable().optional(),
-  images: z.array(z.string()),
+
+  is_live: z.boolean().default(false),
+  cost_cents: z.number().int().positive().optional(),
+  wholesale_price_cents: z.number().int().positive().optional(),
+  sell_status: z.enum(["for-sale", "pre-order", "sold-out", "internal"]).default("internal"),
+  sell_status_note: z.string().optional(),
+  last_synced_at: z.string().datetime().optional(),
+  media: z.array(MediaItemSchema).default([]),
+
   specs: z.array(ProductSpecSchema),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
@@ -39,13 +62,13 @@ export const ProductConfigSchema = z.object({
 export const VariantConfigSchema = z.object({
   id: z.string().min(1),
   product_id: z.string().min(1),
-  stripe_product_id: z.string().min(1),
+  stripe_product_id: z.string().min(1).optional(),
   variant_type: z.string().min(1),
   variant_value: z.string().min(1),
   price_modifier: z.number().int().optional(),
   is_limited_edition: z.boolean(),
   max_quantity: z.number().int().positive().optional(),
-  images: z.array(z.string()).optional(),
+  media: z.array(MediaItemSchema).default([]),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -74,6 +97,7 @@ export const ProductsJsonSchema = z.object({
 });
 
 // Export types inferred from schemas
+export type MediaItem = z.infer<typeof MediaItemSchema>;
 export type ProductConfig = z.infer<typeof ProductConfigSchema>;
 export type VariantConfig = z.infer<typeof VariantConfigSchema>;
 export type ProductDependency = z.infer<typeof ProductDependencySchema>;

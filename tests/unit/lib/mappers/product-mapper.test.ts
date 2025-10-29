@@ -4,10 +4,11 @@ import {
   mapDbProductsToProducts,
   type DbProduct,
 } from "@/lib/mappers/product-mapper";
+import { createMockDbProduct } from "@/tests/fixtures/product-fixtures";
 
 describe("mapDbProductToProduct", () => {
   it("maps valid DB product to application product", () => {
-    const dbProduct = {
+    const dbProduct = createMockDbProduct({
       id: "Material-8x8-V",
       name: "8x8 Void Panel",
       description: "240mm panel",
@@ -23,7 +24,7 @@ describe("mapDbProductToProduct", () => {
       isAvailable: true,
       createdAt: new Date("2024-10-01"),
       updatedAt: new Date("2024-10-24"),
-    };
+    });
 
     const result = mapDbProductToProduct(dbProduct);
 
@@ -41,29 +42,27 @@ describe("mapDbProductToProduct", () => {
       soldQuantity: 0,
       availableQuantity: null,
       isAvailable: true,
+      isLive: true,
+      costCents: undefined,
+      wholesalePriceCents: undefined,
+      sellStatus: 'for-sale',
+      sellStatusNote: undefined,
+      lastSyncedAt: undefined,
+      media: [],
       createdAt: new Date("2024-10-01"),
       updatedAt: new Date("2024-10-24"),
     });
   });
 
   it("handles null description", () => {
-    const dbProduct = {
+    const dbProduct = createMockDbProduct({
       id: "test",
       name: "Test Product",
       description: null,
-      category: "material",
-      devStatus: 5,
-      basePrice: 1000,
-      isActive: true,
-      requiresAssembly: false,
-      hasVariants: false,
       maxQuantity: 100,
       soldQuantity: 0,
       availableQuantity: 100,
-      isAvailable: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    });
 
     const result = mapDbProductToProduct(dbProduct);
 
@@ -71,23 +70,14 @@ describe("mapDbProductToProduct", () => {
   });
 
   it("handles null boolean fields", () => {
-    const dbProduct = {
+    const dbProduct = createMockDbProduct({
       id: "test",
       name: "Test",
       description: "Test",
-      category: "material",
-      devStatus: 5,
-      basePrice: 1000,
       isActive: null,
       requiresAssembly: null,
       hasVariants: null,
-      maxQuantity: null,
-      soldQuantity: 0,
-      availableQuantity: null,
-      isAvailable: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    });
 
     const result = mapDbProductToProduct(dbProduct);
 
@@ -97,23 +87,16 @@ describe("mapDbProductToProduct", () => {
   });
 
   it("handles null timestamps", () => {
-    const dbProduct = {
+    const dbProduct = createMockDbProduct({
       id: "test",
       name: "Test",
       description: "Test",
-      category: "material",
-      devStatus: 5,
-      basePrice: 1000,
-      isActive: true,
-      requiresAssembly: false,
-      hasVariants: false,
       maxQuantity: 50,
       soldQuantity: 10,
       availableQuantity: 40,
-      isAvailable: true,
       createdAt: null,
       updatedAt: null,
-    };
+    });
 
     const result = mapDbProductToProduct(dbProduct);
 
@@ -125,40 +108,23 @@ describe("mapDbProductToProduct", () => {
 describe("mapDbProductsToProducts", () => {
   it("maps array of valid products", () => {
     const dbProducts = [
-      {
+      createMockDbProduct({
         id: "product-1",
         name: "Product 1",
         description: "Description 1",
         category: "material",
-        devStatus: 5,
         basePrice: 1000,
-        isActive: true,
-        requiresAssembly: false,
-        hasVariants: false,
-        maxQuantity: null,
-        soldQuantity: 0,
-        availableQuantity: null,
-        isAvailable: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
+      }),
+      createMockDbProduct({
         id: "product-2",
         name: "Product 2",
         description: "Description 2",
         category: "connector",
-        devStatus: 5,
         basePrice: 2000,
-        isActive: true,
-        requiresAssembly: false,
-        hasVariants: false,
         maxQuantity: 1000,
         soldQuantity: 50,
         availableQuantity: 950,
-        isAvailable: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      }),
     ];
 
     const result = mapDbProductsToProducts(dbProducts);
@@ -177,23 +143,14 @@ describe("mapDbProductsToProducts", () => {
 
   it("handles errors gracefully and continues mapping", () => {
     const dbProducts = [
-      {
+      createMockDbProduct({
         id: "valid-product",
         name: "Valid",
         description: "Valid",
-        category: "material",
-        devStatus: 5,
-        basePrice: 1000,
-        isActive: true,
-        requiresAssembly: false,
-        hasVariants: false,
         maxQuantity: 100,
         soldQuantity: 0,
         availableQuantity: 100,
-        isAvailable: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      }),
       // Invalid product missing required fields - will be skipped
       {
         id: "invalid-product",

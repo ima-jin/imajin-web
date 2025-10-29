@@ -43,6 +43,11 @@ describe("Product Service", () => {
           basePrice: 1000,
           isActive: true,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: true,
+          sellStatus: 'for-sale',
+          media: [],
         },
         {
           id: "svc-prod-2",
@@ -52,6 +57,11 @@ describe("Product Service", () => {
           basePrice: 500,
           isActive: true,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: true,
+          sellStatus: 'for-sale',
+          media: [],
         },
         {
           id: "svc-prod-3",
@@ -61,6 +71,11 @@ describe("Product Service", () => {
           basePrice: 1500,
           isActive: true,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: true,
+          sellStatus: 'for-sale',
+          media: [],
         },
         {
           id: "svc-prod-4",
@@ -70,6 +85,11 @@ describe("Product Service", () => {
           basePrice: 2000,
           isActive: false,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: false,
+          sellStatus: 'internal',
+          media: [],
         },
       ]);
     });
@@ -145,6 +165,11 @@ describe("Product Service", () => {
         basePrice: 1000,
         isActive: true,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       });
     });
 
@@ -183,6 +208,11 @@ describe("Product Service", () => {
           basePrice: 1000,
           isActive: true,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: true,
+          sellStatus: 'for-sale',
+          media: [],
         },
         {
           id: "svc-prod-2",
@@ -192,6 +222,11 @@ describe("Product Service", () => {
           basePrice: 1500,
           isActive: true,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: true,
+          sellStatus: 'for-sale',
+          media: [],
         },
         {
           id: "svc-prod-3",
@@ -201,6 +236,11 @@ describe("Product Service", () => {
           basePrice: 2000,
           isActive: true,
           hasVariants: false,
+          maxQuantity: null,
+          soldQuantity: 0,
+          isLive: true,
+          sellStatus: 'for-sale',
+          media: [],
         },
       ]);
     });
@@ -240,6 +280,11 @@ describe("Product Service", () => {
         basePrice: 10000,
         isActive: true,
         hasVariants: true,
+        maxQuantity: 1000,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       });
 
       // Add variants
@@ -254,6 +299,7 @@ describe("Product Service", () => {
           isLimitedEdition: true,
           maxQuantity: 100,
           soldQuantity: 25,
+          media: [],
         },
         {
           id: "variant-white",
@@ -265,6 +311,7 @@ describe("Product Service", () => {
           isLimitedEdition: true,
           maxQuantity: 50,
           soldQuantity: 10,
+          media: [],
         },
       ]);
 
@@ -326,6 +373,11 @@ describe("Product Service", () => {
         basePrice: 1000,
         isActive: true,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       });
 
       const result = await getProductWithVariants("svc-prod-no-variants");
@@ -353,6 +405,11 @@ describe("Product Service", () => {
         basePrice: 3500,
         isActive: true,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       });
 
       await db.insert(productSpecs).values([
@@ -408,6 +465,11 @@ describe("Product Service", () => {
         basePrice: 1000,
         isActive: true,
         hasVariants: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        isLive: true,
+        sellStatus: 'for-sale',
+        media: [],
       });
 
       const result = await getProductWithSpecs("svc-prod-no-specs");
