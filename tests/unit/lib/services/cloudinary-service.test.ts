@@ -25,6 +25,14 @@ import { v2 as cloudinary } from 'cloudinary';
 describe('cloudinary-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock Cloudinary environment variables
+    vi.stubEnv('CLOUDINARY_CLOUD_NAME', 'test-cloud');
+    vi.stubEnv('CLOUDINARY_API_KEY', 'test-api-key');
+    vi.stubEnv('CLOUDINARY_API_SECRET', 'test-api-secret');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('uploadMedia', () => {

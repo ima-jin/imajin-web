@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { ProductSpecs } from "@/components/products/ProductSpecs";
 import { LimitedEditionBadge } from "@/components/products/LimitedEditionBadge";
 import { ProductAddToCart } from "@/components/products/ProductAddToCart";
@@ -10,11 +12,55 @@ import { API_ENDPOINTS } from "@/lib/config/api";
 import { ProductWithVariantsSchema } from "@/types/product";
 import type { Variant } from "@/types/product";
 import { formatCurrency } from "@/lib/utils/price";
+import { getBestImageUrl, getProductImageUrl } from "@/lib/utils/cloudinary";
+import { getProductDisplayStatus } from "@/lib/utils/product-display";
 
 interface ProductDetailPageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+/**
+ * Generate metadata for product detail pages
+ * Phase 2.4.7 - SEO optimization
+ */
+export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  try {
+    const product = await apiGet(
+      API_ENDPOINTS.PRODUCT_BY_ID(id),
+      ProductWithVariantsSchema,
+      { cache: "no-store" }
+    );
+
+    // Get the first valid image URL for OpenGraph
+    let ogImage = '';
+    if (product.media && product.media.length > 0) {
+      const mainImage = product.media.find(m => m.category === 'main' || m.category === 'hero');
+      if (mainImage?.cloudinaryPublicId) {
+        ogImage = getProductImageUrl(mainImage.cloudinaryPublicId);
+      } else if (product.media[0]?.cloudinaryPublicId) {
+        ogImage = getProductImageUrl(product.media[0].cloudinaryPublicId);
+      }
+    }
+
+    return {
+      title: `${product.name} - Imajin LED Fixtures`,
+      description: product.description || `Shop ${product.name} from Imajin's modular LED fixture collection.`,
+      openGraph: {
+        title: `${product.name} - Imajin`,
+        description: product.description || `Shop ${product.name} from Imajin's collection.`,
+        images: ogImage ? [{ url: ogImage }] : [],
+      },
+    };
+  } catch {
+    return {
+      title: 'Product - Imajin LED Fixtures',
+      description: 'Product details for Imajin modular LED fixtures.',
+    };
+  }
 }
 
 /**
@@ -48,6 +94,9 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     // Format price
     const formattedPrice = formatCurrency(product.basePrice);
 
+    // Get display status (includes sell status badge and note)
+    const displayStatus = getProductDisplayStatus(product);
+
     return (
       <div className="min-h-screen bg-white">
         {/* Breadcrumb */}
@@ -71,8 +120,15 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Image */}
-            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-gray-400">Product Image</span>
+            <div className="aspect-square bg-gray-100 rounded-lg relative overflow-hidden">
+              <Image
+                src={getBestImageUrl(product.media, 'hero', { width: 800, height: 800 })}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
             </div>
 
             {/* Product Info */}
@@ -90,7 +146,14 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               </h1>
 
               {/* Price */}
-              <div className="text-3xl font-bold text-gray-900">{formattedPrice}</div>
+              <div className="flex items-baseline gap-3">
+                <div className="text-3xl font-bold text-gray-900">{formattedPrice}</div>
+                {displayStatus.message && (
+                  <span className="text-base text-gray-600">
+                    ({displayStatus.message})
+                  </span>
+                )}
+              </div>
 
               {/* Limited Edition Badges for Variants */}
               {product.variants && product.variants.length > 0 && (
@@ -139,6 +202,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                     voltage: undefined,
                     // @ts-expect-error - Type mismatch in variant fields (pre-existing)
                     variants: product.variants,
+                    sellStatus: product.sellStatus,
                   }}
                 />
               </div>

@@ -10,7 +10,7 @@ import { z } from 'zod';
 /**
  * Product category enum
  */
-export type ProductCategory = "material" | "connector" | "control" | "diffuser" | "kit" | "interface";
+export type ProductCategory = "material" | "connector" | "control" | "diffuser" | "kit" | "interface" | "unit" | "accessory";
 
 /**
  * Development status (0-5)
@@ -39,9 +39,11 @@ export interface MediaItem {
   type: "image" | "video" | "pdf" | "other";
   mimeType: string; // e.g., "image/jpeg"
   alt: string; // Alt text for accessibility/SEO
-  category: "main" | "detail" | "lifestyle" | "dimension" | "spec";
+  category: "main" | "detail" | "lifestyle" | "dimension" | "spec" | "hero"; // Phase 2.4.7: Added "hero" for featured products
   order: number; // Display order
   uploadedAt?: Date; // When uploaded to Cloudinary
+  deleted?: boolean; // Soft deletion flag
+  deletedAt?: Date; // When media was soft-deleted
 }
 
 /**
@@ -85,6 +87,12 @@ export interface Product {
   sellStatusNote?: string;
   lastSyncedAt?: Date;
   media: MediaItem[];
+
+  // Portfolio & Featured Product fields (Phase 2.4.7)
+  showOnPortfolioPage: boolean;
+  portfolioCopy: string | null;
+  isFeatured: boolean;
+  // Note: Hero image uses media array with category="hero"
 
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -167,6 +175,7 @@ export interface ProductFilters {
   category?: ProductCategory;
   devStatus?: DevStatus;
   isActive?: boolean;
+  isLive?: boolean;
   hasVariants?: boolean;
 }
 
@@ -193,9 +202,11 @@ export const MediaItemSchema = z.object({
   type: z.enum(['image', 'video', 'pdf', 'other']),
   mimeType: z.string(),
   alt: z.string(),
-  category: z.enum(['main', 'detail', 'lifestyle', 'dimension', 'spec']),
+  category: z.enum(['main', 'detail', 'lifestyle', 'dimension', 'spec', 'hero']), // Phase 2.4.7: Added "hero"
   order: z.number(),
   uploadedAt: z.coerce.date().optional(),
+  deleted: z.boolean().optional(),
+  deletedAt: z.coerce.date().optional(),
 });
 
 export const ProductSpecSchema = z.object({
@@ -232,6 +243,12 @@ export const ProductSchema = z.object({
   sellStatusNote: z.string().optional(),
   lastSyncedAt: z.coerce.date().optional(),
   media: z.array(MediaItemSchema),
+
+  // Portfolio & Featured Product fields (Phase 2.4.7)
+  showOnPortfolioPage: z.boolean(),
+  portfolioCopy: z.string().nullable(),
+  isFeatured: z.boolean(),
+  // Note: Hero image uses media array with category="hero"
 
   createdAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date().nullable(),

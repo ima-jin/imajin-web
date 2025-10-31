@@ -26,7 +26,6 @@ function createTestProduct(overrides: Partial<Product> = {}): Product {
     soldQuantity: 0,
     availableQuantity: null,
     isAvailable: true,
-    stripeProductId: 'prod_test123',
     isLive: true,
     costCents: 3000,
     wholesalePriceCents: 4000,
@@ -34,6 +33,9 @@ function createTestProduct(overrides: Partial<Product> = {}): Product {
     sellStatusNote: undefined,
     lastSyncedAt: undefined,
     media: [],
+    showOnPortfolioPage: false,
+    portfolioCopy: null,
+    isFeatured: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -149,7 +151,7 @@ describe('product-display utilities', () => {
       expect(status.shouldShow).toBe(true);
       expect(status.badge).toEqual({
         text: 'Pre-Order',
-        variant: 'info',
+        variant: 'warning',
       });
       expect(status.message).toBe('Ships December 2025');
     });
@@ -261,8 +263,8 @@ describe('product-display utilities', () => {
       expect(getSellStatusBadgeVariant('for-sale')).toBe('success');
     });
 
-    it('should return "info" for "pre-order"', () => {
-      expect(getSellStatusBadgeVariant('pre-order')).toBe('info');
+    it('should return "warning" for "pre-order"', () => {
+      expect(getSellStatusBadgeVariant('pre-order')).toBe('warning');
     });
 
     it('should return "danger" for "sold-out"', () => {

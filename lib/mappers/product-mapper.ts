@@ -38,6 +38,12 @@ export interface DbProduct {
   lastSyncedAt: Date | null;
   media: unknown;
 
+  // Portfolio & Featured Product fields (Phase 2.4.7)
+  showOnPortfolioPage: boolean;
+  portfolioCopy: string | null;
+  isFeatured: boolean;
+  // Note: Hero image uses media array with category="hero"
+
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -67,6 +73,12 @@ export interface Product {
   sellStatusNote?: string;
   lastSyncedAt?: Date;
   media: MediaItem[];
+
+  // Portfolio & Featured Product fields (Phase 2.4.7)
+  showOnPortfolioPage: boolean;
+  portfolioCopy: string | null;
+  isFeatured: boolean;
+  // Note: Hero image uses media array with category="hero"
 
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -140,6 +152,12 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     sellStatusNote: dbProduct.sellStatusNote ?? undefined,
     lastSyncedAt: dbProduct.lastSyncedAt ?? undefined,
     media,
+
+    // Portfolio & Featured Product fields (Phase 2.4.7)
+    showOnPortfolioPage: dbProduct.showOnPortfolioPage,
+    portfolioCopy: dbProduct.portfolioCopy,
+    isFeatured: dbProduct.isFeatured,
+    // Note: Hero image included in media array with category="hero"
 
     createdAt: dbProduct.createdAt,
     updatedAt: dbProduct.updatedAt,

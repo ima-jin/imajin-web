@@ -17,6 +17,13 @@
  *   tsx scripts/sync-products-enhanced.ts <custom-products-json-path> <custom-media-dir>
  */
 
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load .env.local first, then .env
+config({ path: resolve(process.cwd(), '.env.local') });
+config({ path: resolve(process.cwd(), '.env') });
+
 import { db } from '@/db';
 import { products, variants, productSpecs, productDependencies } from '@/db/schema';
 import { eq, notInArray } from 'drizzle-orm';
@@ -94,9 +101,11 @@ export async function syncProductsEnhanced(
 
     // Step 3: Process media files for variants
     logger.info('Processing variant media files');
-    for (const variant of data.variants) {
-      const variantResult = await processVariantMedia(variant, data, mediaDir, report);
-      if (variantResult) modified = true;
+    if (data.variants && data.variants.length > 0) {
+      for (const variant of data.variants) {
+        const variantResult = await processVariantMedia(variant, data, mediaDir, report);
+        if (variantResult) modified = true;
+      }
     }
 
     // Step 4: Cleanup deleted media
@@ -105,9 +114,11 @@ export async function syncProductsEnhanced(
       const cleanupResult = await cleanupDeletedMedia(product, mediaDir, report);
       if (cleanupResult) modified = true;
     }
-    for (const variant of data.variants) {
-      const cleanupResult = await cleanupDeletedMediaVariant(variant, data, mediaDir, report);
-      if (cleanupResult) modified = true;
+    if (data.variants && data.variants.length > 0) {
+      for (const variant of data.variants) {
+        const cleanupResult = await cleanupDeletedMediaVariant(variant, data, mediaDir, report);
+        if (cleanupResult) modified = true;
+      }
     }
 
     logger.info('Media processing complete', {
@@ -155,7 +166,8 @@ export async function syncProductsEnhanced(
 
     // Step 5b: Sync variants to Stripe
     logger.info('Syncing variants to Stripe');
-    for (const variant of data.variants) {
+    if (data.variants && data.variants.length > 0) {
+      for (const variant of data.variants) {
       try {
         // Find parent product for pricing
         const parentProduct = data.products.find((p) => p.id === variant.product_id);
@@ -196,6 +208,7 @@ export async function syncProductsEnhanced(
         report.stripeErrors.push(`${variant.id}: ${errorMsg}`);
         logger.error('Variant Stripe sync failed', error as Error, { variantId: variant.id });
       }
+      }
     }
 
     logger.info('Stripe sync complete', {
@@ -228,8 +241,10 @@ export async function syncProductsEnhanced(
       await syncProductToDb(product, report);
     }
 
-    for (const variant of data.variants) {
-      await syncVariantToDb(variant, report);
+    if (data.variants && data.variants.length > 0) {
+      for (const variant of data.variants) {
+        await syncVariantToDb(variant, report);
+      }
     }
 
     // Sync specs and dependencies (reuse existing logic)
@@ -259,72 +274,74 @@ export async function syncProductsEnhanced(
  * Process media files for a product
  */
 async function processProductMedia(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   product: any,
   mediaDir: string,
   report: SyncReport
 ): Promise<boolean> {
   let modified = false;
-  const productMediaDir = join(mediaDir, product.id);
 
-  if (!existsSync(productMediaDir)) {
-    return false;
+  // Initialize media array if needed
+  if (!product.media) {
+    product.media = [];
   }
 
-  const files = readdirSync(productMediaDir);
-
-  for (const file of files) {
-    const fullPath = join(productMediaDir, file);
-    const stats = statSync(fullPath);
-
-    // Skip directories (variants handled separately)
-    if (stats.isDirectory()) continue;
-
-    const localPath = `${product.id}/${file}`;
-    const existingMedia = product.media?.find((m: any) => m.local_path === localPath);
-
-    if (existingMedia?.cloudinary_public_id) {
+  // Process media items already defined in the JSON
+  for (const mediaItem of product.media) {
+    // Skip if already uploaded to Cloudinary
+    if (mediaItem.cloudinary_public_id) {
       report.mediaSkipped++;
+      continue;
+    }
+
+    // Skip if no local_path defined
+    if (!mediaItem.local_path) {
+      continue;
+    }
+
+    const fullPath = join(mediaDir, mediaItem.local_path);
+
+    // Check if file exists
+    if (!existsSync(fullPath)) {
+      report.mediaErrors.push(`${product.id}: File not found at ${mediaItem.local_path}`);
       continue;
     }
 
     // Upload to Cloudinary
     try {
-      const fileExt = file.split('.').pop() || '';
-      const publicId = `media/products/${product.id}/${file.split('.')[0]}`;
+      const fileExt = mediaItem.local_path.split('.').pop() || '';
+      // Use local_path structure for public ID (preserving directory structure)
+      const publicId = `media/products/${mediaItem.local_path.replace(/\.[^/.]+$/, '')}`;
       const resourceType = getResourceType(fileExt);
 
       const result = await uploadMedia(fullPath, publicId, resourceType);
 
-      // Initialize media array if needed
-      if (!product.media) {
-        product.media = [];
-      }
+      // Update media entry with cloudinary info
+      mediaItem.cloudinary_public_id = result.publicId;
+      mediaItem.uploaded_at = new Date().toISOString();
 
-      // Add or update media entry
-      if (!existingMedia) {
-        product.media.push({
-          local_path: localPath,
-          cloudinary_public_id: result.publicId,
-          type: getMediaType(result.format),
-          mime_type: `${result.resourceType}/${result.format}`,
-          alt: `${product.name}`,
-          category: 'main',
-          order: product.media.length + 1,
-          uploaded_at: new Date().toISOString(),
-        });
-      } else {
-        existingMedia.cloudinary_public_id = result.publicId;
-        existingMedia.uploaded_at = new Date().toISOString();
+      // Set type and mime_type if not already set
+      if (!mediaItem.type) {
+        mediaItem.type = getMediaType(result.format);
+      }
+      if (!mediaItem.mime_type) {
+        mediaItem.mime_type = `${result.resourceType}/${result.format}`;
       }
 
       report.mediaUploaded++;
       modified = true;
+
+      logger.info('Media uploaded', {
+        productId: product.id,
+        localPath: mediaItem.local_path,
+        publicId: result.publicId,
+      });
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      report.mediaErrors.push(`${product.id}/${file}: ${errorMsg}`);
+      report.mediaErrors.push(`${product.id}/${mediaItem.local_path}: ${errorMsg}`);
       logger.error('Media upload failed', error as Error, {
         productId: product.id,
-        file,
+        localPath: mediaItem.local_path,
       });
     }
   }
@@ -336,76 +353,75 @@ async function processProductMedia(
  * Process media files for a variant
  */
 async function processVariantMedia(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variant: any,
   data: ProductsJson,
   mediaDir: string,
   report: SyncReport
 ): Promise<boolean> {
   let modified = false;
-  const productId = variant.product_id;
-  const variantValue = variant.variant_value;
 
-  const variantMediaDir = join(mediaDir, productId, variantValue);
-
-  if (!existsSync(variantMediaDir)) {
-    return false;
+  // Initialize media array if needed
+  if (!variant.media) {
+    variant.media = [];
   }
 
-  const files = readdirSync(variantMediaDir);
-
-  for (const file of files) {
-    const fullPath = join(variantMediaDir, file);
-    const stats = statSync(fullPath);
-
-    if (stats.isDirectory()) continue;
-
-    const localPath = `${productId}/${variantValue}/${file}`;
-    const existingMedia = variant.media?.find((m: any) => m.local_path === localPath);
-
-    if (existingMedia?.cloudinary_public_id) {
+  // Process media items already defined in the JSON
+  for (const mediaItem of variant.media) {
+    // Skip if already uploaded to Cloudinary
+    if (mediaItem.cloudinary_public_id) {
       report.mediaSkipped++;
+      continue;
+    }
+
+    // Skip if no local_path defined
+    if (!mediaItem.local_path) {
+      continue;
+    }
+
+    const fullPath = join(mediaDir, mediaItem.local_path);
+
+    // Check if file exists
+    if (!existsSync(fullPath)) {
+      report.mediaErrors.push(`${variant.id}: File not found at ${mediaItem.local_path}`);
       continue;
     }
 
     // Upload to Cloudinary
     try {
-      const fileExt = file.split('.').pop() || '';
-      const publicId = `media/products/${productId}/${variantValue}/${file.split('.')[0]}`;
+      const fileExt = mediaItem.local_path.split('.').pop() || '';
+      // Use local_path structure for public ID (preserving directory structure)
+      const publicId = `media/products/${mediaItem.local_path.replace(/\.[^/.]+$/, '')}`;
       const resourceType = getResourceType(fileExt);
 
       const result = await uploadMedia(fullPath, publicId, resourceType);
 
-      // Initialize media array if needed
-      if (!variant.media) {
-        variant.media = [];
-      }
+      // Update media entry with cloudinary info
+      mediaItem.cloudinary_public_id = result.publicId;
+      mediaItem.uploaded_at = new Date().toISOString();
 
-      // Add or update media entry
-      if (!existingMedia) {
-        variant.media.push({
-          local_path: localPath,
-          cloudinary_public_id: result.publicId,
-          type: getMediaType(result.format),
-          mime_type: `${result.resourceType}/${result.format}`,
-          alt: `${variantValue} variant`,
-          category: 'main',
-          order: variant.media.length + 1,
-          uploaded_at: new Date().toISOString(),
-        });
-      } else {
-        existingMedia.cloudinary_public_id = result.publicId;
-        existingMedia.uploaded_at = new Date().toISOString();
+      // Set type and mime_type if not already set
+      if (!mediaItem.type) {
+        mediaItem.type = getMediaType(result.format);
+      }
+      if (!mediaItem.mime_type) {
+        mediaItem.mime_type = `${result.resourceType}/${result.format}`;
       }
 
       report.mediaUploaded++;
       modified = true;
+
+      logger.info('Variant media uploaded', {
+        variantId: variant.id,
+        localPath: mediaItem.local_path,
+        publicId: result.publicId,
+      });
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-      report.mediaErrors.push(`${productId}/${variantValue}/${file}: ${errorMsg}`);
+      report.mediaErrors.push(`${variant.id}/${mediaItem.local_path}: ${errorMsg}`);
       logger.error('Variant media upload failed', error as Error, {
-        productId,
-        variantValue,
-        file,
+        variantId: variant.id,
+        localPath: mediaItem.local_path,
       });
     }
   }
@@ -417,6 +433,7 @@ async function processVariantMedia(
  * Cleanup deleted media for a product
  */
 async function cleanupDeletedMedia(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   product: any,
   mediaDir: string,
   report: SyncReport
@@ -427,12 +444,16 @@ async function cleanupDeletedMedia(
     return false;
   }
 
-  for (let i = product.media.length - 1; i >= 0; i--) {
-    const mediaItem = product.media[i];
+  for (const mediaItem of product.media) {
+    // Skip if already marked as deleted
+    if (mediaItem.deleted) {
+      continue;
+    }
+
     const fullPath = join(mediaDir, mediaItem.local_path);
 
     if (!existsSync(fullPath)) {
-      // File deleted from disk
+      // File deleted from disk - mark as deleted instead of removing
       try {
         if (mediaItem.cloudinary_public_id) {
           await deleteMedia(mediaItem.cloudinary_public_id);
@@ -441,9 +462,19 @@ async function cleanupDeletedMedia(
           });
         }
 
-        product.media.splice(i, 1);
+        // Mark as deleted instead of removing the entry
+        mediaItem.deleted = true;
+        mediaItem.local_path = '';
+        mediaItem.cloudinary_public_id = '';
+        mediaItem.deleted_at = new Date().toISOString();
+
         report.mediaDeleted++;
         modified = true;
+
+        logger.info('Media marked as deleted', {
+          productId: product.id,
+          originalPath: fullPath,
+        });
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         report.mediaErrors.push(`Cleanup failed for ${mediaItem.local_path}: ${errorMsg}`);
@@ -461,6 +492,7 @@ async function cleanupDeletedMedia(
  * Cleanup deleted media for a variant
  */
 async function cleanupDeletedMediaVariant(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variant: any,
   data: ProductsJson,
   mediaDir: string,
@@ -472,12 +504,16 @@ async function cleanupDeletedMediaVariant(
     return false;
   }
 
-  for (let i = variant.media.length - 1; i >= 0; i--) {
-    const mediaItem = variant.media[i];
+  for (const mediaItem of variant.media) {
+    // Skip if already marked as deleted
+    if (mediaItem.deleted) {
+      continue;
+    }
+
     const fullPath = join(mediaDir, mediaItem.local_path);
 
     if (!existsSync(fullPath)) {
-      // File deleted from disk
+      // File deleted from disk - mark as deleted instead of removing
       try {
         if (mediaItem.cloudinary_public_id) {
           await deleteMedia(mediaItem.cloudinary_public_id);
@@ -486,9 +522,19 @@ async function cleanupDeletedMediaVariant(
           });
         }
 
-        variant.media.splice(i, 1);
+        // Mark as deleted instead of removing the entry
+        mediaItem.deleted = true;
+        mediaItem.local_path = '';
+        mediaItem.cloudinary_public_id = '';
+        mediaItem.deleted_at = new Date().toISOString();
+
         report.mediaDeleted++;
         modified = true;
+
+        logger.info('Variant media marked as deleted', {
+          variantId: variant.id,
+          originalPath: fullPath,
+        });
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         report.mediaErrors.push(`Cleanup failed for ${mediaItem.local_path}: ${errorMsg}`);
@@ -505,6 +551,7 @@ async function cleanupDeletedMediaVariant(
 /**
  * Sync product to database
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function syncProductToDb(product: any, report: SyncReport): Promise<void> {
   try {
     await db
@@ -526,8 +573,11 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
         sellStatusNote: product.sell_status_note || null,
         costCents: product.cost_cents || null,
         wholesalePriceCents: product.wholesale_price_cents || null,
-        media: product.media?.map((m: any) => m.cloudinary_public_id).filter(Boolean) || null,
+        media: product.media || null,
         lastSyncedAt: product.last_synced_at ? new Date(product.last_synced_at) : null,
+        showOnPortfolioPage: product.showOnPortfolioPage || false,
+        portfolioCopy: product.portfolioCopy || null,
+        isFeatured: product.isFeatured || false,
       })
       .onConflictDoUpdate({
         target: products.id,
@@ -546,8 +596,11 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
           sellStatusNote: product.sell_status_note || null,
           costCents: product.cost_cents || null,
           wholesalePriceCents: product.wholesale_price_cents || null,
-          media: product.media?.map((m: any) => m.cloudinary_public_id).filter(Boolean) || null,
+          media: product.media || null,
           lastSyncedAt: product.last_synced_at ? new Date(product.last_synced_at) : null,
+          showOnPortfolioPage: product.showOnPortfolioPage || false,
+          portfolioCopy: product.portfolioCopy || null,
+          isFeatured: product.isFeatured || false,
         },
       });
 
@@ -562,6 +615,7 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
 /**
  * Sync variant to database
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> {
   try {
     await db
@@ -576,7 +630,7 @@ async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> 
         isLimitedEdition: variant.is_limited_edition || false,
         maxQuantity: variant.max_quantity ?? null,
         soldQuantity: 0,
-        media: variant.media?.map((m: any) => m.cloudinary_public_id).filter(Boolean) || null,
+        media: variant.media || null,
       })
       .onConflictDoUpdate({
         target: variants.id,
@@ -589,7 +643,7 @@ async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> 
           isLimitedEdition: variant.is_limited_edition || false,
           maxQuantity: variant.max_quantity ?? null,
           // NOTE: Don't overwrite soldQuantity on sync
-          media: variant.media?.map((m: any) => m.cloudinary_public_id).filter(Boolean) || null,
+          media: variant.media || null,
         },
       });
 
@@ -614,16 +668,17 @@ async function syncProductSpecs(data: ProductsJson, report: SyncReport): Promise
           .insert(productSpecs)
           .values({
             productId: product.id,
-            label: spec.label,
-            value: spec.value,
-            order: spec.order,
+            specKey: spec.key,
+            specValue: spec.value,
+            specUnit: spec.unit,
+            displayOrder: spec.display_order,
           })
           .onConflictDoNothing();
 
         report.dbSynced++;
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        report.dbErrors.push(`${product.id}/spec/${spec.label}: ${errorMsg}`);
+        report.dbErrors.push(`${product.id}/spec/${spec.key}: ${errorMsg}`);
       }
     }
   }
@@ -633,25 +688,23 @@ async function syncProductSpecs(data: ProductsJson, report: SyncReport): Promise
  * Sync product dependencies to database
  */
 async function syncProductDependencies(data: ProductsJson, report: SyncReport): Promise<void> {
-  for (const product of data.products) {
-    if (!product.dependencies || product.dependencies.length === 0) continue;
+  if (!data.dependencies || data.dependencies.length === 0) return;
 
-    for (const dep of product.dependencies) {
-      try {
-        await db
-          .insert(productDependencies)
-          .values({
-            productId: product.id,
-            dependsOnProductId: dep.depends_on_product_id,
-            dependencyType: dep.dependency_type,
-          })
-          .onConflictDoNothing();
+  for (const dep of data.dependencies) {
+    try {
+      await db
+        .insert(productDependencies)
+        .values({
+          productId: dep.product_id,
+          dependsOnProductId: dep.depends_on_product_id,
+          dependencyType: dep.dependency_type,
+        })
+        .onConflictDoNothing();
 
-        report.dbSynced++;
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        report.dbErrors.push(`${product.id}/dep/${dep.depends_on_product_id}: ${errorMsg}`);
-      }
+      report.dbSynced++;
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      report.dbErrors.push(`${dep.product_id}/dep/${dep.depends_on_product_id}: ${errorMsg}`);
     }
   }
 }
@@ -671,14 +724,13 @@ async function markDeletedProductsInactive(data: ProductsJson, report: SyncRepor
     }
 
     // Mark products as inactive if they're not in the products.json file
-    const result = await db
+    await db
       .update(products)
       .set({ isActive: false })
       .where(notInArray(products.id, activeProductIds));
 
     logger.info('Marked deleted products as inactive', {
       activeProductIds,
-      deletedCount: result.rowCount || 0,
     });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
@@ -754,8 +806,11 @@ function printReport(report: SyncReport): void {
   }
 }
 
-// Run if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run when executed directly
+// Note: Using require.main check works better on Windows than import.meta.url
+const isMainModule = typeof require !== 'undefined' && require.main === module;
+
+if (isMainModule) {
   const customProductsPath = process.argv[2];
   const customMediaDir = process.argv[3];
 

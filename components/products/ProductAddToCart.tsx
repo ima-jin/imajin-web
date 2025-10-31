@@ -21,6 +21,7 @@ interface ProductAddToCartProps {
     image?: string;
     voltage?: '5v' | '24v';
     variants?: Variant[];
+    sellStatus?: string;
   };
 }
 
@@ -123,6 +124,7 @@ export function ProductAddToCart({ product }: ProductAddToCartProps) {
           quantity={quantity}
           className="w-full"
           size="lg"
+          buttonText={product.sellStatus === 'pre-order' ? 'Pre-Order' : 'Add to Cart'}
         />
       )}
     </div>

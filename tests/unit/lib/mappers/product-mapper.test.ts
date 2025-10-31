@@ -49,6 +49,10 @@ describe("mapDbProductToProduct", () => {
       sellStatusNote: undefined,
       lastSyncedAt: undefined,
       media: [],
+      // Portfolio & Featured Product fields (Phase 2.4.7)
+      showOnPortfolioPage: false,
+      portfolioCopy: null,
+      isFeatured: false,
       createdAt: new Date("2024-10-01"),
       updatedAt: new Date("2024-10-24"),
     });
@@ -74,16 +78,16 @@ describe("mapDbProductToProduct", () => {
       id: "test",
       name: "Test",
       description: "Test",
-      isActive: null,
-      requiresAssembly: null,
-      hasVariants: null,
+      isActive: undefined,
+      requiresAssembly: undefined,
+      hasVariants: undefined,
     });
 
     const result = mapDbProductToProduct(dbProduct);
 
-    expect(result.isActive).toBeNull();
-    expect(result.requiresAssembly).toBeNull();
-    expect(result.hasVariants).toBeNull();
+    expect(result.isActive).toBeUndefined();
+    expect(result.requiresAssembly).toBeUndefined();
+    expect(result.hasVariants).toBeUndefined();
   });
 
   it("handles null timestamps", () => {
@@ -94,14 +98,14 @@ describe("mapDbProductToProduct", () => {
       maxQuantity: 50,
       soldQuantity: 10,
       availableQuantity: 40,
-      createdAt: null,
-      updatedAt: null,
+      createdAt: undefined,
+      updatedAt: undefined,
     });
 
     const result = mapDbProductToProduct(dbProduct);
 
-    expect(result.createdAt).toBeNull();
-    expect(result.updatedAt).toBeNull();
+    expect(result.createdAt).toBeUndefined();
+    expect(result.updatedAt).toBeUndefined();
   });
 });
 

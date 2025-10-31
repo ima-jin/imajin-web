@@ -5,13 +5,24 @@
 ## Core Mission
 Build features using systematic TDD. Code that's tested, maintainable, production-ready. Only what's needed, no speculation.
 
+## TDD-First Workflow (Non-Negotiable)
+
+**Every code change follows this sequence:**
+1. Write the test first
+2. See it fail (RED)
+3. Make it pass (GREEN)
+4. Refactor (keep tests green)
+
+This applies to all changes: features, bugs, refactors, quick fixes. No exceptions.
+
 ## Development Workflow
 
 ### 1. Planning (Before Code)
-- Read requirements (IMPLEMENTATION_PLAN.md, specs)
+- Read requirements (IMPLEMENTATION_PLAN.md, task specs)
 - Create TodoWrite tasks (break down work)
-- Review docs (DATABASE_SCHEMA.md, PRODUCT_CATALOG.md, etc.)
-- Plan: What needs testing? Where does code live? Deliverables?
+- Review relevant docs (DATABASE_SCHEMA.md, API_ROUTES.md, etc.)
+- List all tests that need to be written
+- Identify where code will live and what deliverables are required
 
 ### 2. TDD Cycle (Red-Green-Refactor)
 
@@ -53,13 +64,24 @@ export async function getProductById(id: string): Promise<Product | null> {
 6. **Documentation** - Update relevant docs
 
 ### 4. Quality Gates
-Before marking task complete:
+Before marking task complete, verify:
 - [ ] All new tests passing
 - [ ] All existing tests still passing
-- [ ] `npm run lint` clean
-- [ ] `npm run type-check` clean
-- [ ] Code reviewed for leanness
-- [ ] TodoWrite updated (mark completed)
+- [ ] `npm run type-check` returns 0 errors
+- [ ] `npm run lint` returns 0 errors
+- [ ] TodoWrite tasks marked completed
+- [ ] Implementation matches requirements
+
+### 5. Handling Changes (Test-First)
+
+For any code change (bug fix, feature, refactor):
+1. Write test first (demonstrates expected behavior)
+2. See it fail if it should fail (RED)
+3. Implement the change (GREEN)
+4. Refactor if needed (keep tests green)
+5. Verify quality gates pass
+
+Write tests even when not explicitly requested. Tests are non-negotiable.
 
 ## Leanness Principles
 
@@ -154,20 +176,27 @@ export interface Product {
 - [ ] Ready for Dr. Clean review
 
 ## Red Flags
-- Function >30 lines (break it down)
+
+**TDD Violations:**
+- Writing implementation before test
+- Skipped tests (fix or delete, never skip)
+- Tests written after implementation
+- TypeScript or lint errors unresolved before completion
+
+**Code Quality Issues:**
+- Functions >30 lines (consider breaking down)
 - Complex nested logic (extract functions)
 - Duplicate code (DRY violation if 3+ times)
 - Magic numbers (use named constants)
-- Missing tests (TDD discipline slipping)
-- Skipped tests (fix immediately)
 
-## Code Review Self-Check
-Ask yourself:
-1. **Can I simplify this?** (Always ask first)
-2. **Is it tested?** (Unit + integration)
-3. **Is it obvious?** (Clear names, linear flow)
-4. **Is it lean?** (No unnecessary abstraction)
-5. **Is it documented?** (Complex logic explained)
+## Self-Check Before Completion
+1. Did I write the test first?
+2. Did I verify the test fails appropriately (RED)?
+3. Does the test pass now (GREEN)?
+4. Can this be simplified?
+5. Are edge cases tested?
+6. Is the code clear and maintainable?
+7. Do quality gates pass (type-check, lint, tests)?
 
 ## Project-Specific Guidelines
 - **Database:** Use Drizzle ORM, no raw SQL unless necessary
@@ -176,4 +205,4 @@ Ask yourself:
 - **Types:** Match DB schema nullability
 - **Scripts:** Idempotent (can run multiple times safely)
 
-**Philosophy:** Test first. Build lean. Ship when it's ready, not before.
+**Philosophy:** Test first. Build lean. Quality gates before completion.

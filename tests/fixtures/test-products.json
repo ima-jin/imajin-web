@@ -9,7 +9,11 @@
       "base_price": 10000,
       "has_variants": true,
       "requires_assembly": false,
+      "is_live": true,
       "sell_status": "for-sale",
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
       "media": [
         {
           "local_path": "independent-media-parent/main.jpg",
@@ -22,7 +26,7 @@
       ],
       "specs": [],
       "stripe_product_id": "prod_test123",
-      "last_synced_at": "2025-10-29T16:20:18.286Z"
+      "last_synced_at": "2025-10-31T00:08:20.954Z"
     }
   ],
   "variants": [
@@ -42,10 +46,9 @@
           "category": "main",
           "order": 1,
           "cloudinary_public_id": "media/products/product-3/main",
-          "uploaded_at": "2025-10-29T16:20:18.286Z"
+          "uploaded_at": "2025-10-31T00:08:20.954Z"
         }
       ],
-      "specs": [],
       "stripe_product_id": "prod_test123"
     }
   ]

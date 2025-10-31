@@ -64,6 +64,8 @@ describe("Product Validator", () => {
   describe("isLowStock", () => {
     it("returns false for non-limited edition variants", () => {
       const variant = createMockVariant({
+        id: "test-variant-3",
+        productId: "test-product",
         isLimitedEdition: false,
         maxQuantity: null,
         availableQuantity: null,
@@ -74,6 +76,8 @@ describe("Product Validator", () => {
 
     it("returns true when available quantity is at threshold", () => {
       const variant = createMockVariant({
+        id: "test-variant-4",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 100,
         soldQuantity: 90,
@@ -85,6 +89,8 @@ describe("Product Validator", () => {
 
     it("returns true when available quantity is below 10% of max", () => {
       const variant = createMockVariant({
+        id: "test-variant-5",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 500,
         soldQuantity: 495,
@@ -97,6 +103,8 @@ describe("Product Validator", () => {
 
     it("returns false when available quantity is above threshold", () => {
       const variant = createMockVariant({
+        id: "test-variant-6",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 100,
         soldQuantity: 50,
@@ -108,6 +116,8 @@ describe("Product Validator", () => {
 
     it("returns false when variant is sold out (0 available)", () => {
       const variant = createMockVariant({
+        id: "test-variant-7",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 100,
         soldQuantity: 100,
@@ -120,6 +130,8 @@ describe("Product Validator", () => {
 
     it("uses custom threshold when provided", () => {
       const variant = createMockVariant({
+        id: "test-variant-8",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 100,
         soldQuantity: 75,
@@ -134,6 +146,8 @@ describe("Product Validator", () => {
   describe("isSoldOut", () => {
     it("returns true when variant is not available", () => {
       const variant = createMockVariant({
+        id: "test-variant-9",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 100,
         soldQuantity: 100,
@@ -146,6 +160,8 @@ describe("Product Validator", () => {
 
     it("returns false when variant is available", () => {
       const variant = createMockVariant({
+        id: "test-variant-10",
+        productId: "test-product",
         isLimitedEdition: true,
         maxQuantity: 100,
         soldQuantity: 50,
@@ -157,6 +173,8 @@ describe("Product Validator", () => {
 
     it("returns false for unlimited variants", () => {
       const variant = createMockVariant({
+        id: "test-variant-11",
+        productId: "test-product",
         isLimitedEdition: false,
         maxQuantity: null,
         availableQuantity: null,

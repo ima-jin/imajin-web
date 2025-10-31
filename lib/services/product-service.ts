@@ -11,7 +11,7 @@ import { mapDbVariantsToVariants } from "@/lib/mappers/variant-mapper";
 export async function getAllProducts(filters?: ProductFilters): Promise<Product[]> {
   const conditions = [];
 
-  // Default filters: only active products with dev_status = 5
+  // Default filters: only live, active products with dev_status = 5
   if (filters?.devStatus !== undefined) {
     conditions.push(eq(products.devStatus, filters.devStatus));
   } else {
@@ -24,6 +24,13 @@ export async function getAllProducts(filters?: ProductFilters): Promise<Product[
   } else {
     // Default to showing only active products
     conditions.push(eq(products.isActive, true));
+  }
+
+  if (filters?.isLive !== undefined) {
+    conditions.push(eq(products.isLive, filters.isLive));
+  } else {
+    // Default to showing only live products (unless explicitly overridden)
+    conditions.push(eq(products.isLive, true));
   }
 
   if (filters?.category) {

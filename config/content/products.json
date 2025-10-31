@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2025-10-24",
+  "updated": "2025-10-29",
   "products": [
     {
       "id": "Material-5x5-O",
@@ -13,7 +13,30 @@
       "stripe_product_id": "prod_material_5x5_o",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
+      "is_live": true,
+      "sell_status": "for-sale",
+      "media": [
+        {
+          "local_path": "Material/5x5-O/BLACK/front.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/front",
+          "uploaded_at": "2025-10-30T15:28:35.052Z"
+        },
+        {
+          "local_path": "Material/5x5-O/BLACK/back.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/back",
+          "uploaded_at": "2025-10-30T15:28:35.796Z"
+        }
+      ],
       "specs": [
         {
           "key": "dimensions",
@@ -55,7 +78,10 @@
         "year_introduced": "2023",
         "generation": "1",
         "weight_grams": "45"
-      }
+      },
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Material-8x8-V",
@@ -69,7 +95,6 @@
       "has_variants": false,
       "requires_assembly": false,
       "max_quantity": null,
-      "images": [],
       "specs": [
         {
           "key": "dimensions",
@@ -117,8 +142,38 @@
         "year_introduced": "2024",
         "generation": "2",
         "weight_grams": "72",
-        "compatible_diffusers": ["Diffuse-12-C", "Diffuse-12-S"]
-      }
+        "compatible_diffusers": [
+          "Diffuse-12-C",
+          "Diffuse-12-S"
+        ]
+      },
+      "is_live": true,
+      "sell_status": "for-sale",
+      "media": [
+        {
+          "local_path": "Material/8x8-V/BLACK/front.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Material/8x8-V/BLACK/front",
+          "uploaded_at": "2025-10-30T15:25:27.063Z"
+        },
+        {
+          "local_path": "Material/8x8-V/BLACK/caps.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs with diffusion caps installed",
+          "category": "main",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Material/8x8-V/BLACK/caps",
+          "uploaded_at": "2025-10-30T15:25:27.541Z"
+        }
+      ],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Connect-4x31.6-5v",
@@ -131,7 +186,6 @@
       "stripe_product_id": "prod_connect_4x31_6_5v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -158,7 +212,13 @@
       ],
       "metadata": {
         "voltage_system": "5v"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Connect-5x31.6-5v",
@@ -171,7 +231,6 @@
       "stripe_product_id": "prod_connect_5x31_6_5v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -198,7 +257,13 @@
       ],
       "metadata": {
         "voltage_system": "5v"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Connect-4x31.6-24v",
@@ -211,7 +276,6 @@
       "stripe_product_id": "prod_connect_4x31_6_24v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -238,7 +302,13 @@
       ],
       "metadata": {
         "voltage_system": "24v"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Connect-5x31.6-24v",
@@ -251,7 +321,6 @@
       "stripe_product_id": "prod_connect_5x31_6_24v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -278,7 +347,13 @@
       ],
       "metadata": {
         "voltage_system": "24v"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Diffuse-12-C",
@@ -291,7 +366,6 @@
       "stripe_product_id": "prod_diffuse_12_c",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "size",
@@ -318,7 +392,13 @@
       "metadata": {
         "material": "Resin",
         "finish": "Translucent"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Diffuse-12-S",
@@ -331,7 +411,6 @@
       "stripe_product_id": "prod_diffuse_12_s",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "size",
@@ -358,7 +437,13 @@
       "metadata": {
         "material": "Resin",
         "finish": "Translucent"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Control-2-5v",
@@ -371,7 +456,6 @@
       "stripe_product_id": "prod_control_2_5v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -409,7 +493,13 @@
       "metadata": {
         "voltage_system": "5v",
         "firmware": "open-source"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Control-8-24v",
@@ -422,7 +512,6 @@
       "stripe_product_id": "prod_control_8_24v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -460,7 +549,13 @@
       "metadata": {
         "voltage_system": "24v",
         "firmware": "open-source"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Control-16-24v",
@@ -473,7 +568,6 @@
       "stripe_product_id": "prod_control_16_24v",
       "has_variants": false,
       "requires_assembly": false,
-      "images": [],
       "specs": [
         {
           "key": "outputs",
@@ -511,7 +605,13 @@
       "metadata": {
         "voltage_system": "24v",
         "firmware": "open-source"
-      }
+      },
+      "is_live": false,
+      "sell_status": "internal",
+      "media": [],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Unit-8x8x8-DIY",
@@ -524,7 +624,6 @@
       "stripe_product_id": "prod_diy_cube",
       "has_variants": false,
       "requires_assembly": true,
-      "images": [],
       "specs": [
         {
           "key": "dimensions",
@@ -572,21 +671,38 @@
           "Control-2-5v": 1,
           "Diffuse-12-C": 512
         }
-      }
+      },
+      "is_live": true,
+      "sell_status": "pre-order",
+      "sell_status_note": "Ships Q1 2026",
+      "media": [
+        {
+          "local_path": "Unit/8x8x8/BLACK/rainbow.jpg",
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/rainbow",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 1,
+          "uploaded_at": "2025-10-30T15:25:28.217Z"
+        }
+      ],
+      "showOnPortfolioPage": false,
+      "portfolioCopy": null,
+      "isFeatured": false
     },
     {
       "id": "Unit-8x8x8-Founder",
-      "name": "Founder Edition Cube",
-      "description": "Fully hand-assembled 24v 8-layer cube with 10-year warranty and MJN NFT",
-      "long_description": "The ultimate LED cube experience. Each Founder Edition unit is meticulously hand-assembled, tested, and certified. Limited to 1,000 units worldwide across three exclusive colorways.\n\n**Premium Features:**\n- Hand-assembled by Imajin craftspeople\n- 24v professional-grade system\n- Control-8-24v unit (8 outputs, 2 initially configured)\n- Expandable to 32+ layers\n- 10-year comprehensive warranty\n- ESA certified for safety and reliability\n- MJN RWA NFT token (minted on Solana)\n- Unique serial number engraved on unit\n- Certificate of authenticity\n- Premium packaging\n\n**Limited Edition:**\n- BLACK: 500 units\n- WHITE: 300 units\n- RED: 200 units\n\n**What's Included:**\n- 8× Material-8x8-V panels (selected color)\n- 7× Connect-5x31.6-24v spine connectors\n- 1× Control-8-24v control unit\n- 512× Diffuse-12-C round diffusion caps\n- Professional cabling and cable management\n- MJN NFT token (delivered post-shipment)\n- Warranty documentation\n\n**Optional Upgrades:**\n- Control-16-24v upgrade (+$70) - doubles expansion capacity",
-      "category": "kit",
+      "name": "Unit 8x8x8",
+      "description": "Hand-assembled 5v 8-layer cube with 10-year warranty and MJN NFT",
+      "long_description": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
+      "category": "unit",
       "dev_status": 5,
       "base_price": 99500,
       "stripe_product_id": "prod_founder_base",
       "has_variants": true,
       "requires_assembly": false,
-      "max_quantity": 1000,
-      "images": [],
+      "max_quantity": 100,
       "specs": [
         {
           "key": "dimensions",
@@ -602,18 +718,18 @@
         },
         {
           "key": "layers",
-          "value": "8 (expandable to 32)",
+          "value": "8",
           "display_order": 3
         },
         {
           "key": "voltage",
-          "value": "24",
+          "value": "5",
           "unit": "v",
           "display_order": 4
         },
         {
           "key": "max_power",
-          "value": "120",
+          "value": "60",
           "unit": "W",
           "display_order": 5
         },
@@ -634,14 +750,42 @@
         "is_limited_edition": true,
         "includes_nft": true,
         "hand_assembled": true,
-        "voltage_system": "24v",
+        "voltage_system": "5v",
         "contents": {
           "Material-8x8-V": 8,
-          "Connect-5x31.6-24v": 7,
-          "Control-8-24v": 1,
+          "Connect-5x31.6-5v": 2,
+          "Control-2-5v": 1,
           "Diffuse-12-C": 512
         }
-      }
+      },
+      "is_live": true,
+      "sell_status": "pre-order",
+      "sell_status_note": "Ships Q1 2026",
+      "media": [
+        {
+          "local_path": "Unit/8x8x8/BLACK/rainbow.jpg",
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/rainbow",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 2,
+          "uploaded_at": "2025-10-30T15:25:28.488Z"
+        },
+        {
+          "local_path": "Unit/8x8x8/BLACK/desk.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "category": "hero",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/desk",
+          "uploaded_at": "2025-10-30T15:25:28.934Z"
+        }
+      ],
+      "showOnPortfolioPage": true,
+      "portfolioCopy": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
+      "isFeatured": true
     }
   ],
   "variants": [
@@ -653,11 +797,11 @@
       "variant_value": "BLACK",
       "price_modifier": 0,
       "is_limited_edition": true,
-      "max_quantity": 500,
-      "images": [],
+      "max_quantity": 50,
       "metadata": {
         "panel_color": "BLACK"
-      }
+      },
+      "media": []
     },
     {
       "id": "Unit-8x8x8-Founder-White",
@@ -667,11 +811,11 @@
       "variant_value": "WHITE",
       "price_modifier": 0,
       "is_limited_edition": true,
-      "max_quantity": 300,
-      "images": [],
+      "max_quantity": 30,
       "metadata": {
         "panel_color": "WHITE"
-      }
+      },
+      "media": []
     },
     {
       "id": "Unit-8x8x8-Founder-Red",
@@ -681,11 +825,11 @@
       "variant_value": "RED",
       "price_modifier": 0,
       "is_limited_edition": true,
-      "max_quantity": 200,
-      "images": [],
+      "max_quantity": 20,
       "metadata": {
         "panel_color": "RED"
-      }
+      },
+      "media": []
     }
   ],
   "dependencies": [
@@ -756,7 +900,9 @@
       "message": "Recommended: 64 diffusion caps per panel for even light distribution",
       "metadata": {
         "quantity_ratio": 64,
-        "alternative_products": ["Diffuse-12-S"]
+        "alternative_products": [
+          "Diffuse-12-S"
+        ]
       }
     },
     {
@@ -766,7 +912,9 @@
       "message": "Recommended: 64 diffusion caps per panel for even light distribution",
       "metadata": {
         "quantity_ratio": 64,
-        "alternative_products": ["Diffuse-12-C"]
+        "alternative_products": [
+          "Diffuse-12-C"
+        ]
       }
     },
     {
@@ -782,36 +930,36 @@
       "product_id": "Material-8x8-V",
       "depends_on_product_id": "Connect-4x31.6-5v",
       "dependency_type": "suggests",
-      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per 4 panels)",
       "metadata": {
-        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+        "quantity_ratio_note": "For 4 panels stacked, need 1 connectors"
       }
     },
     {
       "product_id": "Material-8x8-V",
       "depends_on_product_id": "Connect-5x31.6-5v",
       "dependency_type": "suggests",
-      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per 5 panels)",
       "metadata": {
-        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+        "quantity_ratio_note": "For 5 panels stacked, need 1 connectors"
       }
     },
     {
       "product_id": "Material-8x8-V",
       "depends_on_product_id": "Connect-4x31.6-24v",
       "dependency_type": "suggests",
-      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per 4 panels)",
       "metadata": {
-        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+        "quantity_ratio_note": "For 4 panels stacked, need 1 connectors"
       }
     },
     {
       "product_id": "Material-8x8-V",
       "depends_on_product_id": "Connect-5x31.6-24v",
       "dependency_type": "suggests",
-      "message": "To stack panels vertically, you'll need spine connectors (one connector per gap between panels)",
+      "message": "To stack panels vertically, you'll need spine connectors (one connector per 5 panels)",
       "metadata": {
-        "quantity_ratio_note": "For N panels stacked, need N-1 connectors"
+        "quantity_ratio_note": "For 5 panels stacked, need 1 connectors"
       }
     },
     {

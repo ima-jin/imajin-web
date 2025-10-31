@@ -16,6 +16,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:sync": "tsx scripts/sync-products.ts",
+    "db:sync:enhanced": "tsx scripts/sync-products-enhanced.ts",
     "db:reset": "tsx scripts/reset-db.ts",
     "db:verify": "tsx scripts/verify-products.ts",
     "db:test": "tsx scripts/test-connection.ts",
@@ -45,6 +46,8 @@
     "postgres": "^3.4.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
     "stripe": "^19.1.0",
     "zod": "^4.1.12"
   },

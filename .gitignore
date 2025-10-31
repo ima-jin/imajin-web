@@ -71,3 +71,6 @@ Thumbs.db
 
 # Claude AI
 .claude/settings.local.json
+
+# Media files
+config/content/media/*

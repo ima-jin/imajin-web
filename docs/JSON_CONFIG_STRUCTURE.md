@@ -59,7 +59,7 @@ Product and portfolio data is managed through JSON configuration files in the `/
 The products.json file follows this structure:
 
 ```typescript
-// types/config.ts
+// config/schema.ts (Phase 2.4.6 updated)
 export interface ProductConfig {
   id: string; // Product ID (matches Stripe)
   name: string; // Display name
@@ -68,12 +68,33 @@ export interface ProductConfig {
   category: "material" | "connector" | "control" | "diffuser" | "kit" | "interface";
   dev_status: 0 | 1 | 2 | 3 | 4 | 5;
   base_price: number; // Price in cents
-  stripe_product_id: string; // Stripe Product ID
+  stripe_product_id?: string; // Stripe Product ID (set after sync)
   has_variants: boolean;
   requires_assembly?: boolean;
-  images: string[]; // Cloudinary URLs
+  max_quantity?: number | null; // NULL = unlimited inventory
+
+  // Phase 2.4.6: Product lifecycle fields
+  is_live: boolean; // Show on site? (default: false)
+  cost_cents?: number; // Manufacturing cost (optional)
+  wholesale_price_cents?: number; // B2B pricing (optional)
+  sell_status: "for-sale" | "pre-order" | "sold-out" | "internal"; // (default: "internal")
+  sell_status_note?: string; // Customer-facing message (e.g., "Shipping Dec 1")
+  last_synced_at?: string; // ISO timestamp of last sync
+  media: MediaItem[]; // Renamed from "images" - supports more than just images
+
   specs: ProductSpec[];
   metadata?: Record<string, any>;
+}
+
+export interface MediaItem {
+  local_path: string; // Path in config/content/media/ (e.g., "Material-8x8-V/main.jpg")
+  cloudinary_public_id?: string; // Set by sync script (e.g., "media/products/Material-8x8-V/main")
+  type: "image" | "video" | "pdf" | "other";
+  mime_type: string; // e.g., "image/jpeg"
+  alt: string; // Alt text for accessibility/SEO
+  category: "main" | "detail" | "lifestyle" | "dimension" | "spec";
+  order: number; // Display order
+  uploaded_at?: string; // ISO timestamp - set by sync script
 }
 
 export interface ProductSpec {
@@ -86,13 +107,13 @@ export interface ProductSpec {
 export interface VariantConfig {
   id: string; // Variant ID
   product_id: string; // Parent product ID
-  stripe_product_id: string; // Stripe Product ID for this variant
+  stripe_product_id?: string; // Stripe Product ID for this variant (set after sync)
   variant_type: string; // "color", "voltage", "size"
   variant_value: string; // "BLACK", "WHITE", "RED", "5v", "24v"
   price_modifier?: number; // Price difference from base (cents)
   is_limited_edition: boolean;
   max_quantity?: number; // NULL = unlimited
-  images?: string[]; // Variant-specific images (if different from base)
+  media: MediaItem[]; // Renamed from "images" - variant-specific media
   metadata?: Record<string, any>;
 }
 ```

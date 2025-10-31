@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from './CartProvider';
 import { useToast } from '@/components/toast/ToastProvider';
 import { Button } from '@/components/ui/Button';
@@ -26,6 +26,16 @@ export function AddToCartButton({
   const { showSuccess: showToastSuccess, showError } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleClick = async () => {
     if (isLoading || showSuccess) return;
@@ -42,7 +52,7 @@ export function AddToCartButton({
       showToastSuccess(`${product.name} added to cart`);
 
       // Reset success state after 2 seconds
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setShowSuccess(false);
       }, 2000);
     } catch (error) {

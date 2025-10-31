@@ -18,7 +18,7 @@ export const products = pgTable(
     id: text("id").primaryKey(), // Matches Stripe Product ID
     name: text("name").notNull(),
     description: text("description"),
-    category: text("category").notNull(), // "material", "connector", "control", "diffuser", "kit", "interface"
+    category: text("category").notNull(), // "material", "connector", "control", "diffuser", "kit", "interface", "unit", "accessory"
     devStatus: integer("dev_status").notNull().default(0), // 0-5 (only show if status = 5)
     basePrice: integer("base_price").notNull(), // Price in cents
     isActive: boolean("is_active").default(true),
@@ -43,6 +43,12 @@ export const products = pgTable(
     lastSyncedAt: timestamp("last_synced_at"),
     media: jsonb("media"),
 
+    // Portfolio & Featured Product fields (Phase 2.4.7)
+    showOnPortfolioPage: boolean("show_on_portfolio_page").default(false).notNull(),
+    portfolioCopy: text("portfolio_copy"), // Nullable, markdown content, max 2000 chars (validated at app level)
+    isFeatured: boolean("is_featured").default(false).notNull(),
+    // Note: Hero image uses media JSONB with category="hero"
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -53,6 +59,8 @@ export const products = pgTable(
     availableIdx: index("idx_products_available").on(table.isAvailable),
     liveIdx: index("idx_products_live").on(table.isLive),
     sellStatusIdx: index("idx_products_sell_status").on(table.sellStatus),
+    portfolioIdx: index("idx_products_portfolio").on(table.showOnPortfolioPage),
+    featuredIdx: index("idx_products_featured").on(table.isFeatured),
   })
 );
 

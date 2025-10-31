@@ -65,69 +65,6 @@ describe('ToastProvider', () => {
     expect(screen.getByText('Info message')).toBeInTheDocument();
   });
 
-  it.skip('should auto-dismiss toast after duration', async () => {
-    vi.useFakeTimers();
-    const user = userEvent.setup({ delay: null });
-
-    render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>
-    );
-
-    await user.click(screen.getByText('Show Success'));
-    expect(screen.getByText('Success message')).toBeInTheDocument();
-
-    // Fast-forward time
-    vi.advanceTimersByTime(5000);
-
-    // Force a re-render by flushing promises
-    await vi.runAllTimersAsync();
-
-    expect(screen.queryByText('Success message')).not.toBeInTheDocument();
-
-    vi.useRealTimers();
-  }, 10000);
-
-  it.skip('should allow manual dismissal', async () => {
-    const user = userEvent.setup();
-    render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>
-    );
-
-    await user.click(screen.getByText('Show Success'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Success message')).toBeInTheDocument();
-    });
-
-    const closeButton = screen.getByLabelText('Close notification');
-    await user.click(closeButton);
-
-    await waitFor(() => {
-      expect(screen.queryByText('Success message')).not.toBeInTheDocument();
-    });
-  }, 10000);
-
-  it.skip('should show multiple toasts', async () => {
-    const user = userEvent.setup();
-    render(
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>
-    );
-
-    await user.click(screen.getByText('Show Success'));
-    await user.click(screen.getByText('Show Error'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Success message')).toBeInTheDocument();
-      expect(screen.getByText('Error message')).toBeInTheDocument();
-    });
-  }, 10000);
-
   it('should throw error when useToast used outside provider', () => {
     // Suppress console.error for this test
     const originalError = console.error;

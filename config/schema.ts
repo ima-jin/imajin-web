@@ -10,9 +10,11 @@ export const MediaItemSchema = z.object({
   type: z.enum(["image", "video", "pdf", "other"]),
   mime_type: z.string(),
   alt: z.string(),
-  category: z.enum(["main", "detail", "lifestyle", "dimension", "spec"]),
+  category: z.enum(["main", "detail", "lifestyle", "dimension", "spec", "hero"]), // Phase 2.4.7: Added "hero"
   order: z.number().int().positive(),
   uploaded_at: z.string().datetime().optional(),
+  deleted: z.boolean().optional(),
+  deleted_at: z.string().datetime().optional(),
 });
 
 /**
@@ -35,7 +37,7 @@ export const ProductConfigSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
   long_description: z.string().optional(),
-  category: z.enum(["material", "connector", "control", "diffuser", "kit", "interface"]),
+  category: z.enum(["material", "connector", "control", "diffuser", "kit", "unit", "interface", "accessory"]),
   dev_status: z.number().int().min(0).max(5),
   base_price: z.number().int().positive(),
   stripe_product_id: z.string().min(1).optional(),
@@ -50,6 +52,12 @@ export const ProductConfigSchema = z.object({
   sell_status_note: z.string().optional(),
   last_synced_at: z.string().datetime().optional(),
   media: z.array(MediaItemSchema).default([]),
+
+  // Portfolio & Featured Product fields (Phase 2.4.7)
+  show_on_portfolio_page: z.boolean().default(false),
+  portfolio_copy: z.string().max(2000).nullable().optional(),
+  is_featured: z.boolean().default(false),
+  hero_image: z.string().nullable().optional(),
 
   specs: z.array(ProductSpecSchema),
   metadata: z.record(z.string(), z.unknown()).optional(),

@@ -1,4 +1,5 @@
-import { HeroSection } from "@/components/home/HeroSection";
+import HeroSection from "@/components/home/HeroSection";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
@@ -10,12 +11,33 @@ import { API_ENDPOINTS } from "@/lib/config/api";
 import { ProductSchema } from "@/types/product";
 import { z } from "zod";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+/**
+ * Metadata for homepage
+ * Phase 2.4.7 - SEO optimization
+ */
+export const metadata: Metadata = {
+  title: "Imajin - Modular LED Fixtures",
+  description: "Transform your space with modular LED lighting fixtures. Designed for flexibility, built to last.",
+  openGraph: {
+    title: "Imajin - Modular LED Fixtures",
+    description: "Transform your space with modular LED lighting fixtures.",
+    images: ["/og-image.jpg"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Imajin - Modular LED Fixtures",
+    description: "Transform your space with modular LED lighting fixtures.",
+  },
+};
 
 /**
  * Homepage
  *
  * Matches wireframe design:
  * - Hero section with black background
+ * - Featured products
  * - Value props (Ready to Install, Modular Design, 10-Year Warranty)
  * - Founder Edition showcase
  * - Lifestyle section
@@ -40,9 +62,12 @@ export default async function HomePage() {
   const browseProducts = products.filter((p) => !p.hasVariants).slice(0, 4);
 
   return (
-    <div className="min-h-screen">
+    <main className="min-h-screen">
       {/* Hero Section */}
       <HeroSection content={content.hero} />
+
+      {/* Featured Products - Phase 2.4.7 */}
+      <FeaturedProducts />
 
       {/* Value Props Section */}
       <section className="bg-white py-16">
@@ -137,6 +162,6 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
-    </div>
+    </main>
   );
 }

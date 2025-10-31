@@ -29,6 +29,12 @@ vi.mock('stripe', () => {
 describe('stripe-sync-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock Stripe environment variable
+    vi.stubEnv('STRIPE_SECRET_KEY', 'sk_test_mock_key_12345');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('syncProductToStripe - Create Product', () => {

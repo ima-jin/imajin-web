@@ -1,124 +1,43 @@
 /**
- * Shared test fixtures for products and variants
- * Ensures consistent test data across all test files
+ * @deprecated This file is deprecated. Use tests/fixtures/products.ts instead.
+ *
+ * Migration Guide:
+ * - createMockProduct() -> import from tests/fixtures/products.ts
+ * - createMockDbProduct() -> import from tests/fixtures/products.ts
+ * - createMockDbVariant() -> import from tests/fixtures/products.ts
+ *
+ * This file will be removed in a future update.
  */
 
-import { Product } from '@/types/product';
-import { DbProduct } from '@/lib/mappers/product-mapper';
-import { DbVariant } from '@/lib/mappers/variant-mapper';
+// Re-export from new location for backward compatibility
+export {
+  createMockProduct,
+  createMockDbProduct,
+  createMockDbVariant,
+  createFeaturedProduct,
+  createPortfolioProduct,
+  type DbProduct,
+  type DbVariant,
+} from './products';
+
+// Legacy exports with deprecation warnings
+import {
+  createMockProduct as _createMockProduct,
+  createMockDbProduct as _createMockDbProduct,
+  createMockDbVariant as _createMockDbVariant,
+} from './products';
 
 /**
- * Create a mock Product with all required fields
+ * @deprecated Use createMockProduct from tests/fixtures/products.ts
  */
-export function createMockProduct(overrides?: Partial<Product>): Product {
-  return {
-    id: 'test-product-1',
-    name: 'Test Product',
-    description: 'Test description',
-    category: 'material',
-    devStatus: 5,
-    basePrice: 10000,
-    isActive: true,
-    requiresAssembly: false,
-    hasVariants: false,
-    maxQuantity: null,
-    soldQuantity: 0,
-    availableQuantity: null,
-    isAvailable: true,
-
-    // Product visibility and sync tracking
-    isLive: true,
-    costCents: undefined,
-    wholesalePriceCents: undefined,
-    sellStatus: 'for-sale',
-    sellStatusNote: undefined,
-    lastSyncedAt: undefined,
-    media: [],
-
-    createdAt: new Date('2025-01-01'),
-    updatedAt: new Date('2025-01-01'),
-    ...overrides,
-  };
-}
+export const createMockProductLegacy = _createMockProduct;
 
 /**
- * Create a mock DbProduct with all required fields
+ * @deprecated Use createMockDbProduct from tests/fixtures/products.ts
  */
-export function createMockDbProduct(overrides?: Partial<DbProduct>): DbProduct {
-  return {
-    id: 'test-product-1',
-    name: 'Test Product',
-    description: 'Test description',
-    category: 'material',
-    devStatus: 5,
-    basePrice: 10000,
-    isActive: true,
-    requiresAssembly: false,
-    hasVariants: false,
-    maxQuantity: null,
-    soldQuantity: 0,
-    availableQuantity: null,
-    isAvailable: true,
-
-    // Product visibility and sync tracking
-    isLive: true,
-    costCents: null,
-    wholesalePriceCents: null,
-    sellStatus: 'for-sale',
-    sellStatusNote: null,
-    lastSyncedAt: null,
-    media: [],
-
-    createdAt: new Date('2025-01-01'),
-    updatedAt: new Date('2025-01-01'),
-    ...overrides,
-  };
-}
+export const createMockDbProductLegacy = _createMockDbProduct;
 
 /**
- * Create a mock DbVariant with all required fields
+ * @deprecated Use createMockDbVariant from tests/fixtures/products.ts
  */
-export function createMockDbVariant(overrides?: Partial<DbVariant>): DbVariant {
-  return {
-    id: 'test-variant-1',
-    productId: 'test-product-1',
-    stripeProductId: 'prod_test123',
-    variantType: 'color',
-    variantValue: 'BLACK',
-    priceModifier: 0,
-    isLimitedEdition: false,
-    maxQuantity: null,
-    soldQuantity: 0,
-    availableQuantity: null,
-    isAvailable: true,
-    media: [],
-    metadata: null,
-    createdAt: new Date('2025-01-01'),
-    updatedAt: new Date('2025-01-01'),
-    ...overrides,
-  };
-}
-
-/**
- * Create a mock Variant with all required fields
- */
-export function createMockVariant(overrides?: any): any {
-  return {
-    id: 'test-variant-1',
-    productId: 'test-product-1',
-    stripeProductId: 'prod_test123',
-    variantType: 'color',
-    variantValue: 'BLACK',
-    priceModifier: 0,
-    isLimitedEdition: false,
-    maxQuantity: null,
-    soldQuantity: 0,
-    availableQuantity: null,
-    isAvailable: true,
-    media: [],
-    metadata: null,
-    createdAt: new Date('2025-01-01'),
-    updatedAt: new Date('2025-01-01'),
-    ...overrides,
-  };
-}
+export const createMockVariant = _createMockDbVariant;

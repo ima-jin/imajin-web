@@ -52,25 +52,25 @@ export async function clearTestData(db: ReturnType<typeof drizzle>) {
  * Creates basic products needed for testing
  */
 export async function seedTestData(db: ReturnType<typeof drizzle>) {
-  // Insert test product
-  await db.insert(schema.products).values({
+  const { createMockDbProduct, createMockDbVariant } = await import('@/tests/fixtures/products');
+
+  // Insert test product using fixture
+  const testProduct = createMockDbProduct({
     id: "test-product-1",
     name: "Test Product",
-    category: "material",
-    devStatus: 5,
     basePrice: 1000,
-    isActive: true,
   });
 
-  // Insert test variant
-  await db.insert(schema.variants).values({
+  await db.insert(schema.products).values(testProduct);
+
+  // Insert test variant using fixture
+  const testVariant = createMockDbVariant({
     id: "test-variant-1",
     productId: "test-product-1",
     stripeProductId: "price_test_123",
-    variantType: "color",
-    variantValue: "BLACK",
-    priceModifier: 0,
   });
+
+  await db.insert(schema.variants).values(testVariant);
 }
 
 /**

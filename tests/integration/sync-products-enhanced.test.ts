@@ -33,6 +33,9 @@ import * as stripeSyncService from '@/lib/services/stripe-sync-service';
 // Import sync function
 import { syncProductsEnhanced } from '@/scripts/sync-products-enhanced';
 
+// Import fixture factories
+import { createTestProductConfig, createTestVariantConfig } from '@/tests/fixtures/products';
+
 // Test fixtures
 const TEST_PRODUCTS_JSON_PATH = join(process.cwd(), 'tests', 'fixtures', 'test-products.json');
 const TEST_MEDIA_DIR = join(process.cwd(), 'tests', 'fixtures', 'media');
@@ -93,46 +96,27 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'product-1',
             name: 'Product 1',
             description: 'Test product 1',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
-          {
+          }),
+          createTestProductConfig({
             id: 'product-2',
             name: 'Product 2',
             description: 'Test product 2',
-            category: 'material',
-            dev_status: 5,
             base_price: 7500,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
-          {
+          }),
+          createTestProductConfig({
             id: 'product-3',
             name: 'Product 3',
             description: 'Test product 3',
             category: 'kit',
-            dev_status: 5,
             base_price: 10000,
-            has_variants: false,
             requires_assembly: true,
             sell_status: 'pre-order',
             sell_status_note: 'Ships Q1 2026',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -154,16 +138,10 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'product-with-media',
             name: 'Product With Media',
             description: 'Has media files',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             media: [
               {
                 local_path: 'product-with-media/main.jpg',
@@ -174,8 +152,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -203,19 +180,11 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'stripe-product',
             name: 'Stripe Product',
             description: 'To be synced to Stripe',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -242,21 +211,13 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'db-product',
             name: 'Database Product',
             description: 'Test all fields',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             cost_cents: 3000,
             wholesale_price_cents: 4000,
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -282,16 +243,10 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'id-tracking-product',
             name: 'ID Tracking',
             description: 'Test ID updates',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             media: [
               {
                 local_path: 'id-tracking-product/main.jpg',
@@ -302,8 +257,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -335,19 +289,11 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should produce identical results when running sync twice', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'idempotent-product',
             name: 'Idempotent Test',
             description: 'Run twice',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -372,16 +318,10 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'media-skip-product',
             name: 'Media Skip',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             media: [
               {
                 local_path: 'media-skip-product/main.jpg',
@@ -393,8 +333,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -417,20 +356,12 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'update-product',
             name: 'Updated Name',
             description: 'Updated description',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             stripe_product_id: 'prod_existing123',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -450,19 +381,11 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should use upsert for database on second run', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'upsert-product',
             name: 'Upsert Test',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -490,19 +413,11 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should update last_synced_at timestamp on each run', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'timestamp-product',
             name: 'Timestamp Test',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -542,16 +457,10 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'existing-1',
             name: 'Existing 1',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             media: [
               {
                 local_path: 'existing-1/main.jpg',
@@ -563,8 +472,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -576,28 +484,24 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       vi.clearAllMocks();
 
       // Add new product
-      testData.products.push({
-        id: 'new-product',
-        name: 'New Product',
-        description: 'Test',
-        category: 'material',
-        dev_status: 5,
-        base_price: 7500,
-        has_variants: false,
-        requires_assembly: false,
-        sell_status: 'for-sale',
-        media: [
-          {
-            local_path: 'new-product/main.jpg',
-            type: 'image',
-            mime_type: 'image/jpeg',
-            alt: 'Main',
-            category: 'main',
-            order: 1,
-          },
-        ],
-        specs: [],
-      });
+      testData.products.push(
+        createTestProductConfig({
+          id: 'new-product',
+          name: 'New Product',
+          description: 'Test',
+          base_price: 7500,
+          media: [
+            {
+              local_path: 'new-product/main.jpg',
+              type: 'image',
+              mime_type: 'image/jpeg',
+              alt: 'Main',
+              category: 'main',
+              order: 1,
+            },
+          ],
+        })
+      );
 
       writeFileSync(TEST_PRODUCTS_JSON_PATH, JSON.stringify(testData, null, 2));
 
@@ -625,20 +529,12 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should sync updated product name to Stripe and database', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'update-name-product',
             name: 'Original Name',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             stripe_product_id: 'prod_existing123',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -679,20 +575,12 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should create new Stripe Price when product price changes', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'price-change-product',
             name: 'Price Change',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             stripe_product_id: 'prod_existing123',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -726,20 +614,12 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should archive Stripe product when sell_status changes to "internal"', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'archive-product',
             name: 'Archive Test',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             stripe_product_id: 'prod_existing123',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -768,16 +648,10 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should remove deleted media from Cloudinary and products.json', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'media-delete-product',
             name: 'Media Delete',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             media: [
               {
                 local_path: 'media-delete-product/main.jpg',
@@ -798,8 +672,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 2,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -817,47 +690,41 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       // Verify Cloudinary delete called
       expect(mockDeleteMedia).toHaveBeenCalledWith('media/products/media-delete-product/deleted');
 
-      // Verify products.json updated (deleted entry removed)
+      // Verify products.json updated (deleted entry marked, not removed)
       const updatedJson = JSON.parse(
         readFileSync(TEST_PRODUCTS_JSON_PATH, 'utf-8')
       ) as ProductsJson;
-      expect(updatedJson.products[0].media).toHaveLength(1);
-      expect(updatedJson.products[0].media[0].local_path).toBe(
-        'media-delete-product/main.jpg'
-      );
+      expect(updatedJson.products[0].media).toHaveLength(2);
+
+      // Find the non-deleted media
+      const activeMedia = updatedJson.products[0].media.find(m => !m.deleted);
+      expect(activeMedia).toBeDefined();
+      expect(activeMedia?.local_path).toBe('media-delete-product/main.jpg');
+
+      // Find the deleted media
+      const deletedMedia = updatedJson.products[0].media.find(m => m.deleted);
+      expect(deletedMedia).toBeDefined();
+      expect(deletedMedia?.deleted).toBe(true);
+      expect(deletedMedia?.local_path).toBe('');
+      expect(deletedMedia?.cloudinary_public_id).toBe('');
+      expect(deletedMedia?.deleted_at).toBeDefined();
     });
 
     it('should handle product deletion from JSON (archive Stripe, soft-delete DB)', async () => {
       // RED: Complex scenario - product removed from JSON
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'to-be-deleted',
             name: 'Delete Test',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             stripe_product_id: 'prod_existing123',
-            media: [],
-            specs: [],
-          },
-          {
+          }),
+          createTestProductConfig({
             id: 'keep-this',
             name: 'Keep This',
             description: 'Test',
-            category: 'material',
-            dev_status: 5,
-            base_price: 5000,
-            has_variants: false,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [],
       };
@@ -961,28 +828,21 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should sync variant media from subfolder (Unit-8x8x8-Founder/BLACK/)', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'Unit-8x8x8-Founder',
             name: 'Founder Edition',
             description: 'Test',
             category: 'kit',
-            dev_status: 5,
             base_price: 10000,
             has_variants: true,
             requires_assembly: true,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [
-          {
+          createTestVariantConfig({
             id: 'Unit-8x8x8-Founder-Black',
             product_id: 'Unit-8x8x8-Founder',
-            stripe_product_id: undefined,
-            variant_type: 'color',
             variant_value: 'BLACK',
-            price_modifier: 0,
             is_limited_edition: true,
             max_quantity: 500,
             media: [
@@ -995,8 +855,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
       };
 
@@ -1021,41 +880,27 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should create separate Stripe Product for each variant', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'variant-parent',
             name: 'Parent Product',
             description: 'Test',
             category: 'kit',
-            dev_status: 5,
             base_price: 10000,
             has_variants: true,
-            requires_assembly: false,
-            sell_status: 'for-sale',
-            media: [],
-            specs: [],
-          },
+          }),
         ],
         variants: [
-          {
+          createTestVariantConfig({
             id: 'variant-parent-black',
             product_id: 'variant-parent',
-            variant_type: 'color',
             variant_value: 'BLACK',
-            price_modifier: 0,
-            is_limited_edition: false,
-            media: [],
-            specs: [],
-          },
-          {
+          }),
+          createTestVariantConfig({
             id: 'variant-parent-white',
             product_id: 'variant-parent',
-            variant_type: 'color',
             variant_value: 'WHITE',
             price_modifier: 500,
-            is_limited_edition: false,
-            media: [],
-            specs: [],
-          },
+          }),
         ],
       };
 
@@ -1076,16 +921,13 @@ describe('Sync Products Enhanced - Integration Tests', () => {
     it('should keep variant media independent from parent product media', async () => {
       const testData: ProductsJson = {
         products: [
-          {
+          createTestProductConfig({
             id: 'independent-media-parent',
             name: 'Parent',
             description: 'Test',
             category: 'kit',
-            dev_status: 5,
             base_price: 10000,
             has_variants: true,
-            requires_assembly: false,
-            sell_status: 'for-sale',
             media: [
               {
                 local_path: 'independent-media-parent/main.jpg',
@@ -1096,17 +938,13 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
         variants: [
-          {
+          createTestVariantConfig({
             id: 'independent-media-parent-red',
             product_id: 'independent-media-parent',
-            variant_type: 'color',
             variant_value: 'RED',
-            price_modifier: 0,
-            is_limited_edition: false,
             media: [
               {
                 local_path: 'independent-media-parent/RED/main.jpg',
@@ -1117,8 +955,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
                 order: 1,
               },
             ],
-            specs: [],
-          },
+          }),
         ],
       };
 

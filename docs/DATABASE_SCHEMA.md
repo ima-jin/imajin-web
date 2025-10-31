@@ -60,6 +60,21 @@ CREATE TABLE products (
     max_quantity IS NULL OR sold_quantity < max_quantity
   ) STORED,
 
+  -- Product visibility and lifecycle (Phase 2.4.6)
+  is_live BOOLEAN NOT NULL DEFAULT false, -- Show on site? (manual control)
+  cost_cents INTEGER,                     -- Manufacturing cost (optional)
+  wholesale_price_cents INTEGER,          -- B2B pricing (optional)
+  sell_status TEXT NOT NULL DEFAULT 'internal',  -- "for-sale" | "pre-order" | "sold-out" | "internal"
+  sell_status_note TEXT,                  -- Optional customer-facing message (e.g., "Shipping Dec 1")
+  last_synced_at TIMESTAMP,               -- Last sync with Stripe/Cloudinary
+  media JSONB,                            -- Array of media items with Cloudinary public IDs
+
+  -- Portfolio & Featured Product fields (Phase 2.4.7)
+  show_on_portfolio_page BOOLEAN NOT NULL DEFAULT false,  -- Show in portfolio gallery?
+  portfolio_copy TEXT,                                     -- Markdown content for portfolio page (max 2000 chars)
+  is_featured BOOLEAN NOT NULL DEFAULT false,              -- Show in featured products section?
+  -- Note: Hero image uses media JSONB array with category="hero"
+
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -68,6 +83,10 @@ CREATE INDEX idx_products_category ON products(category);
 CREATE INDEX idx_products_dev_status ON products(dev_status);
 CREATE INDEX idx_products_active ON products(is_active);
 CREATE INDEX idx_products_available ON products(is_available);
+CREATE INDEX idx_products_live ON products(is_live);
+CREATE INDEX idx_products_sell_status ON products(sell_status);
+CREATE INDEX idx_products_portfolio ON products(show_on_portfolio_page);
+CREATE INDEX idx_products_featured ON products(is_featured);
 ```
 
 **Example:**
@@ -105,6 +124,7 @@ CREATE TABLE variants (
   variant_type TEXT NOT NULL,             -- "color", "voltage", "size"
   variant_value TEXT NOT NULL,            -- "BLACK", "WHITE", "RED"
   price_modifier INTEGER DEFAULT 0,
+  is_limited_edition BOOLEAN DEFAULT false,
 
   -- Per-variant inventory (for limited editions with color options)
   max_quantity INTEGER,                   -- Per-variant limit (e.g., 500 BLACK units)
@@ -118,6 +138,9 @@ CREATE TABLE variants (
   is_available BOOLEAN GENERATED ALWAYS AS (
     max_quantity IS NULL OR sold_quantity < max_quantity
   ) STORED,
+
+  -- Media for this variant (Phase 2.4.6)
+  media JSONB,                            -- Array of variant-specific media (e.g., color-specific images)
 
   metadata JSONB,
   created_at TIMESTAMP DEFAULT NOW(),

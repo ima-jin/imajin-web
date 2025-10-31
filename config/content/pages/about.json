@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-30",
+  "hero": {
+    "heading": "Redefining Home Lighting",
+    "subheading": "Imajin transforms illumination into an immersive, responsive experience that bridges art, technology, and everyday life."
+  },
+  "sections": [
+    {
+      "id": "mission",
+      "heading": "Our Mission",
+      "content": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. We believe lighting should be more than static decoration—it should be dynamic, responsive, and captivating.\n\nImajin brings decades of experience from large-scale festivals, cocktail lounges, and nightclub lighting design into the home. We create modular LED systems that offer a rare duality: equally compelling as works of sculptural stillness or animated fixtures of light and motion."
+    },
+    {
+      "id": "technology",
+      "heading": "Innovation Meets Simplicity",
+      "content": "While our fixtures appear to be a complex interplay of design, hardware, and code, they're simple to install and user-friendly. Each unit features an intuitive physical control interface—a silky-smooth dial offering effortless transitions between moods, tones, and movement.\n\nOur modular system allows you to start with a single unit and expand as your vision grows. From intimate accent lighting to large-scale installations, Imajin adapts to your space and aesthetic."
+    },
+    {
+      "id": "approach",
+      "heading": "Personalized Experience",
+      "content": "Every client receives a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility. We don't just sell fixtures—we create experiences that channel creative energy into your home with lighting that truly redefines \"mood lighting.\""
+    },
+    {
+      "id": "founder_edition",
+      "heading": "Founder Edition",
+      "content": "Our debut product, the Unit 8x8x8, is a 240mm volumetric light array composed of 512 individually addressable emitters. Limited to 1,000 units worldwide, each Founder Edition comes with:\n\n- 10-year warranty\n- Unique NFT token (MJN) tied to the physical unit\n- Lifetime software updates\n- Priority access to new products and features\n\nThe Founder Edition represents our commitment to quality, innovation, and the community of early adopters who believe in our vision."
+    }
+  ],
+  "cta": {
+    "heading": "Ready to Transform Your Space?",
+    "subheading": "Explore our products or view our portfolio of installations.",
+    "buttons": [
+      {
+        "label": "Shop Now",
+        "href": "/products",
+        "variant": "primary"
+      },
+      {
+        "label": "View Portfolio",
+        "href": "/portfolio",
+        "variant": "secondary"
+      }
+    ]
+  }
+}

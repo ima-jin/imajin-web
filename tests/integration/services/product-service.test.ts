@@ -13,6 +13,7 @@ import {
 } from "@/lib/services/product-service";
 import { products, variants, productSpecs } from "@/db/schema";
 import type { ProductCategory } from "@/types/product";
+import { createMockProduct } from "@/tests/fixtures/products";
 
 describe("Product Service", () => {
   let client: any;
@@ -33,64 +34,33 @@ describe("Product Service", () => {
     const testIds = ["svc-prod-1", "svc-prod-2", "svc-prod-3", "svc-prod-4"];
 
     beforeEach(async () => {
-      // Seed test products with different statuses
+      // Seed test products with different statuses using baseProduct fixture
       await db.insert(products).values([
-        {
+        createMockProduct({
           id: "svc-prod-1",
           name: "Test Product 1",
-          category: "material",
-          devStatus: 5,
           basePrice: 1000,
-          isActive: true,
-          hasVariants: false,
-          maxQuantity: null,
-          soldQuantity: 0,
-          isLive: true,
-          sellStatus: 'for-sale',
-          media: [],
-        },
-        {
+        }),
+        createMockProduct({
           id: "svc-prod-2",
           name: "Test Product 2",
           category: "connector",
-          devStatus: 5,
           basePrice: 500,
-          isActive: true,
-          hasVariants: false,
-          maxQuantity: null,
-          soldQuantity: 0,
-          isLive: true,
-          sellStatus: 'for-sale',
-          media: [],
-        },
-        {
+        }),
+        createMockProduct({
           id: "svc-prod-3",
           name: "Test Product 3 (Dev)",
-          category: "material",
-          devStatus: 3,
           basePrice: 1500,
-          isActive: true,
-          hasVariants: false,
-          maxQuantity: null,
-          soldQuantity: 0,
-          isLive: true,
-          sellStatus: 'for-sale',
-          media: [],
-        },
-        {
+          devStatus: 3,
+        }),
+        createMockProduct({
           id: "svc-prod-4",
           name: "Test Product 4 (Inactive)",
-          category: "material",
-          devStatus: 5,
           basePrice: 2000,
           isActive: false,
-          hasVariants: false,
-          maxQuantity: null,
-          soldQuantity: 0,
           isLive: false,
           sellStatus: 'internal',
-          media: [],
-        },
+        }),
       ]);
     });
 
@@ -127,7 +97,7 @@ describe("Product Service", () => {
     });
 
     it("filters by isActive when explicitly provided", async () => {
-      const result = await getAllProducts({ isActive: false, devStatus: 5 });
+      const result = await getAllProducts({ isActive: false, devStatus: 5, isLive: false });
 
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe("svc-prod-4");

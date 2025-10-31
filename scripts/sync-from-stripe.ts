@@ -17,7 +17,10 @@ import {
   fetchStripePrices,
   fetchPricesForProduct,
 } from '@/lib/services/stripe-service';
-import { loadProductsJson } from '@/lib/config/loader';
+import { ProductsJsonSchema, type VariantConfig } from '@/config/schema';
+import { logger } from '@/lib/utils/logger';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import type Stripe from 'stripe';
 
 interface SyncIssue {
@@ -25,6 +28,26 @@ interface SyncIssue {
   productId: string;
   message: string;
   details?: Record<string, unknown>;
+}
+
+/**
+ * Load and validate products.json
+ */
+function loadProductsJson() {
+  const configFile = join(process.cwd(), 'config', 'content', 'products.json');
+  const fileContent = readFileSync(configFile, 'utf-8');
+  const jsonData = JSON.parse(fileContent);
+
+  const validation = ProductsJsonSchema.safeParse(jsonData);
+
+  if (!validation.success) {
+    logger.error('Validation failed for products.json', undefined, {
+      validationErrors: validation.error.format(),
+    });
+    throw new Error('Invalid products.json file');
+  }
+
+  return validation.data;
 }
 
 async function syncFromStripe() {
@@ -36,7 +59,8 @@ async function syncFromStripe() {
   try {
     // Load local products
     console.log('📦 Loading local products.json...');
-    const localProducts = await loadProductsJson();
+    const productsData = await loadProductsJson();
+    const localProducts = productsData.products;
     console.log(`   Found ${localProducts.length} local products\n`);
 
     // Fetch Stripe products
@@ -64,6 +88,17 @@ async function syncFromStripe() {
     console.log('🔍 Analyzing product data...\n');
     console.log('─'.repeat(80));
 
+    // Build variants map by product ID
+    const variantsByProductId = new Map<string, VariantConfig[]>();
+    if (productsData.variants) {
+      for (const variant of productsData.variants) {
+        if (!variantsByProductId.has(variant.product_id)) {
+          variantsByProductId.set(variant.product_id, []);
+        }
+        variantsByProductId.get(variant.product_id)!.push(variant);
+      }
+    }
+
     // Check each local product
     for (const localProduct of localProducts) {
       if (verbose) {
@@ -71,9 +106,10 @@ async function syncFromStripe() {
       }
 
       // Check if product has variants
-      if (localProduct.variants && localProduct.variants.length > 0) {
+      const productVariants = variantsByProductId.get(localProduct.id) || [];
+      if (productVariants.length > 0) {
         // Product with variants - check each variant's Stripe price
-        for (const variant of localProduct.variants) {
+        for (const variant of productVariants) {
           const stripePriceId = variant.stripe_product_id;
 
           if (!stripePriceId) {

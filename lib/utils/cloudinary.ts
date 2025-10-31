@@ -151,12 +151,15 @@ export function getPlaceholderImageUrl(width: number = 400, height: number = 400
  * @returns Best available image URL or placeholder
  */
 export function getBestImageUrl(
-  media: Array<{ cloudinaryPublicId?: string; category?: string }>,
+  media: Array<{ cloudinaryPublicId?: string; category?: string; deleted?: boolean }>,
   category: string = 'main',
   transformOptions?: CloudinaryTransformOptions
 ): string {
+  // Filter out deleted media items
+  const activeMedia = media.filter((item) => !item.deleted);
+
   // Find first image matching category
-  const preferredImage = media.find(
+  const preferredImage = activeMedia.find(
     (item) => item.category === category && isValidCloudinaryId(item.cloudinaryPublicId)
   );
 
@@ -167,7 +170,7 @@ export function getBestImageUrl(
   }
 
   // Fall back to any valid image
-  const anyImage = media.find((item) => isValidCloudinaryId(item.cloudinaryPublicId));
+  const anyImage = activeMedia.find((item) => isValidCloudinaryId(item.cloudinaryPublicId));
 
   if (anyImage?.cloudinaryPublicId) {
     return transformOptions

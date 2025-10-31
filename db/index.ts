@@ -12,9 +12,3 @@ const connectionString = getDatabaseConnectionString();
  */
 const queryClient = postgres(connectionString);
 export const db = drizzle(queryClient, { schema });
-
-/**
- * Database client for running migrations
- * Only use this in migration scripts, not application code
- */
-export const migrationClient = postgres(connectionString, { max: 1 });

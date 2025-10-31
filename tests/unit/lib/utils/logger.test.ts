@@ -29,7 +29,7 @@ describe('Logger', () => {
       logger.info('Test message');
 
       expect(consoleSpy.info).toHaveBeenCalledOnce();
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.level).toBe('info');
@@ -42,7 +42,7 @@ describe('Logger', () => {
     it('should include metadata when provided', () => {
       logger.info('Test with metadata', { userId: '123', action: 'sync' });
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({ userId: '123', action: 'sync' });
@@ -51,7 +51,7 @@ describe('Logger', () => {
     it('should omit empty metadata object', () => {
       logger.info('Test message', {});
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toBeUndefined();
@@ -66,7 +66,7 @@ describe('Logger', () => {
       logger.error('Operation failed', testError);
 
       expect(consoleSpy.error).toHaveBeenCalledOnce();
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.level).toBe('error');
@@ -82,7 +82,7 @@ describe('Logger', () => {
       const testError = new Error('Test error');
       logger.error('Upload failed', testError, { publicId: 'test/image' });
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({ publicId: 'test/image' });
@@ -93,7 +93,7 @@ describe('Logger', () => {
       const testError = new Error('Test error');
       logger.error('Operation failed', testError);
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toBeUndefined();
@@ -103,7 +103,7 @@ describe('Logger', () => {
     it('should handle message without error object', () => {
       logger.error('Generic error message', undefined, { context: 'test' });
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.error).toBeUndefined();
@@ -116,7 +116,7 @@ describe('Logger', () => {
       logger.warn('Deprecation notice');
 
       expect(consoleSpy.warn).toHaveBeenCalledOnce();
-      const logOutput = consoleSpy.warn.mock.calls[0][0];
+      const logOutput = consoleSpy.warn.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.level).toBe('warn');
@@ -126,7 +126,7 @@ describe('Logger', () => {
     it('should include metadata in warning', () => {
       logger.warn('Rate limit approaching', { remaining: 10, limit: 100 });
 
-      const logOutput = consoleSpy.warn.mock.calls[0][0];
+      const logOutput = consoleSpy.warn.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({ remaining: 10, limit: 100 });
@@ -135,30 +135,28 @@ describe('Logger', () => {
 
   describe('debug()', () => {
     it('should log debug message in development mode', () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      vi.stubEnv('NODE_ENV', 'development');
 
       logger.debug('Debug trace');
 
       expect(consoleSpy.debug).toHaveBeenCalledOnce();
-      const logOutput = consoleSpy.debug.mock.calls[0][0];
+      const logOutput = consoleSpy.debug.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.level).toBe('debug');
       expect(parsed.message).toBe('Debug trace');
 
-      process.env.NODE_ENV = originalEnv;
+      vi.unstubAllEnvs();
     });
 
     it('should not log debug message in production mode', () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'production';
+      vi.stubEnv('NODE_ENV', 'production');
 
       logger.debug('Debug trace');
 
       expect(consoleSpy.debug).not.toHaveBeenCalled();
 
-      process.env.NODE_ENV = originalEnv;
+      vi.unstubAllEnvs();
     });
   });
 
@@ -166,7 +164,7 @@ describe('Logger', () => {
     it('should log sync start with operation name', () => {
       logger.syncStart('cloudinary_upload');
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.message).toBe('Sync started: cloudinary_upload');
@@ -179,7 +177,7 @@ describe('Logger', () => {
     it('should include additional metadata', () => {
       logger.syncStart('stripe_sync', { productCount: 5 });
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({
@@ -194,7 +192,7 @@ describe('Logger', () => {
     it('should log sync completion', () => {
       logger.syncComplete('database_sync');
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.message).toBe('Sync completed: database_sync');
@@ -207,7 +205,7 @@ describe('Logger', () => {
     it('should include duration metadata', () => {
       logger.syncComplete('media_upload', { duration: 1234, filesUploaded: 10 });
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({
@@ -224,7 +222,7 @@ describe('Logger', () => {
       const testError = new Error('Sync failed');
       logger.syncError('product_sync', testError);
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.message).toBe('Sync failed: product_sync');
@@ -242,7 +240,7 @@ describe('Logger', () => {
         attempt: 3,
       });
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({
@@ -258,7 +256,7 @@ describe('Logger', () => {
     it('should log API request', () => {
       logger.apiRequest('GET', '/api/products');
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.message).toBe('API request');
@@ -271,7 +269,7 @@ describe('Logger', () => {
     it('should include request metadata', () => {
       logger.apiRequest('POST', '/api/orders', { userId: '123' });
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({
@@ -286,7 +284,7 @@ describe('Logger', () => {
     it('should log successful API response as info', () => {
       logger.apiResponse('GET', '/api/products', 200);
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.level).toBe('info');
@@ -301,7 +299,7 @@ describe('Logger', () => {
     it('should log error API response as error', () => {
       logger.apiResponse('POST', '/api/orders', 500);
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.level).toBe('error');
@@ -316,7 +314,7 @@ describe('Logger', () => {
     it('should include response metadata', () => {
       logger.apiResponse('GET', '/api/products', 404, { productId: 'xyz' });
 
-      const logOutput = consoleSpy.error.mock.calls[0][0];
+      const logOutput = consoleSpy.error.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({
@@ -332,7 +330,7 @@ describe('Logger', () => {
     it('should produce valid JSON output', () => {
       logger.info('Test message', { key: 'value' });
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
 
       // Should not throw
       expect(() => JSON.parse(logOutput)).not.toThrow();
@@ -346,7 +344,7 @@ describe('Logger', () => {
         boolValue: true,
       });
 
-      const logOutput = consoleSpy.info.mock.calls[0][0];
+      const logOutput = consoleSpy.info.mock.calls[0][0] as string;
       const parsed: LogEntry = JSON.parse(logOutput);
 
       expect(parsed.meta).toEqual({

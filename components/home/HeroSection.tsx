@@ -17,7 +17,7 @@ interface HeroSectionProps {
   content: HomePageContent["hero"];
 }
 
-export function HeroSection({ content }: HeroSectionProps) {
+export default function HeroSection({ content }: HeroSectionProps) {
   return (
     <div className="relative h-[600px] bg-black text-white flex items-center justify-center">
       {/* Background - could add image overlay here later */}

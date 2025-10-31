@@ -11,7 +11,7 @@ export interface ProductDisplayStatus {
   shouldShow: boolean;
   badge?: {
     text: string;
-    variant: 'default' | 'success' | 'warning' | 'danger' | 'info';
+    variant: 'default' | 'success' | 'warning' | 'danger';
   };
   message?: string;
 }
@@ -80,7 +80,7 @@ export function getProductDisplayStatus(product: Product): ProductDisplayStatus 
       shouldShow: true,
       badge: {
         text: 'Pre-Order',
-        variant: 'info',
+        variant: 'warning',
       },
       message: product.sellStatusNote || 'Available for pre-order',
     };
@@ -150,12 +150,12 @@ export function getSellStatusLabel(sellStatus: SellStatus): string {
  */
 export function getSellStatusBadgeVariant(
   sellStatus: SellStatus
-): 'default' | 'success' | 'warning' | 'danger' | 'info' {
+): 'default' | 'success' | 'warning' | 'danger' {
   switch (sellStatus) {
     case 'for-sale':
       return 'success';
     case 'pre-order':
-      return 'info';
+      return 'warning';
     case 'sold-out':
       return 'danger';
     case 'internal':

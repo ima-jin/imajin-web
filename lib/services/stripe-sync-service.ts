@@ -1,8 +1,18 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-});
+// Lazy-load Stripe client to allow dotenv to load first
+let stripe: Stripe | null = null;
+function getStripeClient(): Stripe {
+  if (!stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+    }
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-09-30.clover',
+    });
+  }
+  return stripe;
+}
 
 export interface StripeSyncResult {
   productId: string;
@@ -35,6 +45,8 @@ interface ProductSyncInput {
 export async function syncProductToStripe(
   product: ProductSyncInput
 ): Promise<StripeSyncResult> {
+  const stripe = getStripeClient();
+
   try {
     // INTERNAL products → Archive in Stripe
     if (product.sellStatus === 'internal') {

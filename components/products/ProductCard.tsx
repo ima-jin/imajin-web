@@ -37,7 +37,7 @@ export function ProductCard({ product, content }: ProductCardProps) {
         {/* Product Image */}
         <div className="aspect-square bg-gray-100 relative overflow-hidden">
           <Image
-            src={getBestImageUrl(product.media, 'main', { width: 400, height: 400 })}
+            src={getBestImageUrl(product.media, 'hero', { width: 400, height: 400 })}
             alt={product.name}
             fill
             className="object-cover"
@@ -78,7 +78,14 @@ export function ProductCard({ product, content }: ProductCardProps) {
 
           {/* Price */}
           <div className="pt-2">
-            <Price amount={product.basePrice} size="lg" />
+            <div className="flex items-baseline gap-2">
+              <Price amount={product.basePrice} size="lg" />
+              {displayStatus.message && (
+                <span className="text-xs text-gray-600">
+                  ({displayStatus.message})
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Variants Indicator */}

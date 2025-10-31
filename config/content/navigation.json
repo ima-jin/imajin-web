@@ -5,16 +5,10 @@
     "logo_alt": "Imajin Logo",
     "nav_items": [
       {
-        "id": "shop",
-        "label": "Shop",
-        "href": "/products",
-        "aria_label": "Browse all products"
-      },
-      {
-        "id": "collections",
-        "label": "Collections",
-        "href": "/collections",
-        "aria_label": "View product collections"
+        "id": "about",
+        "label": "About",
+        "href": "/about",
+        "aria_label": "Learn about Imajin"
       },
       {
         "id": "portfolio",
@@ -23,10 +17,10 @@
         "aria_label": "View installation portfolio"
       },
       {
-        "id": "about",
-        "label": "About",
-        "href": "/about",
-        "aria_label": "Learn about Imajin"
+        "id": "shop",
+        "label": "Shop",
+        "href": "/products",
+        "aria_label": "Browse all products"
       }
     ]
   },
@@ -38,22 +32,22 @@
         "links": [
           {
             "label": "Founder Edition",
-            "href": "/products",
+            "href": "/products?category=unit",
             "aria_label": "Shop Founder Edition collection"
           },
           {
             "label": "Expansion Panels",
-            "href": "/products",
+            "href": "/products?category=material",
             "aria_label": "Shop expansion panels"
           },
           {
             "label": "Controllers",
-            "href": "/products",
+            "href": "/products?category=control",
             "aria_label": "Shop control units"
           },
           {
             "label": "Accessories",
-            "href": "/products",
+            "href": "/products?category=accessory",
             "aria_label": "Shop accessories and diffusers"
           }
         ]
@@ -116,19 +110,19 @@
         "links": [
           {
             "label": "Instagram",
-            "href": "https://instagram.com",
+            "href": "https://www.instagram.com/imajin.ca/",
             "aria_label": "Follow us on Instagram",
             "external": true
           },
           {
             "label": "Facebook",
-            "href": "https://facebook.com",
+            "href": "https://www.facebook.com/imajin.ca",
             "aria_label": "Follow us on Facebook",
             "external": true
           },
           {
             "label": "LinkedIn",
-            "href": "https://linkedin.com",
+            "href": "https://www.linkedin.com/company/ima-jin",
             "aria_label": "Follow us on LinkedIn",
             "external": true
           }

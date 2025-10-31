@@ -127,6 +127,139 @@ body {
   font-family: var(--font-body), system-ui, -apple-system, sans-serif;
 }
 
+/* ===== PROSE STYLES ===== */
+/* Editorial prose for portfolio/blog content */
+.prose-editorial {
+  @apply max-w-none;
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+}
+
+.prose-editorial p {
+  @apply mb-4;
+}
+
+.prose-editorial p:last-child {
+  @apply mb-0;
+}
+
+.prose-editorial h2 {
+  @apply text-xl font-semibold mt-8 mb-4;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial h3 {
+  @apply text-lg font-semibold mt-6 mb-3;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial ul,
+.prose-editorial ol {
+  @apply my-4 ml-6;
+}
+
+.prose-editorial li {
+  @apply mb-2;
+}
+
+.prose-editorial strong {
+  @apply font-semibold;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial em {
+  @apply italic;
+}
+
+/* Large variant for featured content */
+.prose-editorial-lg {
+  @apply max-w-none;
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.875;
+  color: var(--color-text-secondary);
+}
+
+.prose-editorial-lg p {
+  @apply mb-4;
+}
+
+.prose-editorial-lg p:last-child {
+  @apply mb-0;
+}
+
+.prose-editorial-lg h2 {
+  @apply text-2xl font-semibold mt-10 mb-5;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial-lg h3 {
+  @apply text-xl font-semibold mt-8 mb-4;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial-lg ul,
+.prose-editorial-lg ol {
+  @apply my-5 ml-6;
+}
+
+.prose-editorial-lg li {
+  @apply mb-2;
+}
+
+.prose-editorial-lg strong {
+  @apply font-semibold;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial-lg em {
+  @apply italic;
+}
+
+/* Small variant for cards */
+.prose-editorial-sm {
+  @apply max-w-none;
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.625;
+  color: var(--color-text-secondary);
+}
+
+.prose-editorial-sm p {
+  @apply mb-3;
+}
+
+.prose-editorial-sm p:last-child {
+  @apply mb-0;
+}
+
+.prose-editorial-sm h2 {
+  @apply text-lg font-semibold mt-6 mb-3;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial-sm h3 {
+  @apply text-base font-semibold mt-4 mb-2;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial-sm ul,
+.prose-editorial-sm ol {
+  @apply my-3 ml-5;
+}
+
+.prose-editorial-sm li {
+  @apply mb-1;
+}
+
+.prose-editorial-sm strong {
+  @apply font-semibold;
+  color: var(--color-text-primary);
+}
+
+.prose-editorial-sm em {
+  @apply italic;
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes slide-in-right {
   from {

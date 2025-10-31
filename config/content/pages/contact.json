@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "updated": "2025-10-30",
+  "hero": {
+    "heading": "Get in Touch",
+    "subheading": "Have questions about our products or need assistance? We're here to help."
+  },
+  "contact_methods": [
+    {
+      "id": "email",
+      "heading": "Email Us",
+      "method": "email",
+      "value": "info@imajin.ca",
+      "display": "info@imajin.ca",
+      "description": "General inquiries and product questions"
+    },
+    {
+      "id": "sales",
+      "heading": "Sales",
+      "method": "email",
+      "value": "info@imajin.ca",
+      "display": "info@imajin.ca",
+      "description": "Custom installations and bulk orders"
+    },
+    {
+      "id": "support",
+      "heading": "Technical Support",
+      "method": "email",
+      "value": "info@imajin.ca",
+      "display": "info@imajin.ca",
+      "description": "Installation help and troubleshooting"
+    }
+  ],
+  "response_time": "We typically respond within 24 hours during business days.",
+  "additional_info": {
+    "heading": "Consultation Available",
+    "content": "Interested in a custom installation? Each client receives a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility."
+  }
+}
