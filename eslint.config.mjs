@@ -25,8 +25,8 @@ const eslintConfig = defineConfig([
   {
     files: ["tests/**/*.test.ts", "tests/**/*.test.tsx", "tests/**/*.spec.ts", "tests/**/*.spec.tsx"],
     rules: {
-      "@typescript-eslint/no-explicit-any": "warn", // Downgrade to warning in tests
-      "@typescript-eslint/no-unused-vars": "warn", // Allow unused vars in test setup
+      "@typescript-eslint/no-explicit-any": "off", // Allow any in tests for mocking
+      "@typescript-eslint/no-unused-vars": "off", // Allow unused vars in test setup
     },
   },
 ]);

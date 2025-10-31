@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { validateCart } from '@/lib/services/cart-validator';
 import type { CartItem } from '@/types/cart';

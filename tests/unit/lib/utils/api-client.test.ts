@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { z } from 'zod';
 import { buildApiUrl, fetchApi, apiGet, apiPost, ApiClientError } from '@/lib/utils/api-client';
