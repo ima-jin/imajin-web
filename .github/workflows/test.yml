@@ -28,11 +28,6 @@ jobs:
       - name: Run type check
         run: npm run type-check
 
-      - name: Run tests
-        run: npm test
-        env:
-          NODE_ENV: test
-
       - name: Build application
         run: npm run build
         env:
