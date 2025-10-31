@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { createMockProduct } from "@/tests/fixtures/product-fixtures";
+import { createMockProduct } from "@/tests/fixtures/products";
 
 describe("ProductGrid", () => {
   const mockProducts = [

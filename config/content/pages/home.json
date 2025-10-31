@@ -37,27 +37,7 @@
   ],
   "founder_section": {
     "heading": "Founder Edition Collection",
-    "description": "Limited run of 1,000 units. Each includes MJN NFT ownership certificate and 10-year warranty.",
-    "colors": [
-      {
-        "id": "black",
-        "label": "Black",
-        "quantity": 500,
-        "quantity_label": "500 Available"
-      },
-      {
-        "id": "white",
-        "label": "White",
-        "quantity": 300,
-        "quantity_label": "300 Available"
-      },
-      {
-        "id": "red",
-        "label": "Red",
-        "quantity": 200,
-        "quantity_label": "200 Available"
-      }
-    ],
+    "description": "Limited edition release. Each includes MJN NFT ownership certificate and 10-year warranty.",
     "cta": {
       "label": "View Details",
       "href": "/products/Unit-8x8x8-Founder",

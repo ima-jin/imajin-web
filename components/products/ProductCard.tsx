@@ -13,6 +13,7 @@ import type { ProductDetailContent } from "@/config/schema/page-content-schema";
 interface ProductCardProps {
   product: Product;
   content?: ProductDetailContent;
+  variantName?: string; // Optional variant name to append to product name
 }
 
 /**
@@ -28,8 +29,9 @@ interface ProductCardProps {
  *
  * Links to product detail page on click
  */
-export function ProductCard({ product, content }: ProductCardProps) {
+export function ProductCard({ product, content, variantName }: ProductCardProps) {
   const displayStatus = getProductDisplayStatus(product);
+  const displayName = variantName ? `${product.name} - ${variantName}` : product.name;
 
   return (
     <Link href={`/products/${product.id}`} className="block">
@@ -38,7 +40,7 @@ export function ProductCard({ product, content }: ProductCardProps) {
         <div className="aspect-square bg-gray-100 relative overflow-hidden">
           <Image
             src={getBestImageUrl(product.media, 'hero', { width: 400, height: 400 })}
-            alt={product.name}
+            alt={displayName}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -66,7 +68,7 @@ export function ProductCard({ product, content }: ProductCardProps) {
 
           {/* Product Name */}
           <Heading level={3} className="text-lg">
-            {product.name}
+            {displayName}
           </Heading>
 
           {/* Product Description */}
@@ -88,8 +90,8 @@ export function ProductCard({ product, content }: ProductCardProps) {
             </div>
           </div>
 
-          {/* Variants Indicator */}
-          {product.hasVariants && (
+          {/* Variants Indicator - only show if product has variants AND no specific variant is being shown */}
+          {product.hasVariants && !variantName && (
             <Text size="caption" color="muted">
               {content?.badges.multiple_colors || "Multiple colors available"}
             </Text>

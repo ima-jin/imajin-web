@@ -4,7 +4,7 @@ import {
   isLowStock,
   isSoldOut,
 } from "@/lib/services/product-validator";
-import { createMockVariant } from "@/tests/fixtures/product-fixtures";
+import { createMockDbVariant as createMockVariant } from "@/tests/fixtures/products";
 
 describe("Product Validator", () => {
   describe("validateVariantAvailability", () => {

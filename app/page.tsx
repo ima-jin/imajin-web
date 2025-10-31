@@ -6,7 +6,7 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { getHomePageContent } from "@/hooks/usePageContent";
-import { getAllProducts } from "@/lib/services/product-service";
+import { getAllProducts, getProductWithVariants } from "@/lib/services/product-service";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -54,6 +54,11 @@ export default async function HomePage() {
   // Filter Founder Edition variants (they'll have hasVariants: true)
   const founderEdition = products.find((p) => p.hasVariants === true);
 
+  // Fetch Founder Edition with variants if it exists
+  const founderEditionWithVariants = founderEdition
+    ? await getProductWithVariants(founderEdition.id)
+    : null;
+
   // Get other products for browse section
   const browseProducts = products.filter((p) => !p.hasVariants).slice(0, 4);
 
@@ -94,11 +99,15 @@ export default async function HomePage() {
             </Text>
           </div>
 
-          {founderEdition && (
+          {founderEditionWithVariants && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <ProductCard product={founderEdition} />
-              <ProductCard product={founderEdition} />
-              <ProductCard product={founderEdition} />
+              {founderEditionWithVariants.variants.map((variant) => (
+                <ProductCard
+                  key={variant.id}
+                  product={founderEditionWithVariants}
+                  variantName={variant.variantValue}
+                />
+              ))}
             </div>
           )}
 

@@ -8,6 +8,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import HomePage from '@/app/page';
+import { createMockProduct, createMockDbVariant } from '@/tests/fixtures/products';
 
 // Mock the async data dependencies
 vi.mock('@/hooks/usePageContent', () => ({
@@ -39,26 +40,8 @@ vi.mock('@/hooks/usePageContent', () => ({
   }),
 }));
 
-vi.mock('@/lib/utils/api-client', () => ({
-  apiGet: vi.fn().mockResolvedValue([
-    {
-      id: 'product-1',
-      name: 'Product 1',
-      basePrice: 5000,
-      hasVariants: false,
-      isLive: true,
-      media: [],
-    },
-    {
-      id: 'product-2',
-      name: 'Founder Edition',
-      basePrice: 10000,
-      hasVariants: true,
-      isLive: true,
-      media: [],
-    },
-  ]),
-}));
+// Mock product service functions
+vi.mock('@/lib/services/product-service');
 
 // Mock the homepage components
 vi.mock('@/components/home/HeroSection', () => ({
@@ -70,6 +53,59 @@ vi.mock('@/components/home/FeaturedProducts', () => ({
 }));
 
 describe('HomePage', () => {
+  beforeEach(async () => {
+    const { getAllProducts, getProductWithVariants } = await import('@/lib/services/product-service');
+
+    // Set up default mocks
+    vi.mocked(getAllProducts).mockResolvedValue([
+      createMockProduct({
+        id: 'product-1',
+        name: 'Product 1',
+        basePrice: 5000,
+        hasVariants: false,
+      }),
+      createMockProduct({
+        id: 'founder-edition',
+        name: 'Founder Edition',
+        basePrice: 10000,
+        hasVariants: true,
+      }),
+    ]);
+
+    vi.mocked(getProductWithVariants).mockResolvedValue({
+      ...createMockProduct({
+        id: 'founder-edition',
+        name: 'Founder Edition',
+        basePrice: 10000,
+        hasVariants: true,
+      }),
+      specs: [],
+      variants: [
+        createMockDbVariant({
+          id: 'variant-black',
+          productId: 'founder-edition',
+          variantValue: 'BLACK',
+          availableQuantity: 500,
+          maxQuantity: 500,
+        }),
+        createMockDbVariant({
+          id: 'variant-white',
+          productId: 'founder-edition',
+          variantValue: 'WHITE',
+          availableQuantity: 300,
+          maxQuantity: 300,
+        }),
+        createMockDbVariant({
+          id: 'variant-red',
+          productId: 'founder-edition',
+          variantValue: 'RED',
+          availableQuantity: 200,
+          maxQuantity: 200,
+        }),
+      ],
+    });
+  });
+
   describe('Rendering', () => {
     it('should render homepage without errors', async () => {
       const component = await HomePage();
@@ -161,6 +197,40 @@ describe('HomePage', () => {
 
       // OpenGraph tags should be present for social sharing
       expect(metadata.openGraph).toBeDefined();
+    });
+  });
+
+  describe('Founder Edition Variant Rendering - Phase 2.4.9', () => {
+    it('should call getProductWithVariants when founder edition exists', async () => {
+      const { getProductWithVariants } = await import('@/lib/services/product-service');
+
+      const component = await HomePage();
+      render(component);
+
+      // Verify getProductWithVariants was called with founder edition ID
+      expect(getProductWithVariants).toHaveBeenCalledWith('founder-edition');
+    });
+
+    it('should not call getProductWithVariants when no product has variants', async () => {
+      const { getAllProducts, getProductWithVariants } = await import('@/lib/services/product-service');
+
+      // Mock to return products without variants
+      vi.mocked(getAllProducts).mockResolvedValueOnce([
+        createMockProduct({
+          id: 'product-1',
+          name: 'Product 1',
+          basePrice: 5000,
+          hasVariants: false,
+        }),
+      ]);
+
+      vi.mocked(getProductWithVariants).mockClear();
+
+      const component = await HomePage();
+      render(component);
+
+      // Verify getProductWithVariants was NOT called
+      expect(getProductWithVariants).not.toHaveBeenCalled();
     });
   });
 });

@@ -49,7 +49,7 @@ export const HomePageContentSchema = z.object({
   founder_section: z.object({
     heading: z.string(),
     description: z.string(),
-    colors: z.array(ColorOptionSchema),
+    colors: z.array(ColorOptionSchema).optional(), // Optional - quantities now fetched from database
     cta: CTASchema,
   }),
   expansion_section: z.object({

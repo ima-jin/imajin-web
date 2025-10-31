@@ -4,7 +4,7 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Badge } from "@/components/ui/Badge";
 import { getProductsListingContent } from "@/hooks/usePageContent";
-import { getAllProducts } from "@/lib/services/product-service";
+import { getAllProducts, getProductWithVariants } from "@/lib/services/product-service";
 
 // Revalidate every 60 seconds (ISR)
 export const revalidate = 60;
@@ -28,6 +28,12 @@ export default async function ProductsPage() {
 
   // Categorize products
   const founderEdition = products.find(p => p.hasVariants === true);
+
+  // Fetch Founder Edition with variants if it exists
+  const founderEditionWithVariants = founderEdition
+    ? await getProductWithVariants(founderEdition.id)
+    : null;
+
   const expansionProducts = products.filter(p =>
     p.category === "material" || p.category === "control" || p.category === "connector"
   ).slice(0, 3);
@@ -80,7 +86,7 @@ export default async function ProductsPage() {
           {/* Main Content */}
           <main>
             {/* Featured Founder Edition */}
-            {founderEdition && (
+            {founderEditionWithVariants && (
               <div className="bg-gray-50 border-2 border-gray-300 p-10 mb-16">
                 <Heading level={2} className="text-3xl font-light mb-6">
                   {content.product_sections.find(s => s.id === "founder")?.heading}
@@ -89,25 +95,18 @@ export default async function ProductsPage() {
                   {content.product_sections.find(s => s.id === "founder")?.description}
                 </Text>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      <div className="relative">
-                        <ProductCard product={founderEdition} />
-                        <Badge variant="limited" className="absolute top-4 left-4">
-                          500 Available
-                        </Badge>
-                      </div>
-                      <div className="relative">
-                        <ProductCard product={founderEdition} />
-                        <Badge variant="limited" className="absolute top-4 left-4">
-                          300 Available
-                        </Badge>
-                      </div>
-                      <div className="relative">
-                        <ProductCard product={founderEdition} />
-                        <Badge variant="limited" className="absolute top-4 left-4">
-                          200 Available
-                        </Badge>
-                      </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {founderEditionWithVariants.variants.map((variant) => (
+                    <div key={variant.id} className="relative">
+                      <ProductCard
+                        product={founderEditionWithVariants}
+                        variantName={variant.variantValue}
+                      />
+                      <Badge variant="limited" className="absolute top-4 left-4">
+                        {variant.availableQuantity ?? 0} Available
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

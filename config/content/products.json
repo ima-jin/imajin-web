@@ -32,9 +32,19 @@
           "mime_type": "image/jpeg",
           "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
           "category": "main",
-          "order": 1,
+          "order": 2,
           "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/back",
           "uploaded_at": "2025-10-30T15:28:35.796Z"
+        },
+        {
+          "local_path": "Material/5x5-O/BLACK/45.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 3,
+          "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/45",
+          "uploaded_at": "2025-10-31T06:53:58.272Z"
         }
       ],
       "specs": [
@@ -767,9 +777,9 @@
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/rainbow",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs in pendant form",
           "category": "main",
-          "order": 2,
+          "order": 6,
           "uploaded_at": "2025-10-30T15:25:28.488Z"
         },
         {
@@ -777,10 +787,50 @@
           "type": "image",
           "mime_type": "image/jpeg",
           "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
-          "category": "hero",
-          "order": 1,
+          "category": "main",
+          "order": 3,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/desk",
           "uploaded_at": "2025-10-30T15:25:28.934Z"
+        },
+        {
+          "local_path": "Unit/8x8x8/BLACK/home.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 4,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/home",
+          "uploaded_at": "2025-10-31T06:53:58.871Z"
+        },
+        {
+          "local_path": "Unit/8x8x8/BLACK/video.mp4",
+          "type": "video",
+          "mime_type": "video/mp4",
+          "alt": "8x8x8 DIY Cube displaying moving pattern across 8 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 5,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/video",
+          "uploaded_at": "2025-10-31T06:54:03.032Z"
+        },
+        {
+          "local_path": "Unit/8x8x8/BLACK/waves.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube waves colourful pattern across 8 layers of addressable RGB LEDs",
+          "category": "hero",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/waves",
+          "uploaded_at": "2025-10-31T06:54:03.451Z"
+        },
+        {
+          "local_path": "Unit/8x8x8/BLACK/white.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "category": "main",
+          "order": 2,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/white",
+          "uploaded_at": "2025-10-31T06:54:03.990Z"
         }
       ],
       "showOnPortfolioPage": true,

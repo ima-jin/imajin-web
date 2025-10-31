@@ -130,6 +130,32 @@ export function isValidCloudinaryId(publicId?: string): boolean {
 }
 
 /**
+ * Get a video URL from Cloudinary
+ *
+ * @param publicId - The Cloudinary public ID
+ * @param maxWidth - Maximum width (default 1200px)
+ * @returns Cloudinary URL for video
+ */
+export function getVideoUrl(publicId: string, maxWidth: number = 1200): string {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME;
+  return `https://res.cloudinary.com/${cloudName}/video/upload/w_${maxWidth},c_fit,q_auto/${publicId}`;
+}
+
+/**
+ * Get a video thumbnail URL from Cloudinary
+ * Extracts a frame from the video to use as a thumbnail
+ *
+ * @param publicId - The Cloudinary public ID
+ * @param width - Thumbnail width (default 200px)
+ * @param height - Thumbnail height (default 200px)
+ * @returns Cloudinary URL for video thumbnail
+ */
+export function getVideoThumbnailUrl(publicId: string, width: number = 200, height: number = 200): string {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME;
+  return `https://res.cloudinary.com/${cloudName}/video/upload/so_auto,w_${width},h_${height},c_fill,g_center,q_auto,f_auto/${publicId}.jpg`;
+}
+
+/**
  * Get a fallback placeholder image URL
  *
  * @param width - Width of placeholder

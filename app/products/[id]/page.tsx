@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { ProductSpecs } from "@/components/products/ProductSpecs";
 import { LimitedEditionBadge } from "@/components/products/LimitedEditionBadge";
 import { ProductAddToCart } from "@/components/products/ProductAddToCart";
+import { MediaCarousel } from "@/components/products/MediaCarousel";
 import { getProductDetailContent } from "@/hooks/usePageContent";
 import { getNavigation } from "@/hooks/useNavigation";
 import { apiGet, ApiClientError } from "@/lib/utils/api-client";
@@ -12,7 +12,7 @@ import { API_ENDPOINTS } from "@/lib/config/api";
 import { ProductWithVariantsSchema } from "@/types/product";
 import type { Variant } from "@/types/product";
 import { formatCurrency } from "@/lib/utils/price";
-import { getBestImageUrl, getProductImageUrl } from "@/lib/utils/cloudinary";
+import { getProductImageUrl } from "@/lib/utils/cloudinary";
 import { getProductDisplayStatus } from "@/lib/utils/product-display";
 
 interface ProductDetailPageProps {
@@ -119,17 +119,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         {/* Product Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Product Image */}
-            <div className="aspect-square bg-gray-100 rounded-lg relative overflow-hidden">
-              <Image
-                src={getBestImageUrl(product.media, 'hero', { width: 800, height: 800 })}
-                alt={product.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
-            </div>
+            {/* Product Media Carousel */}
+            <MediaCarousel media={product.media} productName={product.name} />
 
             {/* Product Info */}
             <div className="space-y-6">

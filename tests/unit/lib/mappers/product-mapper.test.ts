@@ -4,7 +4,7 @@ import {
   mapDbProductsToProducts,
   type DbProduct,
 } from "@/lib/mappers/product-mapper";
-import { createMockDbProduct } from "@/tests/fixtures/product-fixtures";
+import { createMockDbProduct } from "@/tests/fixtures/products";
 
 describe("mapDbProductToProduct", () => {
   it("maps valid DB product to application product", () => {

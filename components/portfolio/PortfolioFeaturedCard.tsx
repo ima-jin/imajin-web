@@ -16,7 +16,7 @@ import { Product } from '@/types/product';
 import { Heading } from '@/components/ui/Heading';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { getProductImageUrl } from '@/lib/utils/cloudinary';
+import { getProductImageUrl, getVideoUrl } from '@/lib/utils/cloudinary';
 
 interface PortfolioFeaturedCardProps {
   product: Product;
@@ -47,18 +47,31 @@ export default function PortfolioFeaturedCard({ product }: PortfolioFeaturedCard
   return (
     <div className="relative overflow-hidden rounded-lg bg-white shadow-lg">
       <div className="grid md:grid-cols-2 gap-0">
-        {/* Left: Large Image with Carousel */}
+        {/* Left: Large Media with Carousel */}
         <div className="group/carousel relative h-[400px] md:h-auto md:min-h-[600px] overflow-hidden bg-gray-100 flex items-start md:pt-16">
           {currentImage && (
             <>
-              <Image
-                src={getProductImageUrl(currentImage.cloudinaryPublicId || '', 1200)}
-                alt={currentImage.alt || product.name}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority
-              />
+              {currentImage.type === 'video' ? (
+                <video
+                  src={getVideoUrl(currentImage.cloudinaryPublicId || '')}
+                  controls
+                  loop
+                  className="w-full h-full object-contain"
+                  preload="metadata"
+                >
+                  <track kind="captions" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <Image
+                  src={getProductImageUrl(currentImage.cloudinaryPublicId || '', 1200)}
+                  alt={currentImage.alt || product.name}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
+              )}
 
               {/* Carousel Controls - Only show if multiple images */}
               {sortedImages.length > 1 && (

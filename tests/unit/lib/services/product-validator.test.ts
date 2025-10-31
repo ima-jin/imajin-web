@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { validateProductJson, validateVariantAvailability } from "@/lib/services/product-validator";
-import { createMockVariant } from "@/tests/fixtures/product-fixtures";
+import { createMockDbVariant as createMockVariant } from "@/tests/fixtures/products";
 
 describe("product-validator", () => {
   describe("validateProductJson", () => {

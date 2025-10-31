@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ProductCard } from "@/components/products/ProductCard";
-import { createMockProduct } from "@/tests/fixtures/product-fixtures";
+import { createMockProduct } from "@/tests/fixtures/products";
 
 // Mock cloudinary service
 vi.mock("@/lib/services/cloudinary-service", () => ({

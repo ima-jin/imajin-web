@@ -4,7 +4,7 @@ import {
   mapDbVariantsToVariants,
   type DbVariant,
 } from "@/lib/mappers/variant-mapper";
-import { createMockDbVariant } from "@/tests/fixtures/product-fixtures";
+import { createMockDbVariant } from "@/tests/fixtures/products";
 
 describe("mapDbVariantToVariant", () => {
   it("maps valid DB variant to application variant", () => {
