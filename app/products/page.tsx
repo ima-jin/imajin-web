@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/Badge";
 import { getProductsListingContent } from "@/hooks/usePageContent";
 import { getAllProducts, getProductWithVariants } from "@/lib/services/product-service";
 
+// Force dynamic rendering (don't prerender at build time)
+export const dynamic = 'force-dynamic';
+
 // Revalidate every 60 seconds (ISR)
 export const revalidate = 60;
 

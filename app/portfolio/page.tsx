@@ -16,6 +16,9 @@ import { products } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { mapDbProductToProduct } from '@/lib/mappers/product-mapper';
 
+// Force dynamic rendering (don't prerender at build time)
+export const dynamic = 'force-dynamic';
+
 // Revalidate every 60 seconds (ISR)
 export const revalidate = 60;
 

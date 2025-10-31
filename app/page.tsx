@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Force dynamic rendering (don't prerender at build time)
+export const dynamic = 'force-dynamic';
+
 // Revalidate every 60 seconds (ISR)
 export const revalidate = 60;
 
