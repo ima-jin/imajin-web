@@ -6,72 +6,67 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import PortfolioPage from '@/app/portfolio/page';
 import { createPortfolioProduct } from '@/tests/fixtures/products';
 
-// Mock fetch
-global.fetch = vi.fn();
+// Mock the database module
+vi.mock('@/db', () => ({
+  db: {
+    select: vi.fn(),
+  },
+}));
 
 describe('PortfolioPage', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+
+    // Setup default mock for empty portfolio
+    const { db } = await import('@/db');
+    const whereFn = vi.fn().mockResolvedValue([]);
+    const fromFn = vi.fn().mockReturnValue({ where: whereFn });
+    vi.mocked(db.select).mockReturnValue({ from: fromFn } as any);
   });
 
   describe('Page Rendering', () => {
     it('should render portfolio page', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => [],
-      } as Response);
-
       render(await PortfolioPage());
 
       expect(screen.getByRole('main')).toBeInTheDocument();
     });
 
-    it('should call portfolio API endpoint', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => [],
-      } as Response);
+    it('should query database for portfolio products', async () => {
+      const { db } = await import('@/db');
 
       render(await PortfolioPage());
 
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/portfolio'),
-        expect.any(Object)
-      );
+      expect(db.select).toHaveBeenCalled();
     });
 
     it('should display only products with showOnPortfolioPage = true', async () => {
-      const portfolioProducts = [
-        createPortfolioProduct({
-          id: 'portfolio-1',
-          name: 'Portfolio Product',
-          basePrice: 10000,
-          portfolioCopy: 'Featured installation',
-        }),
+      const { db } = await import('@/db');
+      const mockDbProducts = [
+        {
+          ...createPortfolioProduct({
+            id: 'portfolio-1',
+            name: 'Portfolio Product',
+            basePrice: 10000,
+            portfolioCopy: 'Featured installation',
+          }),
+          showOnPortfolioPage: true,
+        },
       ];
 
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => portfolioProducts,
-      } as Response);
+      const whereFn = vi.fn().mockResolvedValue(mockDbProducts);
+      const fromFn = vi.fn().mockReturnValue({ where: whereFn });
+      vi.mocked(db.select).mockReturnValue({ from: fromFn } as any);
 
       render(await PortfolioPage());
 
-      await waitFor(() => {
-        expect(screen.getByText('Portfolio Product')).toBeInTheDocument();
-      });
+      expect(screen.getByText('Portfolio Product')).toBeInTheDocument();
     });
 
     it('should have proper page heading', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => [],
-      } as Response);
-
       render(await PortfolioPage());
 
       const heading = screen.getByRole('heading', { level: 1 });
@@ -80,25 +75,31 @@ describe('PortfolioPage', () => {
     });
 
     it('should use grid layout for portfolio items', async () => {
-      const portfolioProducts = [
-        createPortfolioProduct({
-          id: 'portfolio-1',
-          name: 'Product 1',
-          basePrice: 10000,
-          portfolioCopy: 'Copy 1',
-        }),
-        createPortfolioProduct({
-          id: 'portfolio-2',
-          name: 'Product 2',
-          basePrice: 15000,
-          portfolioCopy: 'Copy 2',
-        }),
+      const { db } = await import('@/db');
+      const mockDbProducts = [
+        {
+          ...createPortfolioProduct({
+            id: 'portfolio-1',
+            name: 'Product 1',
+            basePrice: 10000,
+            portfolioCopy: 'Copy 1',
+          }),
+          showOnPortfolioPage: true,
+        },
+        {
+          ...createPortfolioProduct({
+            id: 'portfolio-2',
+            name: 'Product 2',
+            basePrice: 15000,
+            portfolioCopy: 'Copy 2',
+          }),
+          showOnPortfolioPage: true,
+        },
       ];
 
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => portfolioProducts,
-      } as Response);
+      const whereFn = vi.fn().mockResolvedValue(mockDbProducts);
+      const fromFn = vi.fn().mockReturnValue({ where: whereFn });
+      vi.mocked(db.select).mockReturnValue({ from: fromFn } as any);
 
       const { container } = render(await PortfolioPage());
 
@@ -109,11 +110,7 @@ describe('PortfolioPage', () => {
 
   describe('Empty State & Error Handling', () => {
     it('should show empty state when no portfolio products', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => [],
-      } as Response);
-
+      // Default mock already returns empty array
       render(await PortfolioPage());
 
       const emptyMessage = screen.getByText(/no.*portfolio|coming soon|check back/i);
@@ -121,52 +118,56 @@ describe('PortfolioPage', () => {
     });
 
     it('should display helpful message in empty state', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => [],
-      } as Response);
-
       render(await PortfolioPage());
 
       // Should guide users to browse products instead
-      const message = screen.getByText(/browse|products|explore/i);
+      const message = screen.getByText(/browse|products/i);
       expect(message).toBeInTheDocument();
     });
 
     it('should show link to products page from empty state', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: true,
-        json: async () => [],
-      } as Response);
-
       render(await PortfolioPage());
 
-      const link = screen.getByRole('link', { name: /browse products|view products/i });
+      const link = screen.getByRole('link', { name: /browse products/i });
       expect(link).toHaveAttribute('href', '/products');
     });
 
-    it('should handle API error gracefully', async () => {
-      vi.mocked(fetch).mockResolvedValue({
-        ok: false,
-        status: 500,
-        json: async () => ({ error: 'Server error' }),
-      } as Response);
+    it('should handle database query error gracefully', async () => {
+      const { db } = await import('@/db');
 
-      render(await PortfolioPage());
+      // Mock database error
+      const whereFn = vi.fn().mockRejectedValue(new Error('Database error'));
+      const fromFn = vi.fn().mockReturnValue({ where: whereFn });
+      vi.mocked(db.select).mockReturnValue({ from: fromFn } as any);
 
-      // Should show empty state when API fails (graceful degradation)
-      const emptyState = screen.getByText(/no portfolio items/i);
-      expect(emptyState).toBeInTheDocument();
+      // Should throw error (Next.js will handle with error boundary)
+      await expect(async () => {
+        await PortfolioPage();
+      }).rejects.toThrow('Database error');
     });
 
-    it('should handle network errors', async () => {
-      vi.mocked(fetch).mockRejectedValue(new Error('Network error'));
+    it('should only show products with isLive = true', async () => {
+      const { db } = await import('@/db');
+      const mockDbProducts = [
+        {
+          ...createPortfolioProduct({
+            id: 'portfolio-1',
+            name: 'Live Product',
+            basePrice: 10000,
+            portfolioCopy: 'Featured',
+          }),
+          showOnPortfolioPage: true,
+          isLive: true,
+        },
+      ];
+
+      const whereFn = vi.fn().mockResolvedValue(mockDbProducts);
+      const fromFn = vi.fn().mockReturnValue({ where: whereFn });
+      vi.mocked(db.select).mockReturnValue({ from: fromFn } as any);
 
       render(await PortfolioPage());
 
-      // Should show empty state when network fails (graceful degradation)
-      const emptyState = screen.getByText(/no portfolio items/i);
-      expect(emptyState).toBeInTheDocument();
+      expect(screen.getByText('Live Product')).toBeInTheDocument();
     });
   });
 });

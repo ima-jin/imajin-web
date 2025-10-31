@@ -29,7 +29,14 @@ export default defineConfig({
     include: [
       "tests/unit/**/*.test.{ts,tsx}",
       "tests/integration/**/*.test.{ts,tsx}",
-      "tests/smoke/**/*.test.{ts,tsx}",
+    ],
+    // Smoke tests are excluded by default - run with npm run test:smoke
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/coverage/**",
+      "tests/smoke/**",
     ],
   },
   resolve: {
