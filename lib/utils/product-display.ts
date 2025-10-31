@@ -11,7 +11,7 @@ export interface ProductDisplayStatus {
   shouldShow: boolean;
   badge?: {
     text: string;
-    variant: 'default' | 'success' | 'warning' | 'danger';
+    variant: 'default' | 'error' | 'success' | 'voltage' | 'warning' | 'danger' | 'limited';
   };
   message?: string;
 }
@@ -150,7 +150,7 @@ export function getSellStatusLabel(sellStatus: SellStatus): string {
  */
 export function getSellStatusBadgeVariant(
   sellStatus: SellStatus
-): 'default' | 'success' | 'warning' | 'danger' {
+): 'default' | 'error' | 'success' | 'voltage' | 'warning' | 'danger' | 'limited' {
   switch (sellStatus) {
     case 'for-sale':
       return 'success';

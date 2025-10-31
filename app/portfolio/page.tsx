@@ -11,25 +11,26 @@ import { Heading } from '@/components/ui/Heading';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import PortfolioGrid from '@/components/portfolio/PortfolioGrid';
-import { Product } from '@/types/product';
-import { logger } from '@/lib/utils/logger';
+import { db } from '@/db';
+import { products } from '@/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { mapDbProductToProduct } from '@/lib/mappers/product-mapper';
 
-async function getPortfolioProducts(): Promise<Product[]> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/portfolio`, {
-      cache: 'no-store',
-    });
+// Revalidate every 60 seconds (ISR)
+export const revalidate = 60;
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch portfolio products');
-    }
+async function getPortfolioProducts() {
+  const portfolioProducts = await db
+    .select()
+    .from(products)
+    .where(
+      and(
+        eq(products.showOnPortfolioPage, true),
+        eq(products.isLive, true)
+      )
+    );
 
-    return await response.json();
-  } catch (error) {
-    logger.error('Error fetching portfolio products', error as Error);
-    return [];
-  }
+  return portfolioProducts.map(mapDbProductToProduct);
 }
 
 export default async function PortfolioPage() {

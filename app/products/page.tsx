@@ -4,10 +4,10 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Badge } from "@/components/ui/Badge";
 import { getProductsListingContent } from "@/hooks/usePageContent";
-import { apiGet } from "@/lib/utils/api-client";
-import { API_ENDPOINTS } from "@/lib/config/api";
-import { ProductSchema } from "@/types/product";
-import { z } from "zod";
+import { getAllProducts } from "@/lib/services/product-service";
+
+// Revalidate every 60 seconds (ISR)
+export const revalidate = 60;
 
 /**
  * Product Listing Page
@@ -22,13 +22,9 @@ export default async function ProductsPage() {
   // Load content
   const content = await getProductsListingContent();
 
-  // Fetch products server-side with validation
+  // Fetch products from database (server-side)
   // Errors will be caught by error boundary (app/products/error.tsx)
-  const products = await apiGet(
-    API_ENDPOINTS.PRODUCTS,
-    z.array(ProductSchema),
-    { cache: "no-store" }
-  );
+  const products = await getAllProducts();
 
   // Categorize products
   const founderEdition = products.find(p => p.hasVariants === true);

@@ -6,10 +6,7 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { getHomePageContent } from "@/hooks/usePageContent";
-import { apiGet } from "@/lib/utils/api-client";
-import { API_ENDPOINTS } from "@/lib/config/api";
-import { ProductSchema } from "@/types/product";
-import { z } from "zod";
+import { getAllProducts } from "@/lib/services/product-service";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -32,6 +29,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Revalidate every 60 seconds (ISR)
+export const revalidate = 60;
+
 /**
  * Homepage
  *
@@ -47,13 +47,9 @@ export default async function HomePage() {
   // Load content
   const content = await getHomePageContent();
 
-  // Fetch all products with validation
+  // Fetch all products from database (server-side)
   // Errors will be caught by error boundary (app/error.tsx)
-  const products = await apiGet(
-    API_ENDPOINTS.PRODUCTS,
-    z.array(ProductSchema),
-    { cache: "no-store" }
-  );
+  const products = await getAllProducts();
 
   // Filter Founder Edition variants (they'll have hasVariants: true)
   const founderEdition = products.find((p) => p.hasVariants === true);

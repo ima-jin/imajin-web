@@ -69,6 +69,7 @@ Before marking task complete, verify:
 - [ ] All existing tests still passing
 - [ ] `npm run type-check` returns 0 errors
 - [ ] `npm run lint` returns 0 errors
+- [ ] `npm run build` completes successfully
 - [ ] TodoWrite tasks marked completed
 - [ ] Implementation matches requirements
 
@@ -170,6 +171,7 @@ export interface Product {
 - [ ] All phase deliverables complete
 - [ ] All tests passing (unit + integration)
 - [ ] No linter/type errors
+- [ ] Production build succeeds
 - [ ] Documentation updated
 - [ ] IMPLEMENTATION_PLAN.md checkboxes marked
 - [ ] TodoWrite tasks completed
@@ -196,7 +198,7 @@ export interface Product {
 4. Can this be simplified?
 5. Are edge cases tested?
 6. Is the code clear and maintainable?
-7. Do quality gates pass (type-check, lint, tests)?
+7. Do quality gates pass (type-check, lint, tests, build)?
 
 ## Project-Specific Guidelines
 - **Database:** Use Drizzle ORM, no raw SQL unless necessary
