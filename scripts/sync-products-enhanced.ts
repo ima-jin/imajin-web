@@ -26,13 +26,13 @@ config({ path: resolve(process.cwd(), '.env') });
 
 import { db } from '@/db';
 import { products, variants, productSpecs, productDependencies } from '@/db/schema';
-import { eq, notInArray } from 'drizzle-orm';
+import { notInArray } from 'drizzle-orm';
 import { ProductsJsonSchema } from '@/config/schema';
 import type { ProductsJson } from '@/config/schema';
 import { uploadMedia, deleteMedia } from '@/lib/services/cloudinary-service';
 import { syncProductToStripe } from '@/lib/services/stripe-sync-service';
 import { logger } from '@/lib/utils/logger';
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 // Default paths (can be overridden for testing)

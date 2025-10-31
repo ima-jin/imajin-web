@@ -6,7 +6,7 @@ import { Price } from "@/components/ui/Price";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { getBestImageUrl } from "@/lib/utils/cloudinary";
-import { getProductDisplayStatus, getSellStatusLabel, getSellStatusBadgeVariant } from "@/lib/utils/product-display";
+import { getProductDisplayStatus } from "@/lib/utils/product-display";
 import type { Product } from "@/types/product";
 import type { ProductDetailContent } from "@/config/schema/page-content-schema";
 

@@ -64,7 +64,7 @@ export async function checkMediaExists(publicId: string): Promise<boolean> {
   try {
     await cloudinary.api.resource(publicId);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

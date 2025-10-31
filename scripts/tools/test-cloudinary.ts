@@ -84,14 +84,14 @@ async function testCloudinary() {
     try {
       unlinkSync(TEST_FILE_PATH);
       console.log('🧹 Local test file cleaned up');
-    } catch (cleanupError) {
+    } catch {
       // File might not exist
     }
 
     try {
       await deleteMedia(TEST_PUBLIC_ID);
       console.log('🧹 Cloudinary test file cleaned up');
-    } catch (cleanupError) {
+    } catch {
       // File might not exist
     }
 

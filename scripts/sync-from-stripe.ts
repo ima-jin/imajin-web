@@ -15,7 +15,6 @@
 import {
   fetchStripeProducts,
   fetchStripePrices,
-  fetchPricesForProduct,
 } from '@/lib/services/stripe-service';
 import { ProductsJsonSchema, type VariantConfig } from '@/config/schema';
 import { logger } from '@/lib/utils/logger';
