@@ -1,14 +1,42 @@
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 import { getDatabaseConnectionString } from "@/lib/config/database";
 
-// Create postgres connection
-const connectionString = getDatabaseConnectionString();
+/**
+ * Type for our database instance with schema
+ */
+type DbInstance = PostgresJsDatabase<typeof schema>;
 
 /**
- * Main database instance for queries
+ * Lazily initialized database connection
+ * Only creates connection when first accessed (runtime, not build time)
+ */
+let queryClient: postgres.Sql | null = null;
+let dbInstance: DbInstance | null = null;
+
+/**
+ * Get database instance (lazy initialization)
  * Use this for all application database operations
  */
-const queryClient = postgres(connectionString);
-export const db = drizzle(queryClient, { schema });
+export function getDb(): DbInstance {
+  if (!dbInstance) {
+    const connectionString = getDatabaseConnectionString();
+    queryClient = postgres(connectionString);
+    dbInstance = drizzle(queryClient, { schema });
+  }
+  return dbInstance;
+}
+
+/**
+ * Legacy export for backwards compatibility
+ * Proxies to getDb() for lazy initialization
+ */
+export const db = new Proxy({} as DbInstance, {
+  get(_target, prop) {
+    const instance = getDb();
+    const value = instance[prop as keyof DbInstance];
+    // Bind functions to preserve 'this' context
+    return typeof value === 'function' ? value.bind(instance) : value;
+  }
+});
