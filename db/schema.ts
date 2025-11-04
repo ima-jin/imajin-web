@@ -38,6 +38,8 @@ export const products = pgTable(
     isLive: boolean("is_live").default(false).notNull(),
     costCents: integer("cost_cents"),
     wholesalePriceCents: integer("wholesale_price_cents"),
+    cogsPrice: integer("cogs_price"), // Cost of goods sold (internal tracking)
+    presaleDepositPrice: integer("presale_deposit_price"), // Refundable deposit amount for pre-sale
     sellStatus: text("sell_status").default("internal").notNull(),
     sellStatusNote: text("sell_status_note"),
     lastSyncedAt: timestamp("last_synced_at"),
@@ -47,7 +49,7 @@ export const products = pgTable(
     stripeProductId: text("stripe_product_id"), // For products WITH variants (parent product)
     stripePriceId: text("stripe_price_id"), // For products WITHOUT variants (single price)
 
-    // Portfolio & Featured Product fields (Phase 2.4.7)
+    // Portfolio & Featured Product fields
     showOnPortfolioPage: boolean("show_on_portfolio_page").default(false).notNull(),
     portfolioCopy: text("portfolio_copy"), // Nullable, markdown content, max 2000 chars (validated at app level)
     isFeatured: boolean("is_featured").default(false).notNull(),
@@ -81,6 +83,8 @@ export const variants = pgTable(
     variantType: text("variant_type").notNull(), // "color", "voltage", "size", etc.
     variantValue: text("variant_value").notNull(), // "BLACK", "WHITE", "RED", "5v", "24v", etc.
     priceModifier: integer("price_modifier").default(0), // Price difference from base (in cents)
+    wholesalePriceModifier: integer("wholesale_price_modifier").default(0), // Adjusts wholesalePrice
+    presaleDepositModifier: integer("presale_deposit_modifier").default(0), // Adjusts presaleDepositPrice
     isLimitedEdition: boolean("is_limited_edition").default(false),
     maxQuantity: integer("max_quantity"), // NULL = unlimited
     soldQuantity: integer("sold_quantity").default(0),
@@ -171,6 +175,7 @@ export const orders = pgTable(
     // Tracking
     trackingNumber: text("tracking_number"),
     shippedAt: timestamp("shipped_at"),
+    appliedAt: timestamp("applied_at"), // When deposit was applied to final order
 
     // Metadata
     notes: text("notes"),

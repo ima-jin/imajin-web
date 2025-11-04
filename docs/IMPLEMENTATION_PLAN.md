@@ -262,7 +262,7 @@
 
 ## Phase 4: Polish & Optimization
 
-### 4.1 Performance & Monitoring
+### 4.1 Performance Optimization
 - [ ] Image optimization (Next.js Image + Cloudinary)
   - [ ] Replace `<img>` with `<Image />` in Header component (header logo)
   - [ ] Optimize product images with Next.js Image
@@ -291,12 +291,23 @@
 - [ ] Mobile responsiveness
 - [ ] Cross-browser testing
 
-### 4.4 Admin Tools
+### 4.4 Auth & Admin
+
+#### 4.4.1 Authentication (Auth options TBD)
+- [ ] Auth strategy decision (NextAuth, Clerk, Supabase, custom, etc.)
+- [ ] User accounts setup
+- [ ] Login/logout flow
+- [ ] Session management
+- [ ] Role-based access (customer, admin)
+
+#### 4.4.5 Admin Tools
 - [ ] Admin interface:
   - [ ] View orders
   - [ ] Manage limited edition quantities
   - [ ] View inventory
-- [ ] Admin authentication
+  - [ ] Manage pre-sale deposits
+  - [ ] Transition products (pre-sale → pre-order)
+- [ ] Admin authentication (protected routes)
 
 ### 4.5 Phase 4 Testing
 **Tests:**

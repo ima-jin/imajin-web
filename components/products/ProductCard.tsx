@@ -6,14 +6,20 @@ import { Price } from "@/components/ui/Price";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { getBestImageUrl } from "@/lib/utils/cloudinary";
-import { getProductDisplayStatus } from "@/lib/utils/product-display";
-import type { Product } from "@/types/product";
+import {
+  getProductDisplayStatus,
+  getDisplayPrice,
+  getDepositAmount
+} from "@/lib/utils/product-display";
+import type { Product, MediaItem } from "@/types/product";
 import type { ProductDetailContent } from "@/config/schema/page-content-schema";
 
 interface ProductCardProps {
   product: Product;
   content?: ProductDetailContent;
   variantName?: string; // Optional variant name to append to product name
+  variantMedia?: MediaItem[]; // Optional variant-specific media
+  userHasPaidDeposit?: boolean; // Whether user has paid deposit for this product
 }
 
 /**
@@ -29,9 +35,16 @@ interface ProductCardProps {
  *
  * Links to product detail page on click
  */
-export function ProductCard({ product, content, variantName }: ProductCardProps) {
+export function ProductCard({ product, content, variantName, variantMedia, userHasPaidDeposit = false }: ProductCardProps) {
   const displayStatus = getProductDisplayStatus(product);
   const displayName = variantName ? `${product.name} - ${variantName}` : product.name;
+
+  // Get conditional pricing based on sell status and deposit status
+  const displayPrice = getDisplayPrice(product, undefined, userHasPaidDeposit);
+  const depositAmount = getDepositAmount(product);
+
+  // Use variant media if provided, otherwise fall back to product media
+  const mediaToUse = variantMedia && variantMedia.length > 0 ? variantMedia : product.media;
 
   return (
     <Link href={`/products/${product.id}`} className="block">
@@ -39,7 +52,7 @@ export function ProductCard({ product, content, variantName }: ProductCardProps)
         {/* Product Image */}
         <div className="aspect-square bg-gray-100 relative overflow-hidden">
           <Image
-            src={getBestImageUrl(product.media, 'hero', { width: 400, height: 400 })}
+            src={getBestImageUrl(mediaToUse, 'hero', { width: 400, height: 400 })}
             alt={displayName}
             fill
             className="object-cover"
@@ -80,14 +93,40 @@ export function ProductCard({ product, content, variantName }: ProductCardProps)
 
           {/* Price */}
           <div className="pt-2">
-            <div className="flex items-baseline gap-2">
-              <Price amount={product.basePrice} size="lg" />
-              {displayStatus.message && (
-                <span className="text-xs text-gray-600">
-                  ({displayStatus.message})
-                </span>
-              )}
-            </div>
+            {product.sellStatus === 'pre-sale' && depositAmount !== null ? (
+              // Pre-sale: Show deposit amount with badge
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="voltage" size="sm">
+                    Deposit
+                  </Badge>
+                  <Price amount={depositAmount} size="lg" />
+                </div>
+                <Text size="caption" color="muted">
+                  Refundable deposit to secure wholesale pricing
+                </Text>
+              </div>
+            ) : displayPrice ? (
+              // Pre-order or For-sale: Show price
+              <div className="flex items-baseline gap-2">
+                <Price amount={displayPrice.price} size="lg" />
+                {displayPrice.type === 'wholesale' && (
+                  <Badge variant="success" size="sm">
+                    Wholesale
+                  </Badge>
+                )}
+                {displayStatus.message && (
+                  <span className="text-xs text-gray-600">
+                    ({displayStatus.message})
+                  </span>
+                )}
+              </div>
+            ) : (
+              // Price hidden (fallback)
+              <Text size="sm" color="muted">
+                Pricing available soon
+              </Text>
+            )}
           </div>
 
           {/* Variants Indicator - only show if product has variants AND no specific variant is being shown */}

@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { orders, orderItems, products, variants } from '@/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 
 export interface CreateOrderParams {
   sessionId: string;
@@ -183,4 +183,72 @@ export async function updateOrderStatus(
     })
     .where(eq(orders.id, orderId))
     .returning();
+}
+
+/**
+ * Checks if user has paid deposit for a specific product
+ *
+ * Used for conditional pricing: deposit holders see wholesale price during pre-order,
+ * public sees base price.
+ *
+ * Query logic:
+ * - Find orders with product_id = 'pre-sale-deposit'
+ * - Match customer email
+ * - Match metadata.target_product_id
+ * - Status must be 'paid' (not 'applied' or 'refunded')
+ *
+ * @param userEmail - Customer email (null if not logged in)
+ * @param productId - Product ID to check deposit for
+ * @returns True if user has active deposit for this product
+ */
+export async function userHasPaidDeposit(
+  userEmail: string | null,
+  productId: string
+): Promise<boolean> {
+  if (!userEmail) return false;
+
+  const [depositOrder] = await db
+    .select()
+    .from(orders)
+    .where(
+      and(
+        eq(orders.customerEmail, userEmail),
+        sql`${orders.metadata}->>'target_product_id' = ${productId}`,
+        eq(orders.status, 'paid')
+      )
+    )
+    .limit(1);
+
+  return !!depositOrder;
+}
+
+/**
+ * Gets deposit order for email + product
+ *
+ * Used for:
+ * - Calculating remaining balance during pre-order checkout
+ * - Refund validation
+ * - Marking deposit as 'applied' after final payment
+ *
+ * @param userEmail - Customer email
+ * @param productId - Product ID
+ * @returns Deposit order, or null if not found
+ */
+export async function getDepositOrder(
+  userEmail: string,
+  productId: string
+): Promise<typeof orders.$inferSelect | null> {
+  const [depositOrder] = await db
+    .select()
+    .from(orders)
+    .where(
+      and(
+        eq(orders.customerEmail, userEmail),
+        sql`${orders.metadata}->>'target_product_id' = ${productId}`,
+        eq(orders.status, 'paid')
+      )
+    )
+    .limit(1);
+
+  return depositOrder || null;
 }

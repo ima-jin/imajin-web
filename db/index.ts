@@ -29,7 +29,7 @@ export function getDb(): DbInstance {
 }
 
 /**
- * Legacy export for backwards compatibility
+ * Re-export for convenience
  * Proxies to getDb() for lazy initialization
  */
 export const db = new Proxy({} as DbInstance, {

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Stripe from 'stripe';
 import {
   createCheckoutSession,
+  createDepositCheckoutSession,
+  createPreOrderCheckoutSession,
   getCheckoutSession,
   verifyWebhookSignature,
   createRefund,
@@ -276,6 +278,227 @@ describe('Stripe Service', () => {
 
       await expect(createRefund('invalid_pi')).rejects.toThrow(
         'No such payment_intent'
+      );
+    });
+  });
+
+  describe('createDepositCheckoutSession', () => {
+    it('creates deposit session with correct metadata', async () => {
+      const mockSession = {
+        id: 'cs_deposit_123',
+        url: 'https://checkout.stripe.com/deposit',
+      };
+
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      const result = await createDepositCheckoutSession({
+        productId: 'prod_founder_edition',
+        depositAmount: 50000, // $500
+        customerEmail: 'test@example.com',
+      });
+
+      expect(result).toEqual(mockSession);
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mode: 'payment',
+          customer_email: 'test@example.com',
+          metadata: {
+            order_type: 'pre-sale-deposit',
+            target_product_id: 'prod_founder_edition',
+          },
+        })
+      );
+    });
+
+    it('includes variant ID in metadata when provided', async () => {
+      const mockSession = { id: 'cs_deposit_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createDepositCheckoutSession({
+        productId: 'prod_founder_edition',
+        variantId: 'variant_black',
+        depositAmount: 50000,
+        customerEmail: 'test@example.com',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: {
+            order_type: 'pre-sale-deposit',
+            target_product_id: 'prod_founder_edition',
+            target_variant_id: 'variant_black',
+          },
+        })
+      );
+    });
+
+    it('creates line item with correct deposit amount', async () => {
+      const mockSession = { id: 'cs_deposit_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createDepositCheckoutSession({
+        productId: 'prod_founder_edition',
+        depositAmount: 50000,
+        customerEmail: 'test@example.com',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: 'Pre-Sale Deposit',
+                  description: 'Refundable deposit to secure wholesale pricing',
+                },
+                unit_amount: 50000,
+              },
+              quantity: 1,
+            },
+          ],
+        })
+      );
+    });
+
+    it('sets custom success and cancel URLs', async () => {
+      const mockSession = { id: 'cs_deposit_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createDepositCheckoutSession({
+        productId: 'prod_founder_edition',
+        depositAmount: 50000,
+        customerEmail: 'test@example.com',
+        successUrl: 'https://example.com/deposit-success',
+        cancelUrl: 'https://example.com/deposit-cancel',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success_url: 'https://example.com/deposit-success',
+          cancel_url: 'https://example.com/deposit-cancel',
+        })
+      );
+    });
+
+    it('does not collect shipping address for deposits', async () => {
+      const mockSession = { id: 'cs_deposit_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createDepositCheckoutSession({
+        productId: 'prod_founder_edition',
+        depositAmount: 50000,
+        customerEmail: 'test@example.com',
+      });
+
+      const callArgs = mockStripe.checkout.sessions.create.mock.calls[0][0];
+      expect(callArgs.shipping_address_collection).toBeUndefined();
+    });
+  });
+
+  describe('createPreOrderCheckoutSession', () => {
+    it('creates pre-order session with deposit metadata', async () => {
+      const mockSession = {
+        id: 'cs_preorder_123',
+        url: 'https://checkout.stripe.com/preorder',
+      };
+
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      const result = await createPreOrderCheckoutSession({
+        items: [{ stripePriceId: 'price_wholesale_123', quantity: 1 }],
+        customerEmail: 'test@example.com',
+        depositOrderId: 'cs_deposit_123',
+      });
+
+      expect(result).toEqual(mockSession);
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mode: 'payment',
+          customer_email: 'test@example.com',
+          metadata: {
+            order_type: 'pre-order-with-deposit',
+            deposit_order_id: 'cs_deposit_123',
+          },
+        })
+      );
+    });
+
+    it('creates session without deposit ID when not provided', async () => {
+      const mockSession = { id: 'cs_preorder_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createPreOrderCheckoutSession({
+        items: [{ stripePriceId: 'price_base_123', quantity: 1 }],
+        customerEmail: 'test@example.com',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: {
+            order_type: 'pre-order-with-deposit',
+          },
+        })
+      );
+    });
+
+    it('includes line items for multiple products', async () => {
+      const mockSession = { id: 'cs_preorder_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createPreOrderCheckoutSession({
+        items: [
+          { stripePriceId: 'price_123', quantity: 2 },
+          { stripePriceId: 'price_456', quantity: 1 },
+        ],
+        customerEmail: 'test@example.com',
+        depositOrderId: 'cs_deposit_123',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          line_items: [
+            { price: 'price_123', quantity: 2 },
+            { price: 'price_456', quantity: 1 },
+          ],
+        })
+      );
+    });
+
+    it('enables shipping address collection', async () => {
+      const mockSession = { id: 'cs_preorder_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createPreOrderCheckoutSession({
+        items: [{ stripePriceId: 'price_123', quantity: 1 }],
+        customerEmail: 'test@example.com',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shipping_address_collection: expect.objectContaining({
+            allowed_countries: expect.arrayContaining(['US', 'CA']),
+          }),
+        })
+      );
+    });
+
+    it('sets custom success and cancel URLs', async () => {
+      const mockSession = { id: 'cs_preorder_123' };
+      mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
+
+      await createPreOrderCheckoutSession({
+        items: [{ stripePriceId: 'price_123', quantity: 1 }],
+        customerEmail: 'test@example.com',
+        successUrl: 'https://example.com/preorder-success',
+        cancelUrl: 'https://example.com/preorder-cancel',
+      });
+
+      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success_url: 'https://example.com/preorder-success',
+          cancel_url: 'https://example.com/preorder-cancel',
+        })
       );
     });
   });

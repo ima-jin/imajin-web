@@ -92,7 +92,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCf0QyGPGlKS",
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Material-8x8-V",
@@ -185,7 +185,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCayXaPKCq8J",
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Connect-4x31.6-5v",
@@ -230,7 +230,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Connect-5x31.6-5v",
@@ -275,7 +275,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Connect-4x31.6-24v",
@@ -320,7 +320,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Connect-5x31.6-24v",
@@ -365,7 +365,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Diffuse-12-C",
@@ -410,7 +410,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Diffuse-12-S",
@@ -455,7 +455,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Control-2-5v",
@@ -511,7 +511,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Control-8-24v",
@@ -567,7 +567,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Control-16-24v",
@@ -623,7 +623,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Unit-8x8x8-DIY",
@@ -688,26 +688,28 @@
       "sell_status_note": "Ships Q1 2026",
       "media": [
         {
-          "local_path": "Unit/8x8x8/BLACK/rainbow.jpg",
-          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/rainbow",
+          "local_path": "",
+          "cloudinary_public_id": "",
           "type": "image",
           "mime_type": "image/jpeg",
           "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
           "category": "main",
           "order": 1,
-          "uploaded_at": "2025-10-30T15:25:28.217Z"
+          "uploaded_at": "2025-10-30T15:25:28.217Z",
+          "deleted": true,
+          "deleted_at": "2025-11-04T08:18:43.986Z"
         }
       ],
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCAvlFacuPh9",
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     },
     {
       "id": "Unit-8x8x8-Founder",
       "name": "Unit 8x8x8",
-      "description": "Hand-assembled 5v 8-layer cube with 10-year warranty and MJN NFT",
+      "description": "Hand-assembled 5v 8-layer cube with 10-year warranty and Solana NFT",
       "long_description": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
       "category": "unit",
       "dev_status": 5,
@@ -775,7 +777,7 @@
       "sell_status_note": "Ships Q1 2026",
       "media": [
         {
-          "local_path": "Unit/8x8x8/BLACK/rainbow.jpg",
+          "local_path": "Unit/8x8x8/rainbow.jpg",
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/rainbow",
           "type": "image",
           "mime_type": "image/jpeg",
@@ -785,7 +787,7 @@
           "uploaded_at": "2025-10-30T15:25:28.488Z"
         },
         {
-          "local_path": "Unit/8x8x8/BLACK/desk.jpg",
+          "local_path": "Unit/8x8x8/desk.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
           "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
@@ -795,7 +797,7 @@
           "uploaded_at": "2025-10-30T15:25:28.934Z"
         },
         {
-          "local_path": "Unit/8x8x8/BLACK/home.jpg",
+          "local_path": "Unit/8x8x8/home.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
           "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
@@ -805,7 +807,7 @@
           "uploaded_at": "2025-10-31T06:53:58.871Z"
         },
         {
-          "local_path": "Unit/8x8x8/BLACK/video.mp4",
+          "local_path": "Unit/8x8x8/video.mp4",
           "type": "video",
           "mime_type": "video/mp4",
           "alt": "8x8x8 DIY Cube displaying moving pattern across 8 layers of addressable RGB LEDs",
@@ -815,7 +817,7 @@
           "uploaded_at": "2025-10-31T06:54:03.032Z"
         },
         {
-          "local_path": "Unit/8x8x8/BLACK/waves.jpg",
+          "local_path": "Unit/8x8x8/waves.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
           "alt": "8x8x8 DIY Cube waves colourful pattern across 8 layers of addressable RGB LEDs",
@@ -825,7 +827,7 @@
           "uploaded_at": "2025-10-31T06:54:03.451Z"
         },
         {
-          "local_path": "Unit/8x8x8/BLACK/white.jpg",
+          "local_path": "Unit/8x8x8/white.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
           "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
@@ -839,7 +841,7 @@
       "portfolioCopy": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
       "isFeatured": true,
       "stripe_product_id": "prod_TLWCEEY3blul23",
-      "last_synced_at": "2025-11-04T05:08:08.784Z"
+      "last_synced_at": "2025-11-04T09:33:16.116Z"
     }
   ],
   "variants": [
@@ -854,9 +856,20 @@
       "metadata": {
         "panel_color": "BLACK"
       },
-      "media": [],
+      "media": [
+        {
+          "local_path": "Unit/8x8x8/BLACK/black.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "category": "hero",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/black",
+          "uploaded_at": "2025-11-04T08:18:41.823Z"
+        }
+      ],
       "stripe_product_id": "prod_TLWC78h4y2DvWI",
-      "stripe_price_id": "price_1SPcTTGpeuLZwNPDUpLVmFPP"
+      "stripe_price_id": "price_1SPgc2GpeuLZwNPDSBMlsxQK"
     },
     {
       "id": "Unit-8x8x8-Founder-White",
@@ -869,9 +882,20 @@
       "metadata": {
         "panel_color": "WHITE"
       },
-      "media": [],
+      "media": [
+        {
+          "local_path": "Unit/8x8x8/WHITE/white.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "category": "hero",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/WHITE/white",
+          "uploaded_at": "2025-11-04T08:18:42.367Z"
+        }
+      ],
       "stripe_product_id": "prod_TLWCKSdz5hHmlb",
-      "stripe_price_id": "price_1SPcTTGpeuLZwNPDRZkw1ncy"
+      "stripe_price_id": "price_1SPgc2GpeuLZwNPD9IxD05WN"
     },
     {
       "id": "Unit-8x8x8-Founder-Red",
@@ -884,9 +908,20 @@
       "metadata": {
         "panel_color": "RED"
       },
-      "media": [],
+      "media": [
+        {
+          "local_path": "Unit/8x8x8/RED/red.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "category": "hero",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/RED/red",
+          "uploaded_at": "2025-11-04T08:18:43.015Z"
+        }
+      ],
       "stripe_product_id": "prod_TLWCEB3m8VtNO1",
-      "stripe_price_id": "price_1SPcTTGpeuLZwNPDXDmJMONW"
+      "stripe_price_id": "price_1SPgc2GpeuLZwNPDDlhHI5Ka"
     }
   ],
   "dependencies": [

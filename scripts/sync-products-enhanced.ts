@@ -642,6 +642,8 @@ async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> 
         variantType: variant.variant_type,
         variantValue: variant.variant_value,
         priceModifier: variant.price_modifier,
+        wholesalePriceModifier: variant.wholesale_price_modifier ?? 0,
+        presaleDepositModifier: variant.presale_deposit_modifier ?? 0,
         isLimitedEdition: variant.is_limited_edition || false,
         maxQuantity: variant.max_quantity ?? null,
         soldQuantity: 0,
@@ -655,6 +657,8 @@ async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> 
           variantType: variant.variant_type,
           variantValue: variant.variant_value,
           priceModifier: variant.price_modifier,
+          wholesalePriceModifier: variant.wholesale_price_modifier ?? 0,
+          presaleDepositModifier: variant.presale_deposit_modifier ?? 0,
           isLimitedEdition: variant.is_limited_edition || false,
           maxQuantity: variant.max_quantity ?? null,
           // NOTE: Don't overwrite soldQuantity on sync

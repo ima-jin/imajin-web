@@ -1,10 +1,12 @@
 import { NextRequest } from 'next/server';
 import { headers } from 'next/headers';
 import { verifyWebhookSignature } from '@/lib/services/stripe-service';
-import { createOrder } from '@/lib/services/order-service';
+import { createOrder, updateOrderStatus } from '@/lib/services/order-service';
 import { successResponse, errorResponse } from '@/lib/utils/api-response';
 import { ERROR_CODES, HTTP_STATUS } from '@/lib/config/api';
 import { logger } from '@/lib/utils/logger';
+import { db } from '@/db';
+import { orders } from '@/db/schema';
 import type Stripe from 'stripe';
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -88,11 +90,24 @@ export async function POST(request: NextRequest) {
  * Handles completed checkout session
  *
  * Creates order in database with all items and shipping info.
- * Decrements limited edition quantities atomically.
+ * Handles three order types:
+ * 1. Regular order: Normal product purchase
+ * 2. Pre-sale deposit: Stores deposit with target_product_id metadata
+ * 3. Pre-order with deposit: Links to deposit order and marks it as applied
+ *
+ * Decrements limited edition quantities atomically (regular and pre-order only).
  */
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   try {
-    // Parse cart items from metadata
+    const orderType = session.metadata?.order_type;
+
+    // Handle pre-sale deposit orders
+    if (orderType === 'pre-sale-deposit') {
+      await handleDepositOrder(session);
+      return;
+    }
+
+    // Handle regular or pre-order with deposit
     const cartItemsJson = session.metadata?.cartItems;
     if (!cartItemsJson) {
       throw new Error('No cart items in session metadata');
@@ -139,8 +154,80 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     });
 
     logger.info('Order created successfully from webhook', { sessionId: session.id });
+
+    // If this is a pre-order with deposit, mark the deposit as applied
+    if (orderType === 'pre-order-with-deposit') {
+      const depositOrderId = session.metadata?.deposit_order_id;
+      if (depositOrderId) {
+        await markDepositAsApplied(depositOrderId);
+        logger.info('Deposit marked as applied', { depositOrderId, orderId: session.id });
+      }
+    }
   } catch (error) {
     logger.error('Failed to create order from webhook', error as Error, { sessionId: session.id });
+    throw error;
+  }
+}
+
+/**
+ * Handles pre-sale deposit orders
+ *
+ * Creates an order record for the deposit with:
+ * - Status: 'paid'
+ * - Metadata: target_product_id (and optionally target_variant_id)
+ * - No shipping info (deposit only, not physical product yet)
+ */
+async function handleDepositOrder(session: Stripe.Checkout.Session) {
+  try {
+    const targetProductId = session.metadata?.target_product_id;
+    const targetVariantId = session.metadata?.target_variant_id;
+
+    if (!targetProductId) {
+      throw new Error('Missing target_product_id in deposit session metadata');
+    }
+
+    // Create order record for deposit
+    await db.insert(orders).values({
+      id: session.id,
+      stripePaymentIntentId: session.payment_intent as string,
+      customerEmail: session.customer_email || session.customer_details?.email || '',
+      customerName: session.customer_details?.name || undefined,
+      status: 'paid',
+      subtotal: session.amount_subtotal || 0,
+      tax: session.total_details?.amount_tax || 0,
+      shipping: 0, // No shipping for deposit
+      total: session.amount_total || 0,
+      currency: 'usd',
+      metadata: {
+        order_type: 'pre-sale-deposit',
+        target_product_id: targetProductId,
+        ...(targetVariantId && { target_variant_id: targetVariantId }),
+      },
+    });
+
+    logger.info('Deposit order created successfully', {
+      sessionId: session.id,
+      targetProductId,
+      targetVariantId,
+    });
+  } catch (error) {
+    logger.error('Failed to create deposit order', error as Error, { sessionId: session.id });
+    throw error;
+  }
+}
+
+/**
+ * Marks a deposit order as applied
+ *
+ * Updates the deposit order status to 'applied' and sets appliedAt timestamp.
+ * This prevents the deposit from being refunded or used again.
+ */
+async function markDepositAsApplied(depositOrderId: string) {
+  try {
+    await updateOrderStatus(depositOrderId, 'applied');
+    logger.info('Deposit order marked as applied', { depositOrderId });
+  } catch (error) {
+    logger.error('Failed to mark deposit as applied', error as Error, { depositOrderId });
     throw error;
   }
 }

@@ -5,6 +5,8 @@ import { ProductSpecs } from "@/components/products/ProductSpecs";
 import { LimitedEditionBadge } from "@/components/products/LimitedEditionBadge";
 import { ProductAddToCart } from "@/components/products/ProductAddToCart";
 import { MediaCarousel } from "@/components/products/MediaCarousel";
+import { DepositRefundButton } from "@/components/products/DepositRefundButton";
+import { Badge } from "@/components/ui/Badge";
 import { getProductDetailContent } from "@/hooks/usePageContent";
 import { getNavigation } from "@/hooks/useNavigation";
 import { apiGet, ApiClientError } from "@/lib/utils/api-client";
@@ -13,11 +15,18 @@ import { ProductWithVariantsSchema } from "@/types/product";
 import type { Variant } from "@/types/product";
 import { formatCurrency } from "@/lib/utils/price";
 import { getProductImageUrl } from "@/lib/utils/cloudinary";
-import { getProductDisplayStatus } from "@/lib/utils/product-display";
+import {
+  getProductDisplayStatus,
+  getDisplayPrice,
+  getDepositAmount
+} from "@/lib/utils/product-display";
 
 interface ProductDetailPageProps {
   params: Promise<{
     id: string;
+  }>;
+  searchParams: Promise<{
+    orderId?: string;
   }>;
 }
 
@@ -72,9 +81,11 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
  * - Product specifications
  * - Variants list (if any)
  * - Add to cart button (placeholder)
+ * - Deposit refund button (if orderId provided in URL)
  */
-export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
+export default async function ProductDetailPage({ params, searchParams }: ProductDetailPageProps) {
   const { id } = await params;
+  const { orderId } = await searchParams;
 
   // Load content
   const [content, navigation] = await Promise.all([
@@ -90,8 +101,14 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       { cache: "no-store" }
     );
 
-    // Format price
-    const formattedPrice = formatCurrency(product.basePrice);
+    // TODO: Get user email from session/auth context
+    // For now, defaulting to false (no deposit paid)
+    // const userEmail = null; // Replace with actual auth check
+    const userHasPaidDeposit = false; // Replace with userHasPaidDeposit(userEmail, product.id)
+
+    // Get conditional pricing based on sell status and deposit status
+    const displayPrice = getDisplayPrice(product, undefined, userHasPaidDeposit);
+    const depositAmount = getDepositAmount(product);
 
     // Get display status (includes sell status badge and note)
     const displayStatus = getProductDisplayStatus(product);
@@ -136,12 +153,58 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               </h1>
 
               {/* Price */}
-              <div className="flex items-baseline gap-3">
-                <div className="text-3xl font-bold text-gray-900">{formattedPrice}</div>
-                {displayStatus.message && (
-                  <span className="text-base text-gray-600">
-                    ({displayStatus.message})
-                  </span>
+              <div className="space-y-3">
+                {product.sellStatus === 'pre-sale' && depositAmount !== null ? (
+                  // Pre-sale: Show deposit amount with badge
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="voltage" size="md">
+                        Deposit
+                      </Badge>
+                      <div className="text-3xl font-bold text-gray-900">
+                        {formatCurrency(depositAmount)}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      Refundable deposit to secure wholesale pricing when this product moves to pre-order
+                    </p>
+                    {displayStatus.message && (
+                      <p className="text-sm text-gray-600">
+                        {displayStatus.message}
+                      </p>
+                    )}
+                  </div>
+                ) : displayPrice ? (
+                  // Pre-order or For-sale: Show price
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl font-bold text-gray-900">
+                        {formatCurrency(displayPrice.price)}
+                      </div>
+                      {displayPrice.type === 'wholesale' && (
+                        <Badge variant="success" size="md">
+                          Wholesale Price
+                        </Badge>
+                      )}
+                    </div>
+                    {displayStatus.message && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        {displayStatus.message}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  // Price hidden (fallback)
+                  <div>
+                    <p className="text-lg text-gray-600">
+                      Pricing will be available soon
+                    </p>
+                    {displayStatus.message && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        {displayStatus.message}
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -178,6 +241,16 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   <p className="text-sm text-amber-800">
                     {content.assembly.notice}
                   </p>
+                </div>
+              )}
+
+              {/* Deposit Refund Button (if orderId provided) */}
+              {orderId && (
+                <div className="pt-4">
+                  <DepositRefundButton
+                    productId={product.id}
+                    orderId={orderId}
+                  />
                 </div>
               )}
 

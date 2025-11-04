@@ -37,12 +37,12 @@ portfolio_items
 
 ```sql
 CREATE TABLE products (
-  id TEXT PRIMARY KEY,                    -- Matches Stripe Product ID
+  id TEXT PRIMARY KEY,                    -- Internal product ID
   name TEXT NOT NULL,
   description TEXT,
   category TEXT NOT NULL,                 -- "material", "connector", "control", "diffuser", "kit", "interface"
   dev_status INTEGER NOT NULL DEFAULT 0,  -- 0-5 (only show if status = 5)
-  base_price INTEGER NOT NULL,            -- Price in cents (from Stripe, cached)
+  base_price INTEGER NOT NULL,            -- Price in cents (retail/base price)
   is_active BOOLEAN DEFAULT true,
   requires_assembly BOOLEAN DEFAULT false,
   has_variants BOOLEAN DEFAULT false,
@@ -60,16 +60,22 @@ CREATE TABLE products (
     max_quantity IS NULL OR sold_quantity < max_quantity
   ) STORED,
 
-  -- Product visibility and lifecycle (Phase 2.4.6)
+  -- Product visibility and lifecycle
   is_live BOOLEAN NOT NULL DEFAULT false, -- Show on site? (manual control)
   cost_cents INTEGER,                     -- Manufacturing cost (optional)
-  wholesale_price_cents INTEGER,          -- B2B pricing (optional)
-  sell_status TEXT NOT NULL DEFAULT 'internal',  -- "for-sale" | "pre-order" | "sold-out" | "internal"
+  wholesale_price_cents INTEGER,          -- Wholesale/vendor pricing (optional)
+  cogs_price INTEGER,                     -- Cost of goods sold (internal tracking)
+  presale_deposit_price INTEGER,          -- Refundable deposit amount for pre-sale
+  sell_status TEXT NOT NULL DEFAULT 'internal',  -- "for-sale" | "pre-order" | "pre-sale" | "sold-out" | "internal"
   sell_status_note TEXT,                  -- Optional customer-facing message (e.g., "Shipping Dec 1")
   last_synced_at TIMESTAMP,               -- Last sync with Stripe/Cloudinary
   media JSONB,                            -- Array of media items with Cloudinary public IDs
 
-  -- Portfolio & Featured Product fields (Phase 2.4.7)
+  -- Stripe integration
+  stripe_product_id TEXT,                 -- For products WITH variants (parent product)
+  stripe_price_id TEXT,                   -- For products WITHOUT variants (single price)
+
+  -- Portfolio & Featured Product fields
   show_on_portfolio_page BOOLEAN NOT NULL DEFAULT false,  -- Show in portfolio gallery?
   portfolio_copy TEXT,                                     -- Markdown content for portfolio page (max 2000 chars)
   is_featured BOOLEAN NOT NULL DEFAULT false,              -- Show in featured products section?
@@ -120,10 +126,13 @@ Product variants (colors, sizes, voltage options). Only used when `products.has_
 CREATE TABLE variants (
   id TEXT PRIMARY KEY,
   product_id TEXT NOT NULL,
-  stripe_product_id TEXT NOT NULL,
+  stripe_product_id TEXT NOT NULL,        -- Stripe Product ID (parent product for variant)
+  stripe_price_id TEXT,                   -- Stripe Price ID (for variant-specific pricing)
   variant_type TEXT NOT NULL,             -- "color", "voltage", "size"
   variant_value TEXT NOT NULL,            -- "BLACK", "WHITE", "RED"
-  price_modifier INTEGER DEFAULT 0,
+  price_modifier INTEGER DEFAULT 0,       -- Adjusts base_price
+  wholesale_price_modifier INTEGER DEFAULT 0,  -- Adjusts wholesale_price_cents
+  presale_deposit_modifier INTEGER DEFAULT 0,  -- Adjusts presale_deposit_price
   is_limited_edition BOOLEAN DEFAULT false,
 
   -- Per-variant inventory (for limited editions with color options)
@@ -139,7 +148,7 @@ CREATE TABLE variants (
     max_quantity IS NULL OR sold_quantity < max_quantity
   ) STORED,
 
-  -- Media for this variant (Phase 2.4.6)
+  -- Media for this variant
   media JSONB,                            -- Array of variant-specific media (e.g., color-specific images)
 
   metadata JSONB,
@@ -252,7 +261,7 @@ CREATE TABLE orders (
   stripe_payment_intent_id TEXT,
   customer_email TEXT NOT NULL,
   customer_name TEXT,
-  status TEXT NOT NULL DEFAULT 'pending', -- "pending", "paid", "fulfilled", "shipped", "delivered", "cancelled"
+  status TEXT NOT NULL DEFAULT 'pending', -- "pending", "paid", "applied", "refunded", "fulfilled", "shipped", "delivered", "cancelled"
   subtotal INTEGER NOT NULL,
   tax INTEGER DEFAULT 0,
   shipping INTEGER DEFAULT 0,
@@ -271,10 +280,11 @@ CREATE TABLE orders (
   -- Tracking
   tracking_number TEXT,
   shipped_at TIMESTAMP,
+  applied_at TIMESTAMP,                   -- When deposit was applied to final order
 
   -- Metadata
   notes TEXT,
-  metadata JSONB,
+  metadata JSONB,                         -- For pre-sale: { target_product_id, deposit_order_id, deposit_applied }
 
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

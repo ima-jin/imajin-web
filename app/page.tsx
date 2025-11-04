@@ -108,6 +108,7 @@ export default async function HomePage() {
                   key={variant.id}
                   product={founderEditionWithVariants}
                   variantName={variant.variantValue}
+                  variantMedia={variant.media}
                 />
               ))}
             </div>

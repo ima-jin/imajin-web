@@ -41,6 +41,7 @@ describe('SEO Metadata', () => {
       // Test with mock params - convert string id to Promise
       const metadata = await productModule.generateMetadata({
         params: Promise.resolve({ id: 'test-product' }),
+        searchParams: Promise.resolve({}),
       });
 
       expect(metadata.title).toBeDefined();

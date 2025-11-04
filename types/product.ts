@@ -26,7 +26,7 @@ export type DependencyType = "requires" | "suggests" | "incompatible" | "voltage
 /**
  * Sell status enum
  */
-export type SellStatus = "for-sale" | "pre-order" | "sold-out" | "internal";
+export type SellStatus = "for-sale" | "pre-order" | "pre-sale" | "sold-out" | "internal";
 
 /**
  * Media Item
@@ -83,6 +83,8 @@ export interface Product {
   isLive: boolean;
   costCents?: number;
   wholesalePriceCents?: number;
+  cogsPrice?: number;
+  presaleDepositPrice?: number;
   sellStatus: SellStatus;
   sellStatusNote?: string;
   lastSyncedAt?: Date;
@@ -113,10 +115,13 @@ export interface ProductWithSpecs extends Product {
 export interface Variant {
   id: string;
   productId: string;
-  stripeProductId: string;
+  stripeProductId: string; // Stripe Product ID (parent product for variant)
+  stripePriceId?: string; // Stripe Price ID (for variant-specific pricing)
   variantType: string;
   variantValue: string;
   priceModifier: number | null; // Price difference in cents
+  wholesalePriceModifier: number | null; // Adjusts wholesalePrice
+  presaleDepositModifier: number | null; // Adjusts presaleDepositPrice
   isLimitedEdition: boolean | null;
   maxQuantity: number | null;
   soldQuantity: number | null;
@@ -239,7 +244,9 @@ export const ProductSchema = z.object({
   isLive: z.boolean(),
   costCents: z.number().optional(),
   wholesalePriceCents: z.number().optional(),
-  sellStatus: z.enum(['for-sale', 'pre-order', 'sold-out', 'internal']),
+  cogsPrice: z.number().optional(),
+  presaleDepositPrice: z.number().optional(),
+  sellStatus: z.enum(['for-sale', 'pre-order', 'pre-sale', 'sold-out', 'internal']),
   sellStatusNote: z.string().optional(),
   lastSyncedAt: z.coerce.date().optional(),
   media: z.array(MediaItemSchema),
@@ -258,9 +265,12 @@ export const VariantSchema = z.object({
   id: z.string(),
   productId: z.string(),
   stripeProductId: z.string(),
+  stripePriceId: z.string().optional(),
   variantType: z.string(),
   variantValue: z.string(),
   priceModifier: z.number().nullable(),
+  wholesalePriceModifier: z.number().nullable(),
+  presaleDepositModifier: z.number().nullable(),
   isLimitedEdition: z.boolean().nullable(),
   maxQuantity: z.number().nullable(),
   soldQuantity: z.number().nullable(),

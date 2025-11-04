@@ -33,6 +33,8 @@ export interface DbProduct {
   isLive: boolean;
   costCents: number | null;
   wholesalePriceCents: number | null;
+  cogsPrice: number | null;
+  presaleDepositPrice: number | null;
   sellStatus: string;
   sellStatusNote: string | null;
   lastSyncedAt: Date | null;
@@ -69,6 +71,8 @@ export interface Product {
   isLive: boolean;
   costCents?: number;
   wholesalePriceCents?: number;
+  cogsPrice?: number;
+  presaleDepositPrice?: number;
   sellStatus: SellStatus;
   sellStatusNote?: string;
   lastSyncedAt?: Date;
@@ -148,6 +152,8 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     isLive: dbProduct.isLive,
     costCents: dbProduct.costCents ?? undefined,
     wholesalePriceCents: dbProduct.wholesalePriceCents ?? undefined,
+    cogsPrice: dbProduct.cogsPrice ?? undefined,
+    presaleDepositPrice: dbProduct.presaleDepositPrice ?? undefined,
     sellStatus: dbProduct.sellStatus as SellStatus,
     sellStatusNote: dbProduct.sellStatusNote ?? undefined,
     lastSyncedAt: dbProduct.lastSyncedAt ?? undefined,

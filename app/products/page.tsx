@@ -104,6 +104,7 @@ export default async function ProductsPage() {
                       <ProductCard
                         product={founderEditionWithVariants}
                         variantName={variant.variantValue}
+                        variantMedia={variant.media}
                       />
                       <Badge variant="limited" className="absolute top-4 left-4">
                         {variant.availableQuantity ?? 0} Available

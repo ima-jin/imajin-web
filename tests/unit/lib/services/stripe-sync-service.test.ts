@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import {
   syncProductToStripe,
   StripeSyncResult,
+  resetStripeClient,
 } from '@/lib/services/stripe-sync-service';
 
 // Set environment variable before module loads
@@ -32,6 +33,11 @@ vi.mock('stripe', () => {
 describe('stripe-sync-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetStripeClient();
+  });
+
+  afterEach(() => {
+    resetStripeClient();
   });
 
   describe('syncProductToStripe - Create Product', () => {

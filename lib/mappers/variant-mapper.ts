@@ -22,6 +22,8 @@ export interface DbVariant {
   variantType: string;
   variantValue: string;
   priceModifier: number | null;
+  wholesalePriceModifier: number | null;
+  presaleDepositModifier: number | null;
   isLimitedEdition: boolean | null;
   maxQuantity: number | null;
   soldQuantity: number | null;
@@ -43,6 +45,8 @@ export interface Variant {
   variantType: string;
   variantValue: string;
   priceModifier: number | null;
+  wholesalePriceModifier: number | null;
+  presaleDepositModifier: number | null;
   isLimitedEdition: boolean | null;
   maxQuantity: number | null;
   soldQuantity: number | null;
@@ -111,6 +115,8 @@ export function mapDbVariantToVariant(dbVariant: DbVariant): Variant {
     variantType: dbVariant.variantType,
     variantValue: dbVariant.variantValue,
     priceModifier: dbVariant.priceModifier,
+    wholesalePriceModifier: dbVariant.wholesalePriceModifier,
+    presaleDepositModifier: dbVariant.presaleDepositModifier,
     isLimitedEdition: dbVariant.isLimitedEdition,
     maxQuantity: dbVariant.maxQuantity,
     soldQuantity: dbVariant.soldQuantity,

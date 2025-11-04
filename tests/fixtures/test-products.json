@@ -25,7 +25,7 @@
         }
       ],
       "specs": [],
-      "last_synced_at": "2025-11-04T04:48:24.604Z"
+      "last_synced_at": "2025-11-04T09:23:19.855Z"
     }
   ],
   "variants": [
@@ -35,6 +35,8 @@
       "variant_type": "color",
       "variant_value": "RED",
       "price_modifier": 0,
+      "wholesale_price_modifier": 0,
+      "presale_deposit_modifier": 0,
       "is_limited_edition": false,
       "media": [
         {
@@ -45,7 +47,7 @@
           "category": "main",
           "order": 1,
           "cloudinary_public_id": "media/products/product-3/main",
-          "uploaded_at": "2025-11-04T04:48:24.604Z"
+          "uploaded_at": "2025-11-04T09:23:19.854Z"
         }
       ]
     }

@@ -29,11 +29,13 @@ const baseProductDefaults = {
   availableQuantity: null,
   isAvailable: true,
   isLive: true,
-  costCents: undefined,
-  wholesalePriceCents: undefined,
+  costCents: null,
+  wholesalePriceCents: null,
+  cogsPrice: null,
+  presaleDepositPrice: null,
   sellStatus: 'for-sale' as const,
-  sellStatusNote: undefined,
-  lastSyncedAt: undefined,
+  sellStatusNote: null,
+  lastSyncedAt: null,
   media: [],
   showOnPortfolioPage: false,
   portfolioCopy: null,
@@ -49,6 +51,8 @@ const baseDbProductDefaults = {
   ...baseProductDefaults,
   costCents: null,
   wholesalePriceCents: null,
+  cogsPrice: null,
+  presaleDepositPrice: null,
   sellStatusNote: null,
   lastSyncedAt: null,
 };
@@ -154,6 +158,8 @@ export interface DbProduct {
   isLive: boolean;
   costCents: number | null;
   wholesalePriceCents: number | null;
+  cogsPrice: number | null;
+  presaleDepositPrice: number | null;
   sellStatus: string;
   sellStatusNote: string | null;
   lastSyncedAt: Date | null;
@@ -203,6 +209,8 @@ export interface DbVariant {
   variantType: string;
   variantValue: string;
   priceModifier: number;
+  wholesalePriceModifier: number;
+  presaleDepositModifier: number;
   isLimitedEdition: boolean;
   maxQuantity: number | null;
   soldQuantity: number;
@@ -235,6 +243,8 @@ export function createMockDbVariant(overrides: Partial<DbVariant> & {
     variantType: 'color',
     variantValue: 'BLACK',
     priceModifier: 0,
+    wholesalePriceModifier: 0,
+    presaleDepositModifier: 0,
     isLimitedEdition: false,
     maxQuantity: null,
     soldQuantity: 0,
@@ -288,6 +298,8 @@ export function createTestProductConfig(overrides: Partial<{
   max_quantity?: number | null;
   cost_cents?: number;
   wholesale_price_cents?: number;
+  cogs_price?: number;
+  presale_deposit_price?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }> & { id: string; name: string }): any {
   return {
@@ -313,6 +325,8 @@ export function createTestProductConfig(overrides: Partial<{
     ...(overrides.max_quantity !== undefined && { max_quantity: overrides.max_quantity }),
     ...(overrides.cost_cents !== undefined && { cost_cents: overrides.cost_cents }),
     ...(overrides.wholesale_price_cents !== undefined && { wholesale_price_cents: overrides.wholesale_price_cents }),
+    ...(overrides.cogs_price !== undefined && { cogs_price: overrides.cogs_price }),
+    ...(overrides.presale_deposit_price !== undefined && { presale_deposit_price: overrides.presale_deposit_price }),
   };
 }
 
@@ -325,6 +339,8 @@ export function createTestVariantConfig(overrides: Partial<{
   variant_type: string;
   variant_value: string;
   price_modifier: number;
+  wholesale_price_modifier: number;
+  presale_deposit_modifier: number;
   is_limited_edition: boolean;
   max_quantity: number | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -338,6 +354,8 @@ export function createTestVariantConfig(overrides: Partial<{
     variant_type: overrides.variant_type ?? 'color',
     variant_value: overrides.variant_value ?? 'BLACK',
     price_modifier: overrides.price_modifier ?? 0,
+    wholesale_price_modifier: overrides.wholesale_price_modifier ?? 0,
+    presale_deposit_modifier: overrides.presale_deposit_modifier ?? 0,
     is_limited_edition: overrides.is_limited_edition ?? false,
     ...(overrides.max_quantity !== undefined && overrides.max_quantity !== null && { max_quantity: overrides.max_quantity }),
     media: overrides.media ?? [],

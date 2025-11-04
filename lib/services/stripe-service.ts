@@ -24,6 +24,26 @@ export interface CreateCheckoutSessionParams {
   cancelUrl?: string;
 }
 
+export interface CreateDepositCheckoutParams {
+  productId: string; // Target product ID for deposit
+  variantId?: string; // Optional variant ID
+  depositAmount: number; // Deposit amount in cents
+  customerEmail: string;
+  successUrl?: string;
+  cancelUrl?: string;
+}
+
+export interface CreatePreOrderCheckoutParams {
+  items: Array<{
+    stripePriceId: string;
+    quantity: number;
+  }>;
+  customerEmail: string;
+  depositOrderId?: string; // ID of deposit order to apply
+  successUrl?: string;
+  cancelUrl?: string;
+}
+
 /**
  * Creates a Stripe Checkout Session
  *
@@ -62,6 +82,118 @@ export async function createCheckoutSession(
     success_url: successUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: cancelUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout`,
     metadata,
+    expires_at: Math.floor(Date.now() / 1000) + 3600 * 24, // 24 hours
+    shipping_address_collection: {
+      allowed_countries: ['US', 'CA'],
+    },
+    billing_address_collection: 'required',
+  });
+
+  return session;
+}
+
+/**
+ * Creates a Stripe Checkout Session for pre-sale deposit
+ *
+ * This creates a payment session for a refundable deposit that:
+ * - Secures wholesale pricing for the customer
+ * - Gets stored with metadata linking to the target product
+ * - Can be refunded if customer changes mind
+ * - Gets applied to final payment when product moves to pre-order
+ *
+ * @param params - Deposit checkout parameters
+ * @returns Stripe Checkout Session
+ */
+export async function createDepositCheckoutSession(
+  params: CreateDepositCheckoutParams
+): Promise<Stripe.Checkout.Session> {
+  const stripe = getStripeInstance();
+
+  const {
+    productId,
+    variantId,
+    depositAmount,
+    customerEmail,
+    successUrl,
+    cancelUrl,
+  } = params;
+
+  // Create a payment link for the deposit amount
+  // We'll use Stripe's payment_intent_data to create a one-time payment
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card', 'link'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Pre-Sale Deposit',
+            description: 'Refundable deposit to secure wholesale pricing',
+          },
+          unit_amount: depositAmount,
+        },
+        quantity: 1,
+      },
+    ],
+    customer_email: customerEmail,
+    success_url: successUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: cancelUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/products/${productId}`,
+    metadata: {
+      order_type: 'pre-sale-deposit',
+      target_product_id: productId,
+      ...(variantId && { target_variant_id: variantId }),
+    },
+    expires_at: Math.floor(Date.now() / 1000) + 3600 * 24, // 24 hours
+  });
+
+  return session;
+}
+
+/**
+ * Creates a Stripe Checkout Session for pre-order with deposit application
+ *
+ * This creates a payment session for the final payment that:
+ * - Charges the remaining balance after deposit
+ * - Links to the original deposit order
+ * - Marks deposit as 'applied' after successful payment
+ *
+ * @param params - Pre-order checkout parameters
+ * @returns Stripe Checkout Session
+ */
+export async function createPreOrderCheckoutSession(
+  params: CreatePreOrderCheckoutParams
+): Promise<Stripe.Checkout.Session> {
+  const stripe = getStripeInstance();
+
+  const {
+    items,
+    customerEmail,
+    depositOrderId,
+    successUrl,
+    cancelUrl,
+  } = params;
+
+  // Build line items for Stripe
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
+    (item) => ({
+      price: item.stripePriceId,
+      quantity: item.quantity,
+    })
+  );
+
+  // Create session with deposit metadata
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card', 'link'],
+    line_items: lineItems,
+    customer_email: customerEmail,
+    success_url: successUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: cancelUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout`,
+    metadata: {
+      order_type: 'pre-order-with-deposit',
+      ...(depositOrderId && { deposit_order_id: depositOrderId }),
+    },
     expires_at: Math.floor(Date.now() / 1000) + 3600 * 24, // 24 hours
     shipping_address_collection: {
       allowed_countries: ['US', 'CA'],

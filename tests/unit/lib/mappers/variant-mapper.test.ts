@@ -34,6 +34,8 @@ describe("mapDbVariantToVariant", () => {
       variantType: "color",
       variantValue: "BLACK",
       priceModifier: 0,
+      wholesalePriceModifier: 0,
+      presaleDepositModifier: 0,
       isLimitedEdition: true,
       maxQuantity: 500,
       soldQuantity: 50,

@@ -7,8 +7,10 @@ import {
   canAddToCart,
   getAvailabilityMessage,
   filterVisibleProducts,
+  getDisplayPrice,
+  getDepositAmount,
 } from '@/lib/utils/product-display';
-import type { Product } from '@/types/product';
+import type { Product, Variant } from '@/types/product';
 
 // Helper to create test products
 function createTestProduct(overrides: Partial<Product> = {}): Product {
@@ -401,6 +403,247 @@ describe('product-display utilities', () => {
       const visible = filterVisibleProducts(products);
 
       expect(visible).toHaveLength(0);
+    });
+  });
+
+  describe('getDisplayPrice()', () => {
+    // Helper to create test variant
+    function createTestVariant(overrides: Partial<Variant> = {}): Variant {
+      return {
+        id: 'test-variant',
+        productId: 'test-product',
+        stripeProductId: 'prod_test',
+        variantType: 'color',
+        variantValue: 'BLACK',
+        priceModifier: 0,
+        wholesalePriceModifier: 0,
+        presaleDepositModifier: 0,
+        isLimitedEdition: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        availableQuantity: null,
+        isAvailable: true,
+        media: [],
+        metadata: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...overrides,
+      };
+    }
+
+    it('returns null for pre-sale products (hide pricing)', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-sale',
+        basePrice: 100000,
+        wholesalePriceCents: 80000,
+        presaleDepositPrice: 25000,
+      });
+
+      const result = getDisplayPrice(product, undefined, false);
+
+      expect(result).toBeNull();
+    });
+
+    it('returns wholesale price for pre-order with deposit paid', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-order',
+        basePrice: 129500,
+        wholesalePriceCents: 97500,
+      });
+
+      const result = getDisplayPrice(product, undefined, true);
+
+      expect(result).toEqual({
+        price: 97500,
+        type: 'wholesale',
+      });
+    });
+
+    it('returns base price for pre-order without deposit', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-order',
+        basePrice: 129500,
+        wholesalePriceCents: 97500,
+      });
+
+      const result = getDisplayPrice(product, undefined, false);
+
+      expect(result).toEqual({
+        price: 129500,
+        type: 'base',
+      });
+    });
+
+    it('returns base price for for-sale products', () => {
+      const product = createTestProduct({
+        sellStatus: 'for-sale',
+        basePrice: 5000,
+      });
+
+      const result = getDisplayPrice(product, undefined, false);
+
+      expect(result).toEqual({
+        price: 5000,
+        type: 'base',
+      });
+    });
+
+    it('applies variant price modifier for base price', () => {
+      const product = createTestProduct({
+        sellStatus: 'for-sale',
+        basePrice: 5000,
+      });
+      const variant = createTestVariant({
+        priceModifier: 1500,
+      });
+
+      const result = getDisplayPrice(product, variant, false);
+
+      expect(result).toEqual({
+        price: 6500, // 5000 + 1500
+        type: 'base',
+      });
+    });
+
+    it('applies variant wholesale price modifier for deposit holders', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-order',
+        basePrice: 129500,
+        wholesalePriceCents: 97500,
+      });
+      const variant = createTestVariant({
+        wholesalePriceModifier: 2000,
+      });
+
+      const result = getDisplayPrice(product, variant, true);
+
+      expect(result).toEqual({
+        price: 99500, // 97500 + 2000
+        type: 'wholesale',
+      });
+    });
+
+    it('falls back to base price if wholesale price not set', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-order',
+        basePrice: 10000,
+        wholesalePriceCents: undefined,
+      });
+
+      const result = getDisplayPrice(product, undefined, true);
+
+      expect(result).toEqual({
+        price: 10000,
+        type: 'wholesale',
+      });
+    });
+
+    it('handles null variant gracefully', () => {
+      const product = createTestProduct({
+        sellStatus: 'for-sale',
+        basePrice: 5000,
+      });
+
+      const result = getDisplayPrice(product, undefined, false);
+
+      expect(result).toEqual({
+        price: 5000,
+        type: 'base',
+      });
+    });
+  });
+
+  describe('getDepositAmount()', () => {
+    function createTestVariant(overrides: Partial<Variant> = {}): Variant {
+      return {
+        id: 'test-variant',
+        productId: 'test-product',
+        stripeProductId: 'prod_test',
+        variantType: 'color',
+        variantValue: 'BLACK',
+        priceModifier: 0,
+        wholesalePriceModifier: 0,
+        presaleDepositModifier: 0,
+        isLimitedEdition: false,
+        maxQuantity: null,
+        soldQuantity: 0,
+        availableQuantity: null,
+        isAvailable: true,
+        media: [],
+        metadata: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ...overrides,
+      };
+    }
+
+    it('returns deposit amount for pre-sale products', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-sale',
+        presaleDepositPrice: 25000,
+      });
+
+      const result = getDepositAmount(product);
+
+      expect(result).toBe(25000);
+    });
+
+    it('returns null for non-pre-sale products', () => {
+      const product = createTestProduct({
+        sellStatus: 'for-sale',
+        presaleDepositPrice: 25000,
+      });
+
+      const result = getDepositAmount(product);
+
+      expect(result).toBeNull();
+    });
+
+    it('returns null for pre-order products', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-order',
+        presaleDepositPrice: 25000,
+      });
+
+      const result = getDepositAmount(product);
+
+      expect(result).toBeNull();
+    });
+
+    it('applies variant deposit modifier', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-sale',
+        presaleDepositPrice: 25000,
+      });
+      const variant = createTestVariant({
+        presaleDepositModifier: 5000,
+      });
+
+      const result = getDepositAmount(product, variant);
+
+      expect(result).toBe(30000); // 25000 + 5000
+    });
+
+    it('handles missing presaleDepositPrice', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-sale',
+        presaleDepositPrice: undefined,
+      });
+
+      const result = getDepositAmount(product);
+
+      expect(result).toBe(0);
+    });
+
+    it('handles null variant gracefully', () => {
+      const product = createTestProduct({
+        sellStatus: 'pre-sale',
+        presaleDepositPrice: 25000,
+      });
+
+      const result = getDepositAmount(product, undefined);
+
+      expect(result).toBe(25000);
     });
   });
 });

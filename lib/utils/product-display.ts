@@ -2,10 +2,12 @@
  * Product Display Utilities
  *
  * Helper functions for determining product visibility and display status
- * based on isLive, sellStatus, and inventory tracking
+ * based on isLive, sellStatus, and inventory tracking.
+ *
+ * Includes conditional pricing logic for pre-sale and pre-order products.
  */
 
-import type { Product, SellStatus } from '@/types/product';
+import type { Product, Variant, SellStatus } from '@/types/product';
 
 export interface ProductDisplayStatus {
   shouldShow: boolean;
@@ -227,4 +229,79 @@ export function getAvailabilityMessage(product: Product): string | undefined {
  */
 export function filterVisibleProducts(products: Product[]): Product[] {
   return products.filter(shouldShowProduct);
+}
+
+/**
+ * Get display price for a product based on sell_status and user deposit status
+ *
+ * Pricing display logic:
+ * - Pre-sale: Hide all pricing (return null) - only show deposit badge
+ * - Pre-order with deposit paid: Show wholesale price (if available, else base price)
+ * - Pre-order without deposit: Show base price
+ * - For-sale: Always show base price
+ *
+ * @param product - The product
+ * @param variant - Selected variant (optional)
+ * @param userHasPaidDeposit - Whether user has paid deposit for this product
+ * @returns Price info with amount and type, or null to hide pricing
+ */
+export function getDisplayPrice(
+  product: Product,
+  variant: Variant | undefined,
+  userHasPaidDeposit: boolean
+): { price: number; type: 'base' | 'wholesale' } | null {
+  // Pre-sale: Hide all pricing
+  if (product.sellStatus === 'pre-sale') {
+    return null;
+  }
+
+  // Pre-order: Conditional pricing
+  if (product.sellStatus === 'pre-order') {
+    if (userHasPaidDeposit) {
+      // Show wholesale price to deposit holders
+      const baseWholesale = product.wholesalePriceCents || product.basePrice;
+      const modifier = variant?.wholesalePriceModifier || 0;
+      return {
+        price: baseWholesale + modifier,
+        type: 'wholesale',
+      };
+    } else {
+      // Show base price to public
+      const basePrice = product.basePrice;
+      const modifier = variant?.priceModifier || 0;
+      return {
+        price: basePrice + modifier,
+        type: 'base',
+      };
+    }
+  }
+
+  // For-sale: Always show base price
+  const basePrice = product.basePrice;
+  const modifier = variant?.priceModifier || 0;
+  return {
+    price: basePrice + modifier,
+    type: 'base',
+  };
+}
+
+/**
+ * Get deposit amount for pre-sale products
+ *
+ * @param product - The product
+ * @param variant - Selected variant (optional)
+ * @returns Deposit amount in cents, or null if not a pre-sale product
+ */
+export function getDepositAmount(
+  product: Product,
+  variant?: Variant
+): number | null {
+  if (product.sellStatus !== 'pre-sale') {
+    return null;
+  }
+
+  const baseDeposit = product.presaleDepositPrice || 0;
+  const modifier = variant?.presaleDepositModifier || 0;
+
+  return baseDeposit + modifier;
 }

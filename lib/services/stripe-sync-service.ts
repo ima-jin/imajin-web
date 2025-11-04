@@ -14,6 +14,11 @@ function getStripeClient(): Stripe {
   return stripe;
 }
 
+// Export for testing purposes
+export function resetStripeClient() {
+  stripe = null;
+}
+
 export interface StripeSyncResult {
   productId: string;
   action: 'created' | 'updated' | 'archived' | 'skipped';

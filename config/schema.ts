@@ -52,6 +52,8 @@ export const ProductConfigSchema = z.object({
   is_live: z.boolean().default(false),
   cost_cents: z.number().int().positive().optional(),
   wholesale_price_cents: z.number().int().positive().optional(),
+  cogs_price: z.number().int().positive().optional(),
+  presale_deposit_price: z.number().int().positive().optional(),
 
   sell_status: z.enum(["for-sale", "pre-order", "pre-sale", "sold-out", "internal"]).default("internal"),
   sell_status_note: z.string().optional(),
@@ -83,6 +85,8 @@ export const VariantConfigSchema = z.object({
   variant_type: z.string().min(1),
   variant_value: z.string().min(1),
   price_modifier: z.number().int().optional(),
+  wholesale_price_modifier: z.number().int().default(0),
+  presale_deposit_modifier: z.number().int().default(0),
 
   is_limited_edition: z.boolean(),
   max_quantity: z.number().int().positive().optional(),

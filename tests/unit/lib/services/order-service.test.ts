@@ -4,6 +4,8 @@ import {
   getOrder,
   lookupOrder,
   updateOrderStatus,
+  userHasPaidDeposit,
+  getDepositOrder,
   type CreateOrderParams,
 } from '@/lib/services/order-service';
 
@@ -581,6 +583,214 @@ describe('Order Service', () => {
 
       const callArg = setMock.mock.calls[0][0];
       expect(callArg.trackingNumber).toBeUndefined();
+    });
+  });
+
+  describe('userHasPaidDeposit', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('returns true when user has paid deposit for product', async () => {
+      const mockDepositOrder = {
+        id: 'deposit_order_123',
+        customerEmail: 'test@example.com',
+        status: 'paid',
+        metadata: { target_product_id: 'Unit-8x8x8-Founder' },
+      };
+
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([mockDepositOrder]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await userHasPaidDeposit('test@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBe(true);
+      expect(db.select).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns false when no deposit found', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await userHasPaidDeposit('test@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false when userEmail is null', async () => {
+      const result = await userHasPaidDeposit(null, 'Unit-8x8x8-Founder');
+
+      expect(result).toBe(false);
+      expect(db.select).not.toHaveBeenCalled();
+    });
+
+    it('returns false when deposit status is not "paid"', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await userHasPaidDeposit('test@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false when email does not match', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await userHasPaidDeposit('different@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('getDepositOrder', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('returns deposit order when found', async () => {
+      const mockDepositOrder = {
+        id: 'deposit_order_123',
+        customerEmail: 'test@example.com',
+        status: 'paid',
+        total: 25000,
+        metadata: { target_product_id: 'Unit-8x8x8-Founder' },
+        createdAt: new Date('2025-01-01'),
+      };
+
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([mockDepositOrder]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await getDepositOrder('test@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toEqual(mockDepositOrder);
+      expect(db.select).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns null when no deposit order found', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await getDepositOrder('test@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns null when email does not match', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await getDepositOrder('wrong@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns null when product ID does not match', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await getDepositOrder('test@example.com', 'Different-Product');
+
+      expect(result).toBeNull();
+    });
+
+    it('only returns deposits with status "paid" (not "applied" or "refunded")', async () => {
+      const selectMock = vi.fn().mockReturnThis();
+      const fromMock = vi.fn().mockReturnThis();
+      const whereMock = vi.fn().mockReturnThis();
+      const limitMock = vi.fn().mockResolvedValue([]);
+
+      (db.select as any) = vi.fn(() => ({
+        from: fromMock.mockReturnValue({
+          where: whereMock.mockReturnValue({
+            limit: limitMock,
+          }),
+        }),
+      }));
+
+      const result = await getDepositOrder('test@example.com', 'Unit-8x8x8-Founder');
+
+      expect(result).toBeNull();
     });
   });
 });
