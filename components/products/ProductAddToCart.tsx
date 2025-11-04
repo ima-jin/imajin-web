@@ -6,7 +6,7 @@ import type { CartItem } from '@/types/cart';
 
 interface Variant {
   id: string;
-  stripeProductId: string; // Stripe Price ID
+  stripePriceId: string; // Stripe Price ID for checkout
   variantValue: string;
   priceModifier: number;
   availableQuantity: number | null;
@@ -45,7 +45,7 @@ export function ProductAddToCart({ product }: ProductAddToCartProps) {
       ? `${product.name} - ${selectedVariant.variantValue}`
       : product.name,
     price: finalPrice,
-    stripeProductId: selectedVariant?.stripeProductId || '', // Stripe Price ID from variant
+    stripePriceId: selectedVariant?.stripePriceId || '', // Stripe Price ID from variant
     image: product.image || '/placeholder.jpg',
     voltage: product.voltage,
     isLimitedEdition: !!selectedVariant,

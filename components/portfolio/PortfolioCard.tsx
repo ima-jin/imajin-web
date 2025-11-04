@@ -1,6 +1,5 @@
 /**
  * PortfolioCard Component
- * Phase 2.4.7 - Phase 3
  *
  * Display card for portfolio products with markdown support
  */

@@ -39,7 +39,7 @@ export interface MediaItem {
   type: "image" | "video" | "pdf" | "other";
   mimeType: string; // e.g., "image/jpeg"
   alt: string; // Alt text for accessibility/SEO
-  category: "main" | "detail" | "lifestyle" | "dimension" | "spec" | "hero"; // Phase 2.4.7: Added "hero" for featured products
+  category: "main" | "detail" | "lifestyle" | "dimension" | "spec" | "hero"; // Includes "hero" for featured products
   order: number; // Display order
   uploadedAt?: Date; // When uploaded to Cloudinary
   deleted?: boolean; // Soft deletion flag
@@ -88,7 +88,7 @@ export interface Product {
   lastSyncedAt?: Date;
   media: MediaItem[];
 
-  // Portfolio & Featured Product fields (Phase 2.4.7)
+  // Portfolio & Featured Product fields
   showOnPortfolioPage: boolean;
   portfolioCopy: string | null;
   isFeatured: boolean;
@@ -202,7 +202,7 @@ export const MediaItemSchema = z.object({
   type: z.enum(['image', 'video', 'pdf', 'other']),
   mimeType: z.string(),
   alt: z.string(),
-  category: z.enum(['main', 'detail', 'lifestyle', 'dimension', 'spec', 'hero']), // Phase 2.4.7: Added "hero"
+  category: z.enum(['main', 'detail', 'lifestyle', 'dimension', 'spec', 'hero']), // Includes "hero" for featured products
   order: z.number(),
   uploadedAt: z.coerce.date().optional(),
   deleted: z.boolean().optional(),
@@ -244,7 +244,7 @@ export const ProductSchema = z.object({
   lastSyncedAt: z.coerce.date().optional(),
   media: z.array(MediaItemSchema),
 
-  // Portfolio & Featured Product fields (Phase 2.4.7)
+  // Portfolio & Featured Product fields
   showOnPortfolioPage: z.boolean(),
   portfolioCopy: z.string().nullable(),
   isFeatured: z.boolean(),

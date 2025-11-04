@@ -12,7 +12,6 @@ import type { Metadata } from "next";
 
 /**
  * Metadata for homepage
- * Phase 2.4.7 - SEO optimization
  */
 export const metadata: Metadata = {
   title: "Imajin - Modular LED Fixtures",
@@ -70,7 +69,7 @@ export default async function HomePage() {
       {/* Hero Section */}
       <HeroSection content={content.hero} />
 
-      {/* Featured Products - Phase 2.4.7 */}
+      {/* Featured Products */}
       <FeaturedProducts />
 
       {/* Value Props Section */}

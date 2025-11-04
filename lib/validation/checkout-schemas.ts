@@ -27,7 +27,7 @@ export const CheckoutSessionRequestSchema = z.object({
       variantId: z.string().optional(),
       quantity: z.number().int().positive(),
       price: z.number().int().nonnegative(),
-      stripeProductId: z.string(), // Stripe Price ID
+      stripePriceId: z.string(), // Stripe Price ID
       productName: z.string(),
       variantValue: z.string().optional(),
     }),

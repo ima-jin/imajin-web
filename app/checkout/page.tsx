@@ -124,7 +124,7 @@ export default function CheckoutPage() {
             variantId: item.variantId,
             quantity: item.quantity,
             price: item.price,
-            stripeProductId: item.stripeProductId,
+            stripePriceId: item.stripePriceId,
             productName: item.name,
             variantValue: item.variantName,
           })),

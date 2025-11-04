@@ -1,6 +1,5 @@
 /**
  * FeaturedProducts Component
- * Phase 2.4.7 - Phase 2
  *
  * Displays featured products on the homepage
  */

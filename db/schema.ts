@@ -43,6 +43,10 @@ export const products = pgTable(
     lastSyncedAt: timestamp("last_synced_at"),
     media: jsonb("media"),
 
+    // Stripe integration
+    stripeProductId: text("stripe_product_id"), // For products WITH variants (parent product)
+    stripePriceId: text("stripe_price_id"), // For products WITHOUT variants (single price)
+
     // Portfolio & Featured Product fields (Phase 2.4.7)
     showOnPortfolioPage: boolean("show_on_portfolio_page").default(false).notNull(),
     portfolioCopy: text("portfolio_copy"), // Nullable, markdown content, max 2000 chars (validated at app level)
@@ -72,13 +76,15 @@ export const variants = pgTable(
     productId: text("product_id")
       .notNull()
       .references(() => products.id, { onDelete: "cascade" }),
-    stripeProductId: text("stripe_product_id").notNull(),
+    stripeProductId: text("stripe_product_id").notNull(), // Stripe Product ID (for variants without individual pricing)
+    stripePriceId: text("stripe_price_id"), // Stripe Price ID (for variants with individual pricing)
     variantType: text("variant_type").notNull(), // "color", "voltage", "size", etc.
     variantValue: text("variant_value").notNull(), // "BLACK", "WHITE", "RED", "5v", "24v", etc.
     priceModifier: integer("price_modifier").default(0), // Price difference from base (in cents)
     isLimitedEdition: boolean("is_limited_edition").default(false),
     maxQuantity: integer("max_quantity"), // NULL = unlimited
     soldQuantity: integer("sold_quantity").default(0),
+
     // Generated columns - calculated automatically
     availableQuantity: integer("available_quantity").generatedAlwaysAs(
       sql`CASE WHEN max_quantity IS NULL THEN NULL ELSE max_quantity - sold_quantity END`
@@ -191,7 +197,7 @@ export const orderItems = pgTable(
       .references(() => orders.id, { onDelete: "cascade" }),
     productId: text("product_id").references(() => products.id, { onDelete: "set null" }),
     variantId: text("variant_id").references(() => variants.id, { onDelete: "set null" }),
-    stripeProductId: text("stripe_product_id").notNull(),
+    stripePriceId: text("stripe_price_id").notNull(),
     quantity: integer("quantity").notNull(),
     unitPrice: integer("unit_price").notNull(), // Price per unit in cents
     totalPrice: integer("total_price").notNull(), // quantity * unitPrice

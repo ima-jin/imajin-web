@@ -25,8 +25,7 @@
         }
       ],
       "specs": [],
-      "stripe_product_id": "prod_test123",
-      "last_synced_at": "2025-10-31T08:35:48.445Z"
+      "last_synced_at": "2025-11-04T04:48:24.604Z"
     }
   ],
   "variants": [
@@ -46,10 +45,9 @@
           "category": "main",
           "order": 1,
           "cloudinary_public_id": "media/products/product-3/main",
-          "uploaded_at": "2025-10-31T08:35:48.445Z"
+          "uploaded_at": "2025-11-04T04:48:24.604Z"
         }
-      ],
-      "stripe_product_id": "prod_test123"
+      ]
     }
   ]
 }

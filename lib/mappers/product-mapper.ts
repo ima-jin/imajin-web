@@ -38,7 +38,7 @@ export interface DbProduct {
   lastSyncedAt: Date | null;
   media: unknown;
 
-  // Portfolio & Featured Product fields (Phase 2.4.7)
+  // Portfolio & Featured Product fields
   showOnPortfolioPage: boolean;
   portfolioCopy: string | null;
   isFeatured: boolean;
@@ -74,7 +74,7 @@ export interface Product {
   lastSyncedAt?: Date;
   media: MediaItem[];
 
-  // Portfolio & Featured Product fields (Phase 2.4.7)
+  // Portfolio & Featured Product fields
   showOnPortfolioPage: boolean;
   portfolioCopy: string | null;
   isFeatured: boolean;
@@ -153,7 +153,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     lastSyncedAt: dbProduct.lastSyncedAt ?? undefined,
     media,
 
-    // Portfolio & Featured Product fields (Phase 2.4.7)
+    // Portfolio & Featured Product fields
     showOnPortfolioPage: dbProduct.showOnPortfolioPage,
     portfolioCopy: dbProduct.portfolioCopy,
     isFeatured: dbProduct.isFeatured,

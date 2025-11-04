@@ -23,7 +23,6 @@ interface ProductDetailPageProps {
 
 /**
  * Generate metadata for product detail pages
- * Phase 2.4.7 - SEO optimization
  */
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   const { id } = await params;

@@ -195,15 +195,18 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       await syncProductsEnhanced(TEST_PRODUCTS_JSON_PATH, TEST_MEDIA_DIR);
 
       // Verify Stripe sync was called
-      expect(mockSyncProductToStripe).toHaveBeenCalledWith({
+      expect(mockSyncProductToStripe).toHaveBeenCalled();
+      const callArgs = mockSyncProductToStripe.mock.calls[0];
+      expect(callArgs[0]).toMatchObject({
         id: 'stripe-product',
         name: 'Stripe Product',
         description: 'To be synced to Stripe',
         basePrice: 5000,
+        hasVariants: false,
         isLive: true,
         sellStatus: 'for-sale',
-        stripeProductId: undefined,
       });
+      expect(callArgs[1]).toBeUndefined();
     });
 
     it('should insert products into database', async () => {
@@ -351,7 +354,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       mockSyncProductToStripe.mockResolvedValue({
         productId: 'update-product',
         action: 'updated',
-        stripeProductId: 'prod_existing123',
+        stripePriceId: 'price_existing123',
       });
 
       const testData: ProductsJson = {
@@ -360,7 +363,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
             id: 'update-product',
             name: 'Updated Name',
             description: 'Updated description',
-            stripe_product_id: 'prod_existing123',
+            stripe_price_id: 'price_existing123',
           }),
         ],
         variants: [],
@@ -371,11 +374,18 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       // Run sync
       await syncProductsEnhanced(TEST_PRODUCTS_JSON_PATH, TEST_MEDIA_DIR);
 
-      expect(mockSyncProductToStripe).toHaveBeenCalledWith(
-        expect.objectContaining({
-          stripeProductId: 'prod_existing123',
-        })
-      );
+      expect(mockSyncProductToStripe).toHaveBeenCalled();
+      const callArgs = mockSyncProductToStripe.mock.calls[0];
+      expect(callArgs[0]).toMatchObject({
+        id: 'update-product',
+        name: 'Updated Name',
+        description: 'Updated description',
+        basePrice: 5000,
+        hasVariants: false,
+        isLive: true,
+        sellStatus: 'for-sale',
+      });
+      expect(callArgs[1]).toBeUndefined();
     });
 
     it('should use upsert for database on second run', async () => {
@@ -551,7 +561,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       mockSyncProductToStripe.mockResolvedValue({
         productId: 'update-name-product',
         action: 'updated',
-        stripeProductId: 'prod_existing123',
+        stripePriceId: 'prod_existing123',
       });
 
       // Second sync
@@ -779,13 +789,13 @@ describe('Sync Products Enhanced - Integration Tests', () => {
         .mockResolvedValueOnce({
           productId: 'product-1',
           action: 'created',
-          stripeProductId: 'prod_1',
+          stripePriceId: 'prod_1',
         })
         .mockRejectedValueOnce(new Error('Stripe API error'))
         .mockResolvedValueOnce({
           productId: 'product-3',
           action: 'created',
-          stripeProductId: 'prod_3',
+          stripePriceId: 'prod_3',
         });
 
       // Products 1 and 3 should succeed
@@ -877,7 +887,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       );
     });
 
-    it('should create separate Stripe Product for each variant', async () => {
+    it('should create parent Stripe Product with variant prices', async () => {
       const testData: ProductsJson = {
         products: [
           createTestProductConfig({
@@ -909,8 +919,18 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       // Run sync
       await syncProductsEnhanced(TEST_PRODUCTS_JSON_PATH, TEST_MEDIA_DIR);
 
-      // Verify Stripe called for parent + 2 variants = 3 times
-      expect(mockSyncProductToStripe).toHaveBeenCalledTimes(3);
+      // Verify Stripe called once for parent product with variants
+      expect(mockSyncProductToStripe).toHaveBeenCalledTimes(1);
+      expect(mockSyncProductToStripe).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'variant-parent',
+          hasVariants: true,
+        }),
+        expect.arrayContaining([
+          expect.objectContaining({ id: 'variant-parent-black' }),
+          expect.objectContaining({ id: 'variant-parent-white' }),
+        ])
+      );
     });
 
     it('should link variant to parent via metadata', async () => {

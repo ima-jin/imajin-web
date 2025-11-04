@@ -73,7 +73,8 @@ describe('POST /api/cart/validate', () => {
     await db.insert(variants).values({
       id: 'test-variant-black',
       productId: 'test-founder',
-      stripeProductId: 'price_test_variant',
+      stripeProductId: 'prod_deprecated', // Deprecated field (required by schema for now)
+      stripePriceId: 'price_test_variant',
       variantType: 'color',
       variantValue: 'BLACK',
       priceModifier: 0,

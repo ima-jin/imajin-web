@@ -32,7 +32,7 @@ describe('Full Checkout Flow Integration', () => {
       variantId: 'variant_black',
       quantity: 2,
       price: 2500,
-      stripeProductId: 'price_test_123',
+      stripePriceId: 'price_test_123',
       productName: 'Material-8x8-V',
       variantValue: 'BLACK',
     },
@@ -109,7 +109,7 @@ describe('Full Checkout Flow Integration', () => {
           {
             productId: 'Material-8x8-V',
             variantId: 'variant_black',
-            stripeProductId: 'price_test_123',
+            stripePriceId: 'price_test_123',
             quantity: 2,
             unitPrice: 2500,
             productName: 'Material-8x8-V',
@@ -176,7 +176,7 @@ describe('Full Checkout Flow Integration', () => {
           {
             productId: 'Material-8x8-V',
             variantId: 'variant_black',
-            stripeProductId: 'price_test_123',
+            stripePriceId: 'price_test_123',
             quantity: 2,
             unitPrice: 2500,
             productName: 'Material-8x8-V',
@@ -228,7 +228,7 @@ describe('Full Checkout Flow Integration', () => {
         variantId: 'variant_black',
         quantity: 2,
         price: 2500,
-        stripeProductId: 'price_test_123',
+        stripePriceId: 'price_test_123',
         productName: 'Material-8x8-V',
         variantValue: 'BLACK',
       },
@@ -237,7 +237,7 @@ describe('Full Checkout Flow Integration', () => {
         variantId: 'variant_red',
         quantity: 1,
         price: 10000,
-        stripeProductId: 'price_test_456',
+        stripePriceId: 'price_test_456',
         productName: 'Founder-8x8-V',
         variantValue: 'RED',
       },
@@ -293,7 +293,7 @@ describe('Full Checkout Flow Integration', () => {
         productId: 'Material-8x8-V',
         quantity: 1,
         price: 2500,
-        stripeProductId: 'price_test_123',
+        stripePriceId: 'price_test_123',
         productName: 'Material-8x8-V',
       },
     ];
@@ -345,7 +345,7 @@ describe('Full Checkout Flow Integration', () => {
         cartItems: JSON.stringify([
           {
             productId: 'Material-8x8-V',
-            stripeProductId: 'price_test_123',
+            stripePriceId: 'price_test_123',
             quantity: 1,
             unitPrice: 2500,
             productName: 'Material-8x8-V',

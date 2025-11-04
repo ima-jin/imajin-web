@@ -15,6 +15,84 @@ Build features using systematic TDD. Code that's tested, maintainable, productio
 
 This applies to all changes: features, bugs, refactors, quick fixes. No exceptions.
 
+## Pre-Launch Phase Rules (CRITICAL)
+
+**We are NOT launched yet. This changes how you write code.**
+
+### ❌ NEVER Add These (Dr. Clean Will Block)
+
+1. **No phase markers or implementation dates**
+   ```typescript
+   // ❌ WRONG - Will be blocked
+   stripePriceId: string; // Phase 2.5.1: New architecture
+   // Added in October 2025
+   // v1.0: Refactor this
+
+   // ✅ RIGHT - Clean, timeless
+   stripePriceId: string; // Stripe Price ID for checkout session
+   ```
+
+2. **No backward compatibility code**
+   ```typescript
+   // ❌ WRONG - We're pre-launch, no old users
+   stripeProductId?: string; // DEPRECATED: Use stripePriceId
+   stripePriceId: string; // New field
+
+   // ✅ RIGHT - Just the correct field
+   stripePriceId: string; // Stripe Price ID for checkout session
+   ```
+
+3. **No migration markers or deprecation notices**
+   ```typescript
+   // ❌ WRONG
+   // DEPRECATED: Will be removed after migration
+   // TODO: Remove after v1.0
+   // Legacy field (keep for 30 days)
+
+   // ✅ RIGHT - If truly needed temporarily
+   // Legacy integration (remove when API v2 ready)
+   ```
+
+4. **No console.log/error/warn in production code**
+   ```typescript
+   // ❌ WRONG (in app/, components/, lib/)
+   console.log('Debug:', data);
+   console.error('Error:', error);
+
+   // ✅ RIGHT
+   import { logger } from '@/lib/utils/logger';
+   logger.debug('Processing data', { data });
+   logger.error('Operation failed', { error });
+
+   // ✅ ALLOWED (in tests/ and scripts/)
+   console.log('✅ Test passed:', result);
+   ```
+
+### Why These Rules Exist
+
+**Pre-launch = Clean Slate Freedom**
+- No real users → Can break things freely
+- No data migrations → Can change schemas boldly
+- No backward compatibility → Code should look perfect from day one
+- Code should appear as if it was always correct
+
+**Post-launch (future):**
+- Deprecation notices make sense
+- Migration paths required
+- Backward compatibility needed
+- Phase markers might be useful
+
+**Right now:** Write code that looks timeless.
+
+### Quick Self-Check
+
+Before writing ANY code, ask:
+- [ ] Am I adding phase markers? (DON'T)
+- [ ] Am I keeping deprecated fields? (DON'T)
+- [ ] Am I using console.log in production code? (DON'T)
+- [ ] Are my comments explaining "why", not "when"? (DO)
+- [ ] Does this look like it was always correct? (DO)
+
 ## Development Workflow
 
 ### 1. Planning (Before Code)
@@ -65,13 +143,25 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 ### 4. Quality Gates
 Before marking task complete, verify:
+
+**Test & Build Quality:**
 - [ ] All new tests passing
 - [ ] All existing tests still passing
 - [ ] `npm run type-check` returns 0 errors
 - [ ] `npm run lint` returns 0 errors
 - [ ] `npm run build` completes successfully
+
+**Code Quality:**
+- [ ] No phase markers in code (e.g., "Phase 2.5.1")
+- [ ] No "DEPRECATED" or "TODO: Remove after..." comments
+- [ ] No backward compatibility fields (we're pre-launch)
+- [ ] No console.log in production code (app/, components/, lib/)
+- [ ] Comments explain "why", not "when"
+
+**Deliverables:**
 - [ ] TodoWrite tasks marked completed
 - [ ] Implementation matches requirements
+- [ ] Documentation updated if needed
 
 ### 5. Handling Changes (Test-First)
 

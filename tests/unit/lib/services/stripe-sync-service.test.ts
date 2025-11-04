@@ -1,8 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import {
   syncProductToStripe,
   StripeSyncResult,
 } from '@/lib/services/stripe-sync-service';
+
+// Set environment variable before module loads
+process.env.STRIPE_SECRET_KEY = 'sk_test_mock_key_12345';
 
 // Create mock functions using vi.hoisted to hoist them before imports
 const { mockProducts, mockPrices } = vi.hoisted(() => ({
@@ -29,12 +32,6 @@ vi.mock('stripe', () => {
 describe('stripe-sync-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock Stripe environment variable
-    vi.stubEnv('STRIPE_SECRET_KEY', 'sk_test_mock_key_12345');
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
   });
 
   describe('syncProductToStripe - Create Product', () => {
@@ -331,6 +328,244 @@ describe('stripe-sync-service', () => {
           },
         })
       );
+    });
+  });
+
+  describe('syncProductToStripe - With Variants (Phase 2.5.1)', () => {
+    it('should create parent product with multiple variant prices', async () => {
+      const mockProduct = {
+        id: 'prod_founder_edition',
+        name: 'Founder Edition Cube',
+        active: true,
+      };
+
+      const mockPriceBlack = {
+        id: 'price_founder_black',
+        unit_amount: 129500,
+        currency: 'usd',
+      };
+
+      const mockPriceWhite = {
+        id: 'price_founder_white',
+        unit_amount: 129500,
+        currency: 'usd',
+      };
+
+      const mockPriceRed = {
+        id: 'price_founder_red',
+        unit_amount: 129500,
+        currency: 'usd',
+      };
+
+      mockProducts.create.mockResolvedValue(mockProduct);
+      mockPrices.create
+        .mockResolvedValueOnce(mockPriceBlack)
+        .mockResolvedValueOnce(mockPriceWhite)
+        .mockResolvedValueOnce(mockPriceRed);
+
+      const result = await syncProductToStripe(
+        {
+          id: 'Unit-8x8x8-Founder',
+          name: 'Founder Edition Cube',
+          description: 'Limited edition cube',
+          basePrice: 129500,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+        },
+        [
+          {
+            id: 'Unit-8x8x8-Founder-BLACK',
+            productId: 'Unit-8x8x8-Founder',
+            variantType: 'color',
+            variantValue: 'BLACK',
+            priceModifier: 0,
+          },
+          {
+            id: 'Unit-8x8x8-Founder-WHITE',
+            productId: 'Unit-8x8x8-Founder',
+            variantType: 'color',
+            variantValue: 'WHITE',
+            priceModifier: 0,
+          },
+          {
+            id: 'Unit-8x8x8-Founder-RED',
+            productId: 'Unit-8x8x8-Founder',
+            variantType: 'color',
+            variantValue: 'RED',
+            priceModifier: 0,
+          },
+        ]
+      );
+
+      expect(result.action).toBe('created');
+      expect(result.stripeProductId).toBe('prod_founder_edition');
+      expect(result.variantPrices).toHaveLength(3);
+      expect(result.variantPrices).toEqual([
+        { variantId: 'Unit-8x8x8-Founder-BLACK', stripePriceId: 'price_founder_black' },
+        { variantId: 'Unit-8x8x8-Founder-WHITE', stripePriceId: 'price_founder_white' },
+        { variantId: 'Unit-8x8x8-Founder-RED', stripePriceId: 'price_founder_red' },
+      ]);
+
+      // Should create ONE product
+      expect(mockProducts.create).toHaveBeenCalledTimes(1);
+
+      // Should create THREE prices
+      expect(mockPrices.create).toHaveBeenCalledTimes(3);
+    });
+
+    it('should include variant metadata in prices', async () => {
+      const mockProduct = { id: 'prod_test' };
+      const mockPrice = { id: 'price_test' };
+
+      mockProducts.create.mockResolvedValue(mockProduct);
+      mockPrices.create.mockResolvedValue(mockPrice);
+
+      await syncProductToStripe(
+        {
+          id: 'test-product',
+          name: 'Test Product',
+          description: 'Test',
+          basePrice: 5000,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+        },
+        [
+          {
+            id: 'variant-black',
+            productId: 'test-product',
+            variantType: 'color',
+            variantValue: 'BLACK',
+            priceModifier: 0,
+          },
+        ]
+      );
+
+      expect(mockPrices.create).toHaveBeenCalledWith({
+        product: 'prod_test',
+        unit_amount: 5000,
+        currency: 'usd',
+        metadata: {
+          variant_id: 'variant-black',
+          variant_type: 'color',
+          variant_value: 'BLACK',
+        },
+      });
+    });
+
+    it('should apply price modifiers to variant prices', async () => {
+      const mockProduct = { id: 'prod_test' };
+      const mockPriceStandard = { id: 'price_standard' };
+      const mockPricePremium = { id: 'price_premium' };
+
+      mockProducts.create.mockResolvedValue(mockProduct);
+      mockPrices.create
+        .mockResolvedValueOnce(mockPriceStandard)
+        .mockResolvedValueOnce(mockPricePremium);
+
+      await syncProductToStripe(
+        {
+          id: 'test-product',
+          name: 'Test Product',
+          description: 'Test',
+          basePrice: 10000,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+        },
+        [
+          {
+            id: 'variant-standard',
+            productId: 'test-product',
+            variantType: 'size',
+            variantValue: 'STANDARD',
+            priceModifier: 0,
+          },
+          {
+            id: 'variant-premium',
+            productId: 'test-product',
+            variantType: 'size',
+            variantValue: 'PREMIUM',
+            priceModifier: 2000, // $20 more expensive
+          },
+        ]
+      );
+
+      // Standard variant: base price
+      expect(mockPrices.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          unit_amount: 10000,
+        })
+      );
+
+      // Premium variant: base price + modifier
+      expect(mockPrices.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          unit_amount: 12000,
+        })
+      );
+    });
+
+    it('should update existing parent product and create new prices for variants', async () => {
+      mockProducts.update.mockResolvedValue({ id: 'prod_existing' });
+      mockPrices.list.mockResolvedValue({ data: [] });
+
+      const mockPrice = { id: 'price_new' };
+      mockPrices.create.mockResolvedValue(mockPrice);
+
+      const result = await syncProductToStripe(
+        {
+          id: 'test-product',
+          name: 'Updated Product',
+          description: 'Updated',
+          basePrice: 5000,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+          stripeProductId: 'prod_existing',
+        },
+        [
+          {
+            id: 'variant-1',
+            productId: 'test-product',
+            variantType: 'color',
+            variantValue: 'BLUE',
+            priceModifier: 0,
+          },
+        ]
+      );
+
+      expect(result.action).toBe('updated');
+      expect(mockProducts.update).toHaveBeenCalledTimes(1);
+      expect(mockPrices.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle products without variants (single price)', async () => {
+      const mockProduct = { id: 'prod_simple' };
+      const mockPrice = { id: 'price_simple' };
+
+      mockProducts.create.mockResolvedValue(mockProduct);
+      mockPrices.create.mockResolvedValue(mockPrice);
+      mockProducts.update.mockResolvedValue(mockProduct);
+
+      const result = await syncProductToStripe({
+        id: 'simple-product',
+        name: 'Simple Product',
+        description: 'No variants',
+        basePrice: 5000,
+        isLive: true,
+        sellStatus: 'for-sale',
+        hasVariants: false,
+      });
+
+      expect(result.action).toBe('created');
+      expect(result.stripeProductId).toBe('prod_simple');
+      expect(result.stripePriceId).toBe('price_simple');
+      expect(result.variantPrices).toBeUndefined();
+
+      expect(mockProducts.create).toHaveBeenCalledTimes(1);
+      expect(mockPrices.create).toHaveBeenCalledTimes(1);
     });
   });
 });

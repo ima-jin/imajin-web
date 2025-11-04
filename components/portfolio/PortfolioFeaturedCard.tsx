@@ -1,6 +1,5 @@
 /**
  * PortfolioFeaturedCard Component
- * Phase 2.4.7 - Phase 3
  *
  * Large hero-style card for featured portfolio product
  */

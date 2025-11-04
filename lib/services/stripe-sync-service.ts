@@ -19,6 +19,10 @@ export interface StripeSyncResult {
   action: 'created' | 'updated' | 'archived' | 'skipped';
   stripeProductId?: string;
   stripePriceId?: string;
+  variantPrices?: Array<{
+    variantId: string;
+    stripePriceId: string;
+  }>;
   error?: string;
 }
 
@@ -29,7 +33,17 @@ interface ProductSyncInput {
   basePrice: number;
   isLive: boolean;
   sellStatus: string;
+  hasVariants?: boolean;
   stripeProductId?: string;
+}
+
+interface VariantSyncInput {
+  id: string;
+  productId: string;
+  variantType: string;
+  variantValue: string;
+  priceModifier: number;
+  stripePriceId?: string;
 }
 
 /**
@@ -37,13 +51,15 @@ interface ProductSyncInput {
  * - Creates product if it doesn't exist
  * - Updates product if it exists
  * - Archives product if sell_status is 'internal'
- * - Handles price changes (Stripe prices are immutable)
+ * - Handles variants (creates prices, not products)
  *
  * @param product - Product data to sync
+ * @param variants - Optional variants (creates multiple prices under one product)
  * @returns Sync result with action taken
  */
 export async function syncProductToStripe(
-  product: ProductSyncInput
+  product: ProductSyncInput,
+  variants?: VariantSyncInput[]
 ): Promise<StripeSyncResult> {
   const stripe = getStripeClient();
 
@@ -60,7 +76,67 @@ export async function syncProductToStripe(
       return { productId: product.id, action: 'skipped' };
     }
 
-    // Non-internal products → Create or Update
+    // PRODUCTS WITH VARIANTS → Create parent product + multiple prices
+    if (product.hasVariants && variants && variants.length > 0) {
+      let stripeProductId = product.stripeProductId;
+
+      // Create or update parent product
+      if (stripeProductId) {
+        // UPDATE existing product
+        await stripe.products.update(stripeProductId, {
+          name: product.name,
+          description: product.description,
+          active: product.isLive,
+          metadata: {
+            local_id: product.id,
+            sell_status: product.sellStatus,
+          },
+        });
+      } else {
+        // CREATE new product
+        const stripeProduct = await stripe.products.create({
+          name: product.name,
+          description: product.description,
+          active: product.isLive,
+          metadata: {
+            local_id: product.id,
+            sell_status: product.sellStatus,
+          },
+        });
+        stripeProductId = stripeProduct.id;
+      }
+
+      // Create prices for each variant
+      const variantPrices = [];
+      for (const variant of variants) {
+        const variantPrice = product.basePrice + variant.priceModifier;
+
+        const price = await stripe.prices.create({
+          product: stripeProductId,
+          unit_amount: variantPrice,
+          currency: 'usd',
+          metadata: {
+            variant_id: variant.id,
+            variant_type: variant.variantType,
+            variant_value: variant.variantValue,
+          },
+        });
+
+        variantPrices.push({
+          variantId: variant.id,
+          stripePriceId: price.id,
+        });
+      }
+
+      return {
+        productId: product.id,
+        action: product.stripeProductId ? 'updated' : 'created',
+        stripeProductId,
+        variantPrices,
+      };
+    }
+
+    // PRODUCTS WITHOUT VARIANTS → Single product with single price
     if (product.stripeProductId) {
       // UPDATE existing product
       await stripe.products.update(product.stripeProductId, {

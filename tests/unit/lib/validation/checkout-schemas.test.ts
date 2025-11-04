@@ -141,7 +141,7 @@ describe('Checkout Validation Schemas', () => {
       variantId: 'variant_black',
       quantity: 2,
       price: 2500,
-      stripeProductId: 'price_test_123',
+      stripePriceId: 'price_test_123',
       productName: 'Material-8x8-V',
       variantValue: 'BLACK',
     };
@@ -201,9 +201,9 @@ describe('Checkout Validation Schemas', () => {
       expect(result.success).toBe(false);
     });
 
-    it('requires stripeProductId', () => {
+    it('requires stripePriceId', () => {
       const itemWithoutStripeId = { ...validItem };
-      delete (itemWithoutStripeId as any).stripeProductId;
+      delete (itemWithoutStripeId as any).stripePriceId;
       const invalid = {
         ...validRequest,
         items: [itemWithoutStripeId],
@@ -231,7 +231,7 @@ describe('Checkout Validation Schemas', () => {
             productId: 'Material-8x8-V',
             quantity: 1,
             price: 2500,
-            stripeProductId: 'price_test_123',
+            stripePriceId: 'price_test_123',
             productName: 'Material-8x8-V',
           },
         ],
@@ -263,7 +263,7 @@ describe('Checkout Validation Schemas', () => {
             productId: 'Founder-8x8-V',
             quantity: 1,
             price: 10000,
-            stripeProductId: 'price_test_456',
+            stripePriceId: 'price_test_456',
             productName: 'Founder-8x8-V',
           },
         ],

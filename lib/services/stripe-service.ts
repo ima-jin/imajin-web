@@ -15,7 +15,7 @@ export function getStripeInstance(): Stripe {
 
 export interface CreateCheckoutSessionParams {
   items: Array<{
-    stripeProductId: string; // Stripe Price ID
+    stripePriceId: string; // Stripe Price ID for this line item
     quantity: number;
   }>;
   customerEmail: string;
@@ -46,7 +46,7 @@ export async function createCheckoutSession(
   // Build line items for Stripe
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
     (item) => ({
-      price: item.stripeProductId,
+      price: item.stripePriceId,
       quantity: item.quantity,
     })
   );
@@ -54,7 +54,9 @@ export async function createCheckoutSession(
   // Create session
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
-    payment_method_types: ['card'],
+    // Enable modern payment methods including Stripe Link
+    // Link is automatically enabled when card payments are supported
+    payment_method_types: ['card', 'link'],
     line_items: lineItems,
     customer_email: customerEmail,
     success_url: successUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,

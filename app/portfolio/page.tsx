@@ -1,6 +1,5 @@
 /**
  * Portfolio Page
- * Phase 2.4.7 - Phase 3
  *
  * Showcases products with showOnPortfolioPage = true
  */

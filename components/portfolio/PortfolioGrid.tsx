@@ -1,6 +1,5 @@
 /**
  * PortfolioGrid Component
- * Phase 2.4.7 - Phase 3
  *
  * Editorial-style layout: Featured product at top, then grid below
  */

@@ -1,6 +1,5 @@
 /**
  * ProductSkeleton Component
- * Phase 2.4.7 - Phase 5
  *
  * Loading skeleton for product cards
  */

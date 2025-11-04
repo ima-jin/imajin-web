@@ -40,7 +40,11 @@ export const ProductConfigSchema = z.object({
   category: z.enum(["material", "connector", "control", "diffuser", "kit", "unit", "interface", "accessory"]),
   dev_status: z.number().int().min(0).max(5),
   base_price: z.number().int().positive(),
-  stripe_product_id: z.string().min(1).optional(),
+
+  // Stripe integration
+  stripe_product_id: z.string().min(1).optional(), // For products WITH variants (parent product)
+  stripe_price_id: z.string().min(1).optional(), // For products WITHOUT variants (single price)
+
   has_variants: z.boolean(),
   requires_assembly: z.boolean().optional(),
   max_quantity: z.number().int().positive().nullable().optional(),
@@ -48,7 +52,8 @@ export const ProductConfigSchema = z.object({
   is_live: z.boolean().default(false),
   cost_cents: z.number().int().positive().optional(),
   wholesale_price_cents: z.number().int().positive().optional(),
-  sell_status: z.enum(["for-sale", "pre-order", "sold-out", "internal"]).default("internal"),
+
+  sell_status: z.enum(["for-sale", "pre-order", "pre-sale", "sold-out", "internal"]).default("internal"),
   sell_status_note: z.string().optional(),
   last_synced_at: z.string().datetime().optional(),
   media: z.array(MediaItemSchema).default([]),
@@ -70,10 +75,15 @@ export const ProductConfigSchema = z.object({
 export const VariantConfigSchema = z.object({
   id: z.string().min(1),
   product_id: z.string().min(1),
-  stripe_product_id: z.string().min(1).optional(),
+
+  // Stripe integration
+  stripe_product_id: z.string().min(1).optional(), // Stripe Product ID (for variants without individual pricing)
+  stripe_price_id: z.string().min(1).optional(), // Stripe Price ID (for variants with individual pricing)
+
   variant_type: z.string().min(1),
   variant_value: z.string().min(1),
   price_modifier: z.number().int().optional(),
+
   is_limited_edition: z.boolean(),
   max_quantity: z.number().int().positive().optional(),
   media: z.array(MediaItemSchema).default([]),

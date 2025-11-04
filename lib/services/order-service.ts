@@ -14,7 +14,7 @@ export interface CreateOrderParams {
   items: Array<{
     productId: string;
     variantId?: string;
-    stripeProductId: string;
+    stripePriceId: string; // Stripe Price ID
     quantity: number;
     unitPrice: number;
     productName: string;
@@ -87,7 +87,7 @@ export async function createOrder(params: CreateOrderParams) {
         orderId: order.id,
         productId: item.productId,
         variantId: item.variantId,
-        stripeProductId: item.stripeProductId,
+        stripePriceId: item.stripePriceId,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         totalPrice: item.unitPrice * item.quantity,

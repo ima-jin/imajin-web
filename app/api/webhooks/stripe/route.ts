@@ -129,7 +129,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       items: cartItems.map((item: any) => ({
         productId: item.productId,
         variantId: item.variantId,
-        stripeProductId: item.stripeProductId,
+        stripePriceId: item.stripePriceId,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         productName: item.productName,

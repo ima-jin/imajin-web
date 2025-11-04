@@ -5,7 +5,7 @@ export interface CartItem {
   variantId?: string;
   name: string;
   price: number; // In cents
-  stripeProductId: string; // Stripe Price ID for checkout
+  stripePriceId: string; // Stripe Price ID for checkout
   image: string;
   quantity: number;
   voltage?: '5v' | '24v'; // For dependency validation

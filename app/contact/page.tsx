@@ -1,6 +1,5 @@
 /**
  * Contact Page
- * Phase 2.4.7 - Phase 4
  *
  * Contact information and consultation details
  */

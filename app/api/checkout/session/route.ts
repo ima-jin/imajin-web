@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Map items to Stripe format
     const stripeItems = items.map((item) => ({
-      stripeProductId: item.stripeProductId,
+      stripePriceId: item.stripePriceId,
       quantity: item.quantity,
     }));
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         items.map((item) => ({
           productId: item.productId,
           variantId: item.variantId,
-          stripeProductId: item.stripeProductId,
+          stripePriceId: item.stripePriceId,
           quantity: item.quantity,
           unitPrice: item.price,
           productName: item.productName,

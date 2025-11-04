@@ -227,6 +227,98 @@ The `web/` folder is a **monorepo** containing:
 6. Commit only when all tests pass
 7. Update implementation plan checkboxes
 
+---
+
+## Code Style Rules (Pre-Launch Phase)
+
+**CRITICAL:** We are NOT launched yet. This fundamentally changes how you write code.
+
+### Never Include in Code:
+
+1. ❌ **Phase markers or implementation dates**
+   ```typescript
+   // ❌ WRONG - Will be blocked by Dr. Clean
+   stripePriceId: string; // Phase 2.5.1: New architecture
+   // Added in October 2025
+   // v1.0: Refactor this
+
+   // ✅ RIGHT - Clean, timeless
+   stripePriceId: string; // Stripe Price ID for checkout session
+   ```
+
+2. ❌ **Deprecation notices or migration markers**
+   ```typescript
+   // ❌ WRONG
+   stripeProductId?: string; // DEPRECATED: Use stripePriceId instead
+   // TODO: Remove after migration
+   // Will be removed in v2.0
+
+   // ✅ RIGHT
+   stripePriceId: string; // Stripe Price ID for checkout session
+   ```
+
+3. ❌ **Backward compatibility code**
+   ```typescript
+   // ❌ WRONG - We have no users yet, no need for compatibility
+   interface CartItem {
+     stripeProductId?: string; // Legacy field
+     stripePriceId: string;    // New field
+   }
+
+   // ✅ RIGHT - Just the correct design
+   interface CartItem {
+     stripePriceId: string; // Stripe Price ID for checkout session
+   }
+   ```
+
+4. ❌ **console.log/error/warn in production code**
+   ```typescript
+   // ❌ WRONG (in app/, components/, lib/ folders)
+   console.log('Debug:', data);
+   console.error('Error:', error);
+
+   // ✅ RIGHT - Use logger utility
+   import { logger } from '@/lib/utils/logger';
+   logger.debug('Processing data', { data });
+   logger.error('Operation failed', { error });
+
+   // ✅ ALLOWED (in tests/ and scripts/ folders)
+   console.log('✅ Test passed:', result);
+   ```
+
+### Always Write:
+
+1. ✅ **Clean, timeless code** - Looks like it was always correct
+2. ✅ **Comments that explain "why"** - Not "when" or "what"
+3. ✅ **Concise technical descriptions** - No timeline context
+4. ✅ **Logger utility** - Not console.log in production code
+
+### Why These Rules Exist:
+
+**Pre-launch = Clean Slate**
+- No real users → Can break things freely
+- No existing data → Can change schemas without migrations
+- No backward compatibility → Code should be perfect from day one
+- Code should appear as if it was designed correctly from the start
+
+**After launch (future state):**
+- Then we'll need deprecation notices
+- Then we'll need migration paths
+- Then we'll need backward compatibility
+- Then phase markers might make sense
+
+**Right now:** Write code that looks timeless and perfect.
+
+### Before Writing ANY Code:
+
+Quick checklist to avoid Dr. Clean blocking your commit:
+- [ ] No phase markers (Phase 2.5.1, etc.)
+- [ ] No DEPRECATED comments
+- [ ] No backward compatibility fields
+- [ ] No console.log in production code
+- [ ] Comments explain "why", not "when"
+- [ ] Code looks like it was always correct
+
 ### Tools to Use
 
 - **TodoWrite** - Track progress on complex tasks

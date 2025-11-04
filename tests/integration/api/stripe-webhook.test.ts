@@ -27,7 +27,7 @@ describe('POST /api/webhooks/stripe', () => {
     {
       productId: 'Material-8x8-V',
       variantId: 'variant_black',
-      stripeProductId: 'price_test_123',
+      stripePriceId: 'price_test_123',
       quantity: 2,
       unitPrice: 2500,
       productName: 'Material-8x8-V',
@@ -156,7 +156,7 @@ describe('POST /api/webhooks/stripe', () => {
           {
             productId: 'Material-8x8-V',
             variantId: 'variant_black',
-            stripeProductId: 'price_test_123',
+            stripePriceId: 'price_test_123',
             quantity: 2,
             unitPrice: 2500,
             productName: 'Material-8x8-V',
@@ -468,7 +468,7 @@ describe('POST /api/webhooks/stripe', () => {
       {
         productId: 'Material-8x8-V',
         variantId: 'variant_black',
-        stripeProductId: 'price_test_123',
+        stripePriceId: 'price_test_123',
         quantity: 2,
         unitPrice: 2500,
         productName: 'Material-8x8-V',
@@ -477,7 +477,7 @@ describe('POST /api/webhooks/stripe', () => {
       {
         productId: 'Founder-8x8-V',
         variantId: 'variant_red',
-        stripeProductId: 'price_test_456',
+        stripePriceId: 'price_test_456',
         quantity: 1,
         unitPrice: 10000,
         productName: 'Founder-8x8-V',
@@ -523,7 +523,7 @@ describe('POST /api/webhooks/stripe', () => {
     const cartWithoutVariant = JSON.stringify([
       {
         productId: 'Material-8x8-V',
-        stripeProductId: 'price_test_123',
+        stripePriceId: 'price_test_123',
         quantity: 1,
         unitPrice: 2500,
         productName: 'Material-8x8-V',

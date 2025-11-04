@@ -128,86 +128,101 @@ export async function syncProductsEnhanced(
       errors: report.mediaErrors.length,
     });
 
-    // Step 5: Sync to Stripe
+    // Step 5: Sync to Stripe (products with variants create parent product + prices)
     logger.info('Syncing to Stripe');
     for (const product of data.products) {
       try {
-        const result = await syncProductToStripe({
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          basePrice: product.base_price,
-          isLive: product.sell_status === 'for-sale' || product.sell_status === 'pre-order',
-          sellStatus: product.sell_status || 'internal',
-          stripeProductId: product.stripe_product_id,
-        });
+        // Get variants for this product
+        const productVariants = data.variants?.filter((v) => v.product_id === product.id) || [];
 
-        if (result.action === 'created') {
-          report.stripeCreated++;
-          product.stripe_product_id = result.stripeProductId;
-          modified = true;
-        } else if (result.action === 'updated') {
-          report.stripeUpdated++;
-        } else if (result.action === 'archived') {
-          report.stripeArchived++;
-          delete product.stripe_product_id;
-          modified = true;
-        }
+        if (product.has_variants && productVariants.length > 0) {
+          // Sync product WITH variants (creates parent product + multiple prices)
+          const result = await syncProductToStripe(
+            {
+              id: product.id,
+              name: product.name,
+              description: product.description,
+              basePrice: product.base_price,
+              isLive: product.sell_status === 'for-sale' || product.sell_status === 'pre-order',
+              sellStatus: product.sell_status || 'internal',
+              hasVariants: true,
+              stripeProductId: product.stripe_product_id,
+            },
+            productVariants.map((v) => ({
+              id: v.id,
+              productId: v.product_id,
+              variantType: v.variant_type,
+              variantValue: v.variant_value,
+              priceModifier: v.price_modifier || 0,
+              stripePriceId: v.stripe_price_id,
+            }))
+          );
 
-        if (result.error) {
-          report.stripeErrors.push(`${product.id}: ${result.error}`);
+          if (result.action === 'created' || result.action === 'updated') {
+            if (result.action === 'created') {
+              report.stripeCreated++;
+            } else {
+              report.stripeUpdated++;
+            }
+
+            // Update parent product ID
+            product.stripe_product_id = result.stripeProductId;
+            modified = true;
+
+            // Update variant Price IDs
+            if (result.variantPrices) {
+              for (const vp of result.variantPrices) {
+                const variant = productVariants.find((v) => v.id === vp.variantId);
+                if (variant) {
+                  variant.stripe_price_id = vp.stripePriceId;
+                  modified = true;
+                }
+              }
+            }
+          } else if (result.action === 'archived') {
+            report.stripeArchived++;
+            delete product.stripe_product_id;
+            modified = true;
+          }
+
+          if (result.error) {
+            report.stripeErrors.push(`${product.id}: ${result.error}`);
+          }
+        } else {
+          // Sync product WITHOUT variants (creates single product + single price)
+          const result = await syncProductToStripe({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            basePrice: product.base_price,
+            isLive: product.sell_status === 'for-sale' || product.sell_status === 'pre-order',
+            sellStatus: product.sell_status || 'internal',
+            hasVariants: false,
+            stripeProductId: product.stripe_product_id,
+          });
+
+          if (result.action === 'created') {
+            report.stripeCreated++;
+            product.stripe_product_id = result.stripeProductId;
+            product.stripe_price_id = result.stripePriceId;
+            modified = true;
+          } else if (result.action === 'updated') {
+            report.stripeUpdated++;
+          } else if (result.action === 'archived') {
+            report.stripeArchived++;
+            delete product.stripe_product_id;
+            delete product.stripe_price_id;
+            modified = true;
+          }
+
+          if (result.error) {
+            report.stripeErrors.push(`${product.id}: ${result.error}`);
+          }
         }
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         report.stripeErrors.push(`${product.id}: ${errorMsg}`);
         logger.error('Stripe sync failed', error as Error, { productId: product.id });
-      }
-    }
-
-    // Step 5b: Sync variants to Stripe
-    logger.info('Syncing variants to Stripe');
-    if (data.variants && data.variants.length > 0) {
-      for (const variant of data.variants) {
-      try {
-        // Find parent product for pricing
-        const parentProduct = data.products.find((p) => p.id === variant.product_id);
-        if (!parentProduct) {
-          report.stripeErrors.push(`${variant.id}: Parent product not found`);
-          continue;
-        }
-
-        const variantPrice = parentProduct.base_price + (variant.price_modifier || 0);
-
-        const result = await syncProductToStripe({
-          id: variant.id,
-          name: `${parentProduct.name} - ${variant.variant_value}`,
-          description: `${parentProduct.description} (${variant.variant_value})`,
-          basePrice: variantPrice,
-          isLive: parentProduct.sell_status === 'for-sale' || parentProduct.sell_status === 'pre-order',
-          sellStatus: parentProduct.sell_status || 'internal',
-          stripeProductId: variant.stripe_product_id,
-        });
-
-        if (result.action === 'created') {
-          report.stripeCreated++;
-          variant.stripe_product_id = result.stripeProductId;
-          modified = true;
-        } else if (result.action === 'updated') {
-          report.stripeUpdated++;
-        } else if (result.action === 'archived') {
-          report.stripeArchived++;
-          delete variant.stripe_product_id;
-          modified = true;
-        }
-
-        if (result.error) {
-          report.stripeErrors.push(`${variant.id}: ${result.error}`);
-        }
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        report.stripeErrors.push(`${variant.id}: ${errorMsg}`);
-        logger.error('Variant Stripe sync failed', error as Error, { variantId: variant.id });
-      }
       }
     }
 

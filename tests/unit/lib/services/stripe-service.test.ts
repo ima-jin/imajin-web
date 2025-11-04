@@ -58,7 +58,7 @@ describe('Stripe Service', () => {
 
       const result = await createCheckoutSession({
         items: [
-          { stripeProductId: 'price_123', quantity: 2 },
+          { stripePriceId: 'price_123', quantity: 2 },
         ],
         customerEmail: 'test@example.com',
       });
@@ -80,7 +80,7 @@ describe('Stripe Service', () => {
       mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
 
       await createCheckoutSession({
-        items: [{ stripeProductId: 'price_123', quantity: 1 }],
+        items: [{ stripePriceId: 'price_123', quantity: 1 }],
         customerEmail: 'test@example.com',
         metadata: { orderId: 'order_123' },
       });
@@ -97,7 +97,7 @@ describe('Stripe Service', () => {
       mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
 
       await createCheckoutSession({
-        items: [{ stripeProductId: 'price_123', quantity: 1 }],
+        items: [{ stripePriceId: 'price_123', quantity: 1 }],
         customerEmail: 'test@example.com',
         successUrl: 'https://example.com/success',
         cancelUrl: 'https://example.com/cancel',
@@ -116,7 +116,7 @@ describe('Stripe Service', () => {
       mockStripe.checkout.sessions.create.mockResolvedValue(mockSession);
 
       await createCheckoutSession({
-        items: [{ stripeProductId: 'price_123', quantity: 1 }],
+        items: [{ stripePriceId: 'price_123', quantity: 1 }],
         customerEmail: 'test@example.com',
       });
 
@@ -136,7 +136,7 @@ describe('Stripe Service', () => {
 
       await expect(
         createCheckoutSession({
-          items: [{ stripeProductId: 'price_123', quantity: 1 }],
+          items: [{ stripePriceId: 'price_123', quantity: 1 }],
           customerEmail: 'test@example.com',
         })
       ).rejects.toThrow('Stripe API error');

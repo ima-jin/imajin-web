@@ -1,6 +1,5 @@
 /**
  * Shipping Policy Page
- * Phase 2.4.7 - Phase 8
  */
 
 import { Container } from '@/components/ui/Container';

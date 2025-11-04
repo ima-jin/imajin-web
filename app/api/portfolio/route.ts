@@ -1,6 +1,5 @@
 /**
  * Portfolio API Route
- * Phase 2.4.7 - Phase 3
  *
  * GET /api/portfolio - Returns products with showOnPortfolioPage = true
  */

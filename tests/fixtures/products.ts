@@ -283,6 +283,7 @@ export function createTestProductConfig(overrides: Partial<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   specs: any[];
   stripe_product_id?: string;
+  stripe_price_id?: string;
   last_synced_at?: string;
   max_quantity?: number | null;
   cost_cents?: number;
@@ -307,6 +308,7 @@ export function createTestProductConfig(overrides: Partial<{
     media: overrides.media ?? [],
     specs: overrides.specs ?? [],
     ...(overrides.stripe_product_id && { stripe_product_id: overrides.stripe_product_id }),
+    ...(overrides.stripe_price_id && { stripe_price_id: overrides.stripe_price_id }),
     ...(overrides.last_synced_at && { last_synced_at: overrides.last_synced_at }),
     ...(overrides.max_quantity !== undefined && { max_quantity: overrides.max_quantity }),
     ...(overrides.cost_cents !== undefined && { cost_cents: overrides.cost_cents }),

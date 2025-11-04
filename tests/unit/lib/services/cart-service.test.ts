@@ -17,7 +17,7 @@ const mockItem: CartItem = {
   image: '/test.jpg',
   quantity: 1,
   price: 1000,
-  stripeProductId: 'price_test',
+  stripePriceId: 'price_test',
 };
 
 describe('Cart Service', () => {
@@ -35,7 +35,7 @@ describe('Cart Service', () => {
         image: '/test2.jpg',
         quantity: 1,
         price: 500,
-      stripeProductId: 'price_test',
+      stripePriceId: 'price_test',
       };
       const cart = addItemToCart([existing], mockItem);
       expect(cart).toHaveLength(2);
@@ -68,7 +68,7 @@ describe('Cart Service', () => {
         image: '/test2.jpg',
         quantity: 1,
         price: 500,
-      stripeProductId: 'price_test',
+      stripePriceId: 'price_test',
       };
       const cart = removeItemFromCart([mockItem, item2], 'prod-1');
       expect(cart).toHaveLength(1);
@@ -94,7 +94,7 @@ describe('Cart Service', () => {
         image: '/test2.jpg',
         quantity: 2,
         price: 500,
-      stripeProductId: 'price_test',
+      stripePriceId: 'price_test',
       };
       const cart = updateItemQuantity([mockItem, item2], 'prod-1', 10);
       expect(cart[0].quantity).toBe(10);
