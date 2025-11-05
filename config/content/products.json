@@ -92,7 +92,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCf0QyGPGlKS",
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Material-8x8-V",
@@ -185,7 +185,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCayXaPKCq8J",
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Connect-4x31.6-5v",
@@ -230,7 +230,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Connect-5x31.6-5v",
@@ -275,7 +275,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Connect-4x31.6-24v",
@@ -320,7 +320,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Connect-5x31.6-24v",
@@ -365,7 +365,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Diffuse-12-C",
@@ -410,7 +410,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Diffuse-12-S",
@@ -455,7 +455,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Control-2-5v",
@@ -511,7 +511,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Control-8-24v",
@@ -567,7 +567,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Control-16-24v",
@@ -623,7 +623,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Unit-8x8x8-DIY",
@@ -704,7 +704,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCAvlFacuPh9",
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     },
     {
       "id": "Unit-8x8x8-Founder",
@@ -718,6 +718,7 @@
       "has_variants": true,
       "requires_assembly": false,
       "max_quantity": 100,
+      "max_quantity_per_order": 2,
       "is_live": true,
       "sell_status": "pre-sale",
       "sell_status_note": "Ships Q1 2026",
@@ -842,7 +843,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCEEY3blul23",
-      "last_synced_at": "2025-11-05T03:59:40.761Z"
+      "last_synced_at": "2025-11-05T05:53:31.064Z"
     }
   ],
   "variants": [
@@ -870,7 +871,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWC78h4y2DvWI",
-      "stripe_price_id": "price_1SPxsmGpeuLZwNPDSqE3kBm6"
+      "stripe_price_id": "price_1SPzewGpeuLZwNPDL4neUTIM"
     },
     {
       "id": "Unit-8x8x8-Founder-White",
@@ -896,7 +897,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCKSdz5hHmlb",
-      "stripe_price_id": "price_1SPxsmGpeuLZwNPDvGwhh3kG"
+      "stripe_price_id": "price_1SPzewGpeuLZwNPDhqWTE7cP"
     },
     {
       "id": "Unit-8x8x8-Founder-Red",
@@ -922,7 +923,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCEB3m8VtNO1",
-      "stripe_price_id": "price_1SPxsmGpeuLZwNPDrQb2qX09"
+      "stripe_price_id": "price_1SPzewGpeuLZwNPDldgfcTQg"
     }
   ],
   "dependencies": [

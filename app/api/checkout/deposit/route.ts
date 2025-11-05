@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { productId, variantId, email } = validation.data;
+    const { productId, variantId, email, quantity } = validation.data;
 
     // Fetch product to get deposit amount
     const product = await getProductById(productId);
@@ -63,10 +63,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Get deposit amount (handles variants and edge cases)
-    const depositAmount = getDepositAmount(product, variant);
+    // Get deposit amount per unit (handles variants and edge cases)
+    const depositAmountPerUnit = getDepositAmount(product, variant);
 
-    if (!depositAmount) {
+    if (!depositAmountPerUnit) {
       return errorResponse(
         ERROR_CODES.VALIDATION_ERROR,
         'Product does not have a deposit price configured',
@@ -74,11 +74,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calculate total deposit amount
+    const totalDepositAmount = depositAmountPerUnit * quantity;
+
     // Create Stripe checkout session for deposit
     const session = await createDepositCheckoutSession({
       productId,
       variantId,
-      depositAmount,
+      depositAmount: totalDepositAmount,
       customerEmail: email,
     });
 

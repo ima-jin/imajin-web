@@ -26,6 +26,7 @@ export interface DbProduct {
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
   maxQuantity: number | null;
+  maxQuantityPerOrder: number | null;
   soldQuantity: number;
   availableQuantity: number | null;
   isAvailable: boolean | null;
@@ -64,6 +65,7 @@ export interface Product {
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
   maxQuantity: number | null;
+  maxQuantityPerOrder: number | null;
   soldQuantity: number;
   availableQuantity: number | null;
   isAvailable: boolean | null;
@@ -145,6 +147,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     requiresAssembly: dbProduct.requiresAssembly,
     hasVariants: dbProduct.hasVariants,
     maxQuantity: dbProduct.maxQuantity,
+    maxQuantityPerOrder: dbProduct.maxQuantityPerOrder,
     soldQuantity: dbProduct.soldQuantity,
     availableQuantity: dbProduct.availableQuantity,
     isAvailable: dbProduct.isAvailable,

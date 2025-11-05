@@ -274,6 +274,8 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
                     // @ts-expect-error - Type mismatch in variant fields (pre-existing)
                     variants: product.variants,
                     sellStatus: product.sellStatus,
+                    presaleDepositPrice: product.presaleDepositPrice,
+                    maxQuantityPerOrder: product.maxQuantityPerOrder,
                   }}
                 />
               </div>

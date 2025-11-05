@@ -25,6 +25,7 @@ function createTestProduct(overrides: Partial<Product> = {}): Product {
     requiresAssembly: false,
     hasVariants: false,
     maxQuantity: null,
+    maxQuantityPerOrder: null,
     soldQuantity: 0,
     availableQuantity: null,
     isAvailable: true,

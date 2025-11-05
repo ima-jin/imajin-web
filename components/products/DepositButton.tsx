@@ -12,7 +12,8 @@ import { DepositCheckoutSchema } from '@/lib/validation/deposit-schemas';
 interface DepositButtonProps {
   productId: string;
   variantId?: string;
-  depositAmount: number; // Amount in cents
+  depositAmount: number; // Amount in cents (per unit)
+  quantity: number; // Number of units
   productName: string;
 }
 
@@ -30,12 +31,16 @@ export function DepositButton({
   productId,
   variantId,
   depositAmount,
+  quantity,
   productName,
 }: DepositButtonProps) {
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { showError } = useToast();
+
+  // Calculate total deposit amount
+  const totalDepositAmount = depositAmount * quantity;
 
   const handleInitialClick = () => {
     setShowEmailForm(true);
@@ -49,6 +54,7 @@ export function DepositButton({
       productId,
       variantId,
       email,
+      quantity,
     });
 
     if (!validation.success) {
@@ -85,13 +91,14 @@ export function DepositButton({
         return;
       }
 
-      const data = await response.json();
+      const result = await response.json();
+      const data = result.data || result; // Handle both wrapped and unwrapped responses
 
       if (!data.url) {
         logger.error('Invalid checkout response', undefined, {
           productId,
           variantId,
-          response: data,
+          response: result,
         });
         showError('Unable to start checkout. Please try again.');
         return;
@@ -118,8 +125,13 @@ export function DepositButton({
         <div className="text-center">
           <p className="text-sm text-gray-600 mb-2">Secure your spot with a deposit</p>
           <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(depositAmount)}
+            {formatCurrency(totalDepositAmount)}
           </p>
+          {quantity > 1 && (
+            <p className="text-xs text-gray-500">
+              {formatCurrency(depositAmount)} × {quantity} {quantity === 1 ? 'unit' : 'units'}
+            </p>
+          )}
           <p className="text-xs text-gray-500 mt-1">{productName}</p>
         </div>
         <Button
@@ -139,7 +151,12 @@ export function DepositButton({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-sm text-blue-900 font-medium mb-1">Deposit Amount</p>
-        <p className="text-2xl font-bold text-blue-900">{formatCurrency(depositAmount)}</p>
+        <p className="text-2xl font-bold text-blue-900">{formatCurrency(totalDepositAmount)}</p>
+        {quantity > 1 && (
+          <p className="text-xs text-blue-700">
+            {formatCurrency(depositAmount)} × {quantity} {quantity === 1 ? 'unit' : 'units'}
+          </p>
+        )}
         <p className="text-xs text-blue-700 mt-1">{productName}</p>
       </div>
 

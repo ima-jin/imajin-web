@@ -87,7 +87,16 @@ describe('POST /api/checkout/deposit', () => {
         presaleDepositPrice: 25000,
       };
 
+      const mockVariant = {
+        id: 'variant-black',
+        productId: 'test-product',
+        variantType: 'color',
+        variantValue: 'BLACK',
+        presaleDepositModifier: 0,
+      };
+
       vi.mocked(productService.getProductById).mockResolvedValueOnce(mockProduct as any);
+      vi.mocked(productService.getVariantById).mockResolvedValueOnce(mockVariant as any);
       vi.mocked(stripeService.createDepositCheckoutSession).mockResolvedValueOnce({
         id: 'cs_test_123',
         url: 'https://checkout.stripe.com/test',

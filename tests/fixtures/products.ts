@@ -25,6 +25,7 @@ const baseProductDefaults = {
   requiresAssembly: false,
   hasVariants: false,
   maxQuantity: null,
+  maxQuantityPerOrder: null,
   soldQuantity: 0,
   availableQuantity: null,
   isAvailable: true,
@@ -152,6 +153,7 @@ export interface DbProduct {
   requiresAssembly: boolean;
   hasVariants: boolean;
   maxQuantity: number | null;
+  maxQuantityPerOrder: number | null;
   soldQuantity: number;
   availableQuantity: number | null;
   isAvailable: boolean;

@@ -48,6 +48,7 @@ export const ProductConfigSchema = z.object({
   has_variants: z.boolean(),
   requires_assembly: z.boolean().optional(),
   max_quantity: z.number().int().positive().nullable().optional(),
+  max_quantity_per_order: z.number().int().positive().optional(),
 
   is_live: z.boolean().default(false),
   cost_cents: z.number().int().positive().optional(),

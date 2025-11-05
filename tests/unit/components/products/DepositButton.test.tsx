@@ -29,6 +29,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -43,6 +44,7 @@ describe('DepositButton', () => {
           productId="test-product"
           variantId="test-variant"
           depositAmount={30000}
+          quantity={1}
           productName="Test Product - Black"
         />
       );
@@ -56,6 +58,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={12345}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -71,6 +74,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -87,6 +91,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -113,6 +118,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -132,6 +138,7 @@ describe('DepositButton', () => {
             body: JSON.stringify({
               productId: 'test-product',
               email: 'test@example.com',
+              quantity: 1,
             }),
           })
         );
@@ -154,6 +161,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -180,6 +188,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -208,6 +217,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -231,6 +241,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -258,6 +269,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -285,6 +297,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -311,6 +324,7 @@ describe('DepositButton', () => {
         <DepositButton
           productId="test-product"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product"
         />
       );
@@ -332,6 +346,7 @@ describe('DepositButton', () => {
           productId="test-product"
           variantId="variant-black"
           depositAmount={25000}
+          quantity={1}
           productName="Test Product - Black"
         />
       );
@@ -350,6 +365,7 @@ describe('DepositButton', () => {
               productId: 'test-product',
               variantId: 'variant-black',
               email: 'test@example.com',
+              quantity: 1,
             }),
           })
         );

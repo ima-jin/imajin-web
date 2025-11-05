@@ -77,6 +77,7 @@ export interface Product {
   // Inventory tracking (product level)
   maxQuantity: number | null;
   soldQuantity: number;
+  maxQuantityPerOrder: number | null;
   availableQuantity: number | null;
   isAvailable: boolean | null;
 
@@ -236,6 +237,7 @@ export const ProductSchema = z.object({
 
   // Inventory tracking (product level)
   maxQuantity: z.number().nullable(),
+  maxQuantityPerOrder: z.number().nullable(),
   soldQuantity: z.number(),
   availableQuantity: z.number().nullable(),
   isAvailable: z.boolean().nullable(),

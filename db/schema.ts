@@ -28,6 +28,7 @@ export const products = pgTable(
     // Inventory tracking (product level)
     maxQuantity: integer("max_quantity"), // NULL = unlimited inventory
     soldQuantity: integer("sold_quantity").default(0).notNull(), // Total units sold (all variants combined)
+    maxQuantityPerOrder: integer("max_quantity_per_order"), // Maximum quantity per single order (e.g., 2 for limited editions)
     availableQuantity: integer("available_quantity").generatedAlwaysAs(
       sql`CASE WHEN max_quantity IS NULL THEN NULL ELSE max_quantity - sold_quantity END`
     ),

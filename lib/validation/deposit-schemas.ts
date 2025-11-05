@@ -8,6 +8,7 @@ export const DepositCheckoutSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
   variantId: z.string().optional(),
   email: z.string().email('Valid email address is required'),
+  quantity: z.number().int().positive().default(1),
 });
 
 export type DepositCheckoutRequest = z.infer<typeof DepositCheckoutSchema>;

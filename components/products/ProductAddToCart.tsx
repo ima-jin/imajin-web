@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
+import { DepositButton } from '@/components/products/DepositButton';
 import type { CartItem } from '@/types/cart';
 
 interface Variant {
@@ -22,6 +23,8 @@ interface ProductAddToCartProps {
     voltage?: '5v' | '24v';
     variants?: Variant[];
     sellStatus?: string;
+    presaleDepositPrice?: number;
+    maxQuantityPerOrder?: number | null;
   };
 }
 
@@ -55,6 +58,11 @@ export function ProductAddToCart({ product }: ProductAddToCartProps) {
 
   // Check if selected variant is out of stock
   const isOutOfStock = selectedVariant && !selectedVariant.isAvailable;
+
+  // Calculate max quantity allowed per order
+  const maxPerOrder = product.maxQuantityPerOrder || 999;
+  const maxAvailable = selectedVariant?.availableQuantity || 999;
+  const maxQuantity = Math.min(maxPerOrder, maxAvailable);
 
   return (
     <div className="space-y-4">
@@ -94,11 +102,16 @@ export function ProductAddToCart({ product }: ProductAddToCartProps) {
         <input
           type="number"
           min="1"
-          max={selectedVariant?.availableQuantity || 999}
+          max={maxQuantity}
           value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+          onChange={(e) => setQuantity(Math.max(1, Math.min(maxQuantity, parseInt(e.target.value) || 1)))}
           className="w-24 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
+        {product.maxQuantityPerOrder && product.maxQuantityPerOrder < 999 && (
+          <p className="text-xs text-gray-500 mt-1">
+            Maximum {product.maxQuantityPerOrder} per order
+          </p>
+        )}
       </div>
 
       {/* Low Stock Warning */}
@@ -110,8 +123,20 @@ export function ProductAddToCart({ product }: ProductAddToCartProps) {
         </div>
       )}
 
-      {/* Add to Cart Button */}
-      {isOutOfStock ? (
+      {/* Conditional Button: DepositButton for pre-sale, AddToCartButton for others */}
+      {product.sellStatus === 'pre-sale' ? (
+        <DepositButton
+          productId={product.id}
+          variantId={selectedVariantId}
+          depositAmount={product.presaleDepositPrice || 0}
+          quantity={quantity}
+          productName={
+            selectedVariant
+              ? `${product.name} - ${selectedVariant.variantValue}`
+              : product.name
+          }
+        />
+      ) : isOutOfStock ? (
         <button
           disabled
           className="w-full bg-gray-300 text-gray-500 font-semibold py-3 px-6 rounded-lg cursor-not-allowed"
