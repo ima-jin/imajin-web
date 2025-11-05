@@ -38,10 +38,6 @@ describe('AddToCartButton', () => {
     mockAddItem.mockResolvedValue(undefined);
   });
 
-  afterEach(() => {
-    vi.clearAllTimers();
-  });
-
   it('renders add to cart button', () => {
     render(<AddToCartButton product={baseProduct} />);
 
