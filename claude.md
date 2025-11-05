@@ -43,7 +43,7 @@ For detailed phase completion status and task breakdowns, see:
 ### Key Product Details
 
 - Selling DIY kits, fully assembled units, and individual components
-- **Founder Edition:** Limited run (1,000 units total) with 10-year warranty and MJN NFT tokens
+- **Founder Edition:** Limited run (1,000 units total) with 10-year warranty and Solana NFT tokens
   - BLACK: 500 units
   - WHITE: 300 units
   - RED: 200 units

@@ -92,7 +92,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCf0QyGPGlKS",
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Material-8x8-V",
@@ -185,7 +185,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCayXaPKCq8J",
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Connect-4x31.6-5v",
@@ -230,7 +230,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Connect-5x31.6-5v",
@@ -275,7 +275,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Connect-4x31.6-24v",
@@ -320,7 +320,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Connect-5x31.6-24v",
@@ -365,7 +365,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Diffuse-12-C",
@@ -410,7 +410,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Diffuse-12-S",
@@ -455,7 +455,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Control-2-5v",
@@ -511,7 +511,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Control-8-24v",
@@ -567,7 +567,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Control-16-24v",
@@ -623,7 +623,7 @@
       "showOnPortfolioPage": false,
       "portfolioCopy": null,
       "isFeatured": false,
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Unit-8x8x8-DIY",
@@ -704,7 +704,7 @@
       "portfolioCopy": null,
       "isFeatured": false,
       "stripe_product_id": "prod_TLWCAvlFacuPh9",
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     },
     {
       "id": "Unit-8x8x8-Founder",
@@ -714,9 +714,16 @@
       "category": "unit",
       "dev_status": 5,
       "base_price": 99500,
+      "presale_deposit_price": 10000,
       "has_variants": true,
       "requires_assembly": false,
       "max_quantity": 100,
+      "is_live": true,
+      "sell_status": "pre-sale",
+      "sell_status_note": "Ships Q1 2026",
+      "showOnPortfolioPage": true,
+      "portfolioCopy": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
+      "isFeatured": true,
       "specs": [
         {
           "key": "dimensions",
@@ -772,9 +779,6 @@
           "Diffuse-12-C": 512
         }
       },
-      "is_live": true,
-      "sell_status": "pre-order",
-      "sell_status_note": "Ships Q1 2026",
       "media": [
         {
           "local_path": "Unit/8x8x8/rainbow.jpg",
@@ -837,11 +841,8 @@
           "uploaded_at": "2025-10-31T06:54:03.990Z"
         }
       ],
-      "showOnPortfolioPage": true,
-      "portfolioCopy": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
-      "isFeatured": true,
       "stripe_product_id": "prod_TLWCEEY3blul23",
-      "last_synced_at": "2025-11-04T09:33:16.116Z"
+      "last_synced_at": "2025-11-05T03:59:40.761Z"
     }
   ],
   "variants": [
@@ -869,7 +870,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWC78h4y2DvWI",
-      "stripe_price_id": "price_1SPgc2GpeuLZwNPDSBMlsxQK"
+      "stripe_price_id": "price_1SPxsmGpeuLZwNPDSqE3kBm6"
     },
     {
       "id": "Unit-8x8x8-Founder-White",
@@ -895,7 +896,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCKSdz5hHmlb",
-      "stripe_price_id": "price_1SPgc2GpeuLZwNPD9IxD05WN"
+      "stripe_price_id": "price_1SPxsmGpeuLZwNPDvGwhh3kG"
     },
     {
       "id": "Unit-8x8x8-Founder-Red",
@@ -921,7 +922,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCEB3m8VtNO1",
-      "stripe_price_id": "price_1SPgc2GpeuLZwNPDDlhHI5Ka"
+      "stripe_price_id": "price_1SPxsmGpeuLZwNPDrQb2qX09"
     }
   ],
   "dependencies": [

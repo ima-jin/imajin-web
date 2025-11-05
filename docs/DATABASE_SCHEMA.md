@@ -335,7 +335,7 @@ CREATE INDEX idx_order_items_variant ON order_items(variant_id);
 
 ### `nft_tokens`
 
-Track MJN NFT tokens for Founder Edition units.
+Track Solana NFT tokens for Founder Edition units.
 
 ```sql
 CREATE TABLE nft_tokens (

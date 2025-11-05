@@ -779,7 +779,7 @@ A: Open hardware design means we can swap MCU (redesign PCB for alternative). Co
 - Progressive price drop strategy
 - Early access queue mechanism
 - Tier specifications (Basic, Premium, Founder)
-- Solana NFT (not MJN NFT) for Premium + Founder
+- Solana NFT for Premium + Founder
 - Premium includes camera-capable hardware (socket + firmware, no camera)
 - Founder includes camera pre-installed
 

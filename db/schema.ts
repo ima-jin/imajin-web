@@ -220,7 +220,7 @@ export const orderItems = pgTable(
   })
 );
 
-// NFT tokens - Track MJN NFT tokens for Founder Edition units
+// NFT tokens - Track Solana NFT tokens for Founder Edition units
 export const nftTokens = pgTable(
   "nft_tokens",
   {

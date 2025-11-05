@@ -20,6 +20,7 @@ import {
   getDisplayPrice,
   getDepositAmount
 } from "@/lib/utils/product-display";
+import { userHasPaidDeposit as checkDeposit } from "@/lib/services/order-service";
 
 interface ProductDetailPageProps {
   params: Promise<{
@@ -27,6 +28,7 @@ interface ProductDetailPageProps {
   }>;
   searchParams: Promise<{
     orderId?: string;
+    email?: string; // Email from query param (for deposit holder links)
   }>;
 }
 
@@ -85,7 +87,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
  */
 export default async function ProductDetailPage({ params, searchParams }: ProductDetailPageProps) {
   const { id } = await params;
-  const { orderId } = await searchParams;
+  const { orderId, email } = await searchParams;
 
   // Load content
   const [content, navigation] = await Promise.all([
@@ -101,17 +103,23 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
       { cache: "no-store" }
     );
 
-    // TODO: Get user email from session/auth context
-    // For now, defaulting to false (no deposit paid)
-    // const userEmail = null; // Replace with actual auth check
-    const userHasPaidDeposit = false; // Replace with userHasPaidDeposit(userEmail, product.id)
+    // Return 404 if product should not be shown (not live, not active, etc.)
+    const displayStatus = getProductDisplayStatus(product);
+    if (!displayStatus.shouldShow) {
+      notFound();
+    }
+
+    // Check deposit status
+    // Server Component calls service directly (no HTTP overhead)
+    // Email can come from query param (email links) or session (future auth)
+    const userEmail = email || null; // TODO: Also check session/auth context
+    const userHasPaidDeposit = userEmail
+      ? await checkDeposit(userEmail, product.id)
+      : false;
 
     // Get conditional pricing based on sell status and deposit status
     const displayPrice = getDisplayPrice(product, undefined, userHasPaidDeposit);
     const depositAmount = getDepositAmount(product);
-
-    // Get display status (includes sell status badge and note)
-    const displayStatus = getProductDisplayStatus(product);
 
     return (
       <div className="min-h-screen bg-white">

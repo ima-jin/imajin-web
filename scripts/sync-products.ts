@@ -75,7 +75,7 @@ async function syncProducts() {
           hasVariants: product.has_variants,
           maxQuantity: product.max_quantity ?? null,
           soldQuantity: 0,
-          isLive: product.sell_status === 'for-sale',
+          isLive: product.is_live ?? false,
           sellStatus: product.sell_status || 'internal',
           sellStatusNote: product.sell_status_note || null,
           costCents: product.cost_cents || null,
@@ -97,7 +97,7 @@ async function syncProducts() {
             hasVariants: product.has_variants,
             maxQuantity: product.max_quantity ?? null,
             // NOTE: We do NOT overwrite soldQuantity on sync!
-            isLive: product.sell_status === 'for-sale',
+            isLive: product.is_live ?? false,
             sellStatus: product.sell_status || 'internal',
             sellStatusNote: product.sell_status_note || null,
             costCents: product.cost_cents || null,

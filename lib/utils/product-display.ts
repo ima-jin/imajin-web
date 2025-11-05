@@ -23,7 +23,7 @@ export interface ProductDisplayStatus {
  *
  * Products are shown if:
  * - isLive is true
- * - sellStatus is 'for-sale' or 'pre-order'
+ * - sellStatus is 'for-sale', 'pre-order', or 'pre-sale'
  * - devStatus is 5 (production ready)
  * - isActive is true
  *
@@ -41,8 +41,12 @@ export function shouldShowProduct(product: Product): boolean {
     return false;
   }
 
-  // Must be for sale or pre-order
-  if (product.sellStatus !== 'for-sale' && product.sellStatus !== 'pre-order') {
+  // Must be available for purchase (for-sale, pre-order, or pre-sale)
+  if (
+    product.sellStatus !== 'for-sale' &&
+    product.sellStatus !== 'pre-order' &&
+    product.sellStatus !== 'pre-sale'
+  ) {
     return false;
   }
 
@@ -73,6 +77,18 @@ export function getProductDisplayStatus(product: Product): ProductDisplayStatus 
         variant: 'danger',
       },
       message: product.sellStatusNote || 'This product is currently sold out',
+    };
+  }
+
+  // Pre-sale (accepting deposits)
+  if (product.sellStatus === 'pre-sale') {
+    return {
+      shouldShow: true,
+      badge: {
+        text: 'Pre-Sale',
+        variant: 'voltage',
+      },
+      message: product.sellStatusNote || 'Accepting refundable deposits',
     };
   }
 

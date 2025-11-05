@@ -105,90 +105,84 @@
 - [x] 775/778 tests passing (99.6%)
 
 ### 2.4.6 Product Data Normalization & Multi-System Sync ✅
+- [x] Structured logging (logger.ts, 15 tests)
+- [x] Cloudinary + Stripe service integration (25 tests)
+- [x] Schema migration (is_live, sell_status, media fields)
+- [x] Enhanced sync script (Media → Stripe → DB)
+- [x] Product display logic (badges, filtering, 25 tests)
+- [x] 943/946 tests passing (99.7%)
 
-**Status:** Complete - All infrastructure and content migration done
+**See:** `/docs/tasks/Phase 2.4.6 - Product Data Normalization.md`
 
-**Phase 0: Structured Logging (1-2h)** ✅
-- [x] Create lib/utils/logger.ts (structured logger class)
-- [x] Write logger tests (15 tests)
-- [x] Replace all console.log/error in existing code
-- [x] Document logging patterns
+### 2.4.7 Launch Injection (Homepage, Portfolio, Contact) ✅
+- [x] Homepage with hero section and featured products
+- [x] Portfolio page (showOnPortfolioPage field)
+- [x] Contact page (info@imajin.ca)
+- [x] UX polish (loading states, error boundaries, 404, mobile responsive)
+- [x] SEO meta tags and policy pages
 
-**Phase 1: Connection Setup (2-3h)** ✅
-- [x] Install Cloudinary SDK
-- [x] Create cloudinary-service.ts with upload/check/delete
-- [x] Create tools/test-cloudinary.ts script
-- [x] Create stripe-sync-service.ts with create/update/archive
-- [x] Create tools/test-stripe.ts script
-- [x] Validate both services with manual tests
-- [x] 25 connection tests passing
+**See:** `/docs/tasks/Phase 2.4.7 - Launch Injection.md`
 
-**Phase 2: Schema Migration (3-4h)** ✅
-- [x] Move products.json to config/content/
-- [x] Update schemas: Zod, TypeScript, PostgreSQL
-- [x] Add new fields: is_live, cost_cents, wholesale_price_cents, sell_status, sell_status_note, last_synced_at, media
-- [x] Create database migration
-- [x] Update mappers for new fields
-- [x] Migrate products.json to new schema (images → media, add is_live, sell_status)
-- [x] All existing tests passing (943+)
+### 2.4.8 Fix TDD Violations from 2.4.7 ✅
+- [x] Wrote tests retroactively for 2.4.7 code
+- [x] Verified test coverage for all new components
+- [x] All quality gates passing
 
-**Phase 3: Cloudinary Integration (3-4h)** ✅
-- [x] Create cloudinary helper utility (URL generation)
-- [x] Create upload-media.ts test script
-- [x] Add placeholder images to config/content/media/
-- [x] ProductCard ready for Cloudinary images
-- [x] 15 new tests passing
+**See:** `/docs/tasks/Phase 2.4.8 - Fix TDD Violations from 2.4.7.md`
 
-**Phase 4: Stripe Sync (3-4h)** ✅
-- [x] Enhance stripe-sync-service with full logic
-- [x] Handle all sell_status scenarios
-- [x] Handle Stripe Price immutability
-- [x] Ready for Founder Edition variant sync
-- [x] 30 new tests passing
+### 2.4.9 Dynamic Founder Edition Variant Display ✅
+- [x] Variant selection UI on product detail page
+- [x] Stock tracking per variant (BLACK/WHITE/RED)
+- [x] Dynamic pricing display
 
-**Phase 5: Enhanced Sync Script (4-5h)** ✅
-- [x] Create sync-products-enhanced.ts
-- [x] Implement full sync flow (Media → Stripe → DB)
-- [x] Implement media cleanup logic
-- [x] Test idempotency
-- [x] Script ready to update products.json with generated IDs
-- [x] 30 integration tests passing
+**See:** `/docs/tasks/Phase 2.4.9 - Dynamic Founder Edition Variant Display.md`
 
-**Phase 6: Product Display Logic (2-3h)** ✅
-- [x] Create product-filters.ts (shouldShowProduct, getProductDisplayStatus)
-- [x] ProductCard displays sell_status badges via product-display.ts
-- [x] AddToCartButton respects canAddToCart() for sold-out/pre-order
-- [x] Product API routes filter by is_live (default true)
-- [x] 25 new tests passing
+### 2.5 Products & Inventory Completion ✅
+- [x] Product catalog feature-complete
+- [x] Inventory tracking functional
+- [x] Ready for checkout integration
 
-**Phase 7: Testing & Validation (2h)** ✅
-- [x] All integration tests passing (943/946 = 99.7%)
-- [x] products.json validates against schema
-- [x] Database schema includes all new fields
-- [x] Mappers handle new fields correctly
-- [ ] Manual testing checklist - **DEFERRED to Phase 2.5**
-- [ ] Update DATABASE_SCHEMA.md - **TODO**
-- [ ] Update JSON_CONFIG_STRUCTURE.md - **TODO**
+**See:** `/docs/tasks/Phase 2.5 - Products & Inventory Completion.md`
 
-**Total:** 18-20 hours - **95% complete** (documentation pending)
+### 2.5.1 Stripe Product/Price Architecture Refactor ✅
+- [x] Refactored Stripe sync: 1 Product with multiple Prices (not multiple Products)
+- [x] Variant metadata in Price objects
+- [x] Clean Stripe dashboard structure
+- [x] Proper industry-standard architecture
 
-**Completed:**
-1. ✅ Migrated products.json to new schema
-2. ✅ UI components use new fields (badges, filtering)
-3. ✅ API routes filter by is_live
-4. ✅ All tests passing
-5. ⏳ Documentation updates (final step)
+**See:** `/docs/tasks/Phase 2.5.1 - Stripe Product Price Architecture.md`
 
-**See:** `/docs/tasks/Phase 2.4.6 - Product Data Normalization.md` for detailed specification
+### 2.5.2 Pre-Sale vs Pre-Order Pricing Infrastructure 🔶
+- [x] Schema: presale_deposit_price, wholesale_price, cogs_price fields
+- [x] Database migration
+- [ ] Pre-sale deposit checkout flow - **TODO → Phase 2.5.2.1**
+- [ ] Deposit holder tracking - **TODO → Phase 2.5.2.1**
+- [ ] Wholesale price display logic - **TODO → Phase 2.5.2.1**
 
-### 2.5 Real-Time Inventory Management
+**Status:** Schema complete, checkout flow pending
+
+**See:** `/docs/tasks/Phase 2.5.2 - Pre-Sale vs Pre-Order Schema.md` (full spec with business logic)
+
+### 2.5.2.1 Pre-Sale Deposit Checkout Implementation (NEXT)
+- [ ] Phase 1: Deposit checkout flow (DepositButton, API route, 45 tests)
+- [ ] Phase 2: Deposit holder tracking (lookup functions, API, 27 tests)
+- [ ] Phase 3: Wholesale price display (ProductPrice updates, 18 tests)
+- [ ] Phase 4: Deposit application at checkout (session adjustment, 27 tests)
+
+**Estimated:** 4-6 hours | **Tests:** 117 total
+
+**See:** `/docs/tasks/Phase 2.5.2.1 - Pre-Sale Deposit Checkout Implementation.md` ⭐ **LEAN SPEC - Start here**
+
+### 2.5.5 Real-Time Inventory Management (DEFERRED)
 - [ ] Inventory service and API endpoint (GET /api/inventory/:productId)
 - [ ] Polling hook (useInventory with 10s intervals)
 - [ ] Stock indicator components (StockIndicator, LowStockWarning, SoldOutBadge)
 - [ ] Update ProductCard and ProductAddToCart with real-time availability
 - [ ] 60+ tests
 
-**See:** `/docs/tasks/Phase 2.5 - Real-Time Inventory Management.md`
+**Note:** Deferred - not blocking launch
+
+**See:** `/docs/tasks/Phase 2.5.5 - Real-Time Inventory Management.md`
 
 ### 2.6 E2E & Smoke Tests
 - [ ] E2E tests: checkout.spec.ts, product-browsing.spec.ts, shopping-cart.spec.ts

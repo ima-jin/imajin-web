@@ -100,6 +100,20 @@ export async function getProductWithVariants(id: string): Promise<ProductWithVar
 }
 
 /**
+ * Get a single variant by ID
+ */
+export async function getVariantById(variantId: string) {
+  const [dbVariant] = await db.select().from(variants).where(eq(variants.id, variantId));
+
+  if (!dbVariant) {
+    return null;
+  }
+
+  const [mappedVariant] = mapDbVariantsToVariants([dbVariant]);
+  return mappedVariant || null;
+}
+
+/**
  * Get a product with specs
  */
 export async function getProductWithSpecs(id: string): Promise<ProductWithSpecs | null> {

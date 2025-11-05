@@ -512,7 +512,7 @@ export type Navigation = z.infer<typeof NavigationSchema>;
   ],
   "founder_section": {
     "heading": "Founder Edition Collection",
-    "description": "Limited run of 1,000 units worldwide. Hand-assembled 24v cubes with 10-year warranty and MJN NFT token.",
+    "description": "Limited run of 1,000 units worldwide. Hand-assembled 24v cubes with 10-year warranty and Solana NFT token.",
     "colors": [
       {
         "id": "black",
@@ -695,7 +695,7 @@ export type Navigation = z.infer<typeof NavigationSchema>;
     {
       "id": "founder",
       "heading": "Founder Edition Collection",
-      "description": "Limited run of 1,000 units worldwide. Hand-assembled 24v cubes with 10-year warranty and MJN NFT token."
+      "description": "Limited run of 1,000 units worldwide. Hand-assembled 24v cubes with 10-year warranty and Solana NFT token."
     },
     {
       "id": "expansion",
