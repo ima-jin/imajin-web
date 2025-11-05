@@ -19,7 +19,7 @@
           "local_path": "Material/5x5-O/BLACK/front.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
+          "alt": "5x5 imajin black opaque PCB panel with RGBW SMDs",
           "category": "main",
           "order": 1,
           "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/front",
@@ -29,7 +29,7 @@
           "local_path": "Material/5x5-O/BLACK/back.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
+          "alt": "5x5 imajin black opaque PCB panel back",
           "category": "main",
           "order": 2,
           "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/back",
@@ -39,7 +39,7 @@
           "local_path": "Material/5x5-O/BLACK/45.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs",
+          "alt": "5x5 imajin black opaque PCB panel tilted 45 degrees",
           "category": "main",
           "order": 3,
           "cloudinary_public_id": "media/products/Material/5x5-O/BLACK/45",
@@ -88,11 +88,11 @@
         "generation": "1",
         "weight_grams": "45"
       },
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
       "stripe_product_id": "prod_TLWCf0QyGPGlKS",
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Material-8x8-V",
@@ -164,7 +164,7 @@
           "local_path": "Material/8x8-V/BLACK/front.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "alt": "8x8 imajin black volumetric PCB panel with RGBW SMDs",
           "category": "main",
           "order": 1,
           "cloudinary_public_id": "media/products/Material/8x8-V/BLACK/front",
@@ -174,18 +174,18 @@
           "local_path": "Material/8x8-V/BLACK/caps.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "5x5 DIY Cube displaying rainbow pattern across 5 layers of addressable RGB LEDs with diffusion caps installed",
+          "alt": "8x8 imajin black volumetric PCB panel with RGBW SMDs and diffusion caps installed",
           "category": "main",
           "order": 1,
           "cloudinary_public_id": "media/products/Material/8x8-V/BLACK/caps",
           "uploaded_at": "2025-10-30T15:25:27.541Z"
         }
       ],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
       "stripe_product_id": "prod_TLWCayXaPKCq8J",
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Connect-4x31.6-5v",
@@ -227,10 +227,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Connect-5x31.6-5v",
@@ -272,10 +272,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Connect-4x31.6-24v",
@@ -317,10 +317,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Connect-5x31.6-24v",
@@ -362,10 +362,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Diffuse-12-C",
@@ -407,10 +407,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Diffuse-12-S",
@@ -452,10 +452,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Control-2-5v",
@@ -508,10 +508,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Control-8-24v",
@@ -564,10 +564,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Control-16-24v",
@@ -620,10 +620,10 @@
       "is_live": false,
       "sell_status": "internal",
       "media": [],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Unit-8x8x8-DIY",
@@ -688,23 +688,31 @@
       "sell_status_note": "Ships Q1 2026",
       "media": [
         {
-          "local_path": "",
-          "cloudinary_public_id": "",
+          "local_path": "Unit/8x8x8-DIY/grid.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "alt": "8x8x8 DIY Cube being assembled",
           "category": "main",
           "order": 1,
-          "uploaded_at": "2025-10-30T15:25:28.217Z",
-          "deleted": true,
-          "deleted_at": "2025-11-04T08:18:43.986Z"
+          "cloudinary_public_id": "media/products/Unit/8x8x8-DIY/grid",
+          "uploaded_at": "2025-11-05T15:52:09.974Z"
+        },
+        {
+          "local_path": "Unit/8x8x8-DIY/white.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "8x8x8 DIY Cube being assembled",
+          "category": "main",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8-DIY/white",
+          "uploaded_at": "2025-11-05T15:52:10.542Z"
         }
       ],
-      "showOnPortfolioPage": false,
-      "portfolioCopy": null,
-      "isFeatured": false,
+      "show_on_portfolio_page": false,
+      "portfolio_copy": null,
+      "is_featured": false,
       "stripe_product_id": "prod_TLWCAvlFacuPh9",
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     },
     {
       "id": "Unit-8x8x8-Founder",
@@ -722,9 +730,9 @@
       "is_live": true,
       "sell_status": "pre-sale",
       "sell_status_note": "Ships Q1 2026",
-      "showOnPortfolioPage": true,
-      "portfolioCopy": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
-      "isFeatured": true,
+      "show_on_portfolio_page": true,
+      "portfolio_copy": "Traditional luxury lighting is beautiful, but predictable. Light sculptures on a dimmer. Yawn! Imajin Lighting transforms illumination into an immersive, responsive experience.\n\nOur debut prototype, Unit 8x8x8, is a 240mm, volumetric light array composed of 512 emitters. The Unit offers a rare duality. It can be both static and dynamic. Equally compelling as a work of sculptural stillness or an animated fixture of light and motion.\n\nWhile the Unit's refined form appears to be a complex interplay of design, hardware, and code, it is simple to instal and user friendly. The interface control is a simple, silky-smooth physical dial offering effortless transitions between moods, tones, and movement. Each client experiences a personalized consultation to tailor unique lighting patterns and behaviors that reflect their environment and aesthetic sensibility.\n\nThe Imajin team brings decades of experience in large-scale festivals, cocktail lounges and nightclub lighting design — now reimagined for the home. The Unit channels creative energy into your home with lighting that is captivating, responsive, and redefines \\\"mood lighting\\\" to the next level.",
+      "is_featured": true,
       "specs": [
         {
           "key": "dimensions",
@@ -786,7 +794,7 @@
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/rainbow",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs in pendant form",
+          "alt": "Unit 8x8x8 Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs in pendant form",
           "category": "main",
           "order": 6,
           "uploaded_at": "2025-10-30T15:25:28.488Z"
@@ -795,7 +803,7 @@
           "local_path": "Unit/8x8x8/desk.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
           "category": "main",
           "order": 3,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/desk",
@@ -805,7 +813,7 @@
           "local_path": "Unit/8x8x8/home.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying rainbow pattern across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Volumetric Cube in a home setting",
           "category": "main",
           "order": 4,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/home",
@@ -815,7 +823,7 @@
           "local_path": "Unit/8x8x8/video.mp4",
           "type": "video",
           "mime_type": "video/mp4",
-          "alt": "8x8x8 DIY Cube displaying moving pattern across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube displaying moving pattern across 8 layers of addressable RGB LEDs",
           "category": "main",
           "order": 5,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/video",
@@ -825,7 +833,7 @@
           "local_path": "Unit/8x8x8/waves.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube waves colourful pattern across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube waves colourful pattern across 8 layers of addressable RGB LEDs",
           "category": "hero",
           "order": 1,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/waves",
@@ -835,7 +843,7 @@
           "local_path": "Unit/8x8x8/white.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube displaying solid white across 8 layers of addressable RGB LEDs",
           "category": "main",
           "order": 2,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/white",
@@ -843,7 +851,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCEEY3blul23",
-      "last_synced_at": "2025-11-05T05:53:31.064Z"
+      "last_synced_at": "2025-11-05T21:31:46.053Z"
     }
   ],
   "variants": [
@@ -863,7 +871,7 @@
           "local_path": "Unit/8x8x8/BLACK/black.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube with black PCB displaying purple light across 8 layers of addressable RGB LEDs",
           "category": "hero",
           "order": 1,
           "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/black",
@@ -871,7 +879,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWC78h4y2DvWI",
-      "stripe_price_id": "price_1SPzewGpeuLZwNPDL4neUTIM"
+      "stripe_price_id": "price_1SQEIuGpeuLZwNPDSyjgcugc"
     },
     {
       "id": "Unit-8x8x8-Founder-White",
@@ -889,7 +897,7 @@
           "local_path": "Unit/8x8x8/WHITE/white.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube with white PCB displaying white across 8 layers of addressable RGB LEDs",
           "category": "hero",
           "order": 1,
           "cloudinary_public_id": "media/products/Unit/8x8x8/WHITE/white",
@@ -897,7 +905,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCKSdz5hHmlb",
-      "stripe_price_id": "price_1SPzewGpeuLZwNPDhqWTE7cP"
+      "stripe_price_id": "price_1SQEIuGpeuLZwNPDr3t4O3qf"
     },
     {
       "id": "Unit-8x8x8-Founder-Red",
@@ -915,7 +923,7 @@
           "local_path": "Unit/8x8x8/RED/red.jpg",
           "type": "image",
           "mime_type": "image/jpeg",
-          "alt": "8x8x8 DIY Cube displaying solid white across 8 layers of addressable RGB LEDs",
+          "alt": "Unit 8x8x8 Cube with black PCB displaying red across 8 layers of addressable RGB LEDs",
           "category": "hero",
           "order": 1,
           "cloudinary_public_id": "media/products/Unit/8x8x8/RED/red",
@@ -923,7 +931,7 @@
         }
       ],
       "stripe_product_id": "prod_TLWCEB3m8VtNO1",
-      "stripe_price_id": "price_1SPzewGpeuLZwNPDldgfcTQg"
+      "stripe_price_id": "price_1SQEIvGpeuLZwNPDXnQErvlK"
     }
   ],
   "dependencies": [

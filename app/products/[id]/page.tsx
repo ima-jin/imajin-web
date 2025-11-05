@@ -269,7 +269,13 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
                     id: product.id,
                     name: product.name,
                     basePrice: product.basePrice,
-                    image: undefined,
+                    image: product.media && product.media.length > 0
+                      ? getProductImageUrl(
+                          product.media.find(m => m.category === 'main' || m.category === 'hero')?.cloudinaryPublicId ||
+                          product.media[0]?.cloudinaryPublicId ||
+                          ''
+                        )
+                      : undefined,
                     voltage: undefined,
                     // @ts-expect-error - Type mismatch in variant fields (pre-existing)
                     variants: product.variants,

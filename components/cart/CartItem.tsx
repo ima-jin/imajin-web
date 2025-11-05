@@ -5,6 +5,7 @@ import type { UIStrings } from '@/config/schema/ui-strings-schema';
 import { formatCurrency } from '@/lib/utils/format';
 import { Badge } from '@/components/ui/Badge';
 import { interpolate } from '@/lib/utils/string-template';
+import Image from 'next/image';
 
 interface CartItemProps {
   item: CartItem;
@@ -44,9 +45,15 @@ export function CartItem({ item, uiStrings, onUpdateQuantity, onRemove }: CartIt
 
   return (
     <div className="flex gap-4 py-4 border-b last:border-b-0">
-      {/* Product Image Placeholder */}
-      <div className="relative w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-        <span className="text-xs text-gray-400">Image</span>
+      {/* Product Image */}
+      <div className="relative w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+        <Image
+          src={item.image}
+          alt={item.name}
+          fill
+          className="object-cover"
+          sizes="80px"
+        />
       </div>
 
       {/* Product Details */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/components/cart/CartProvider';
 import { useToast } from '@/components/toast/ToastProvider';
@@ -15,60 +15,8 @@ import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { apiPost } from '@/lib/utils/api-client';
 import { API_ENDPOINTS } from '@/lib/config/api';
 import { logger } from '@/lib/utils/logger';
+import { getAllCountries, getCountryByCode, hasSubdivisions } from '@/lib/utils/countries';
 import { z } from 'zod';
-
-const US_STATES = [
-  { value: 'AL', label: 'Alabama' },
-  { value: 'AK', label: 'Alaska' },
-  { value: 'AZ', label: 'Arizona' },
-  { value: 'AR', label: 'Arkansas' },
-  { value: 'CA', label: 'California' },
-  { value: 'CO', label: 'Colorado' },
-  { value: 'CT', label: 'Connecticut' },
-  { value: 'DE', label: 'Delaware' },
-  { value: 'FL', label: 'Florida' },
-  { value: 'GA', label: 'Georgia' },
-  { value: 'HI', label: 'Hawaii' },
-  { value: 'ID', label: 'Idaho' },
-  { value: 'IL', label: 'Illinois' },
-  { value: 'IN', label: 'Indiana' },
-  { value: 'IA', label: 'Iowa' },
-  { value: 'KS', label: 'Kansas' },
-  { value: 'KY', label: 'Kentucky' },
-  { value: 'LA', label: 'Louisiana' },
-  { value: 'ME', label: 'Maine' },
-  { value: 'MD', label: 'Maryland' },
-  { value: 'MA', label: 'Massachusetts' },
-  { value: 'MI', label: 'Michigan' },
-  { value: 'MN', label: 'Minnesota' },
-  { value: 'MS', label: 'Mississippi' },
-  { value: 'MO', label: 'Missouri' },
-  { value: 'MT', label: 'Montana' },
-  { value: 'NE', label: 'Nebraska' },
-  { value: 'NV', label: 'Nevada' },
-  { value: 'NH', label: 'New Hampshire' },
-  { value: 'NJ', label: 'New Jersey' },
-  { value: 'NM', label: 'New Mexico' },
-  { value: 'NY', label: 'New York' },
-  { value: 'NC', label: 'North Carolina' },
-  { value: 'ND', label: 'North Dakota' },
-  { value: 'OH', label: 'Ohio' },
-  { value: 'OK', label: 'Oklahoma' },
-  { value: 'OR', label: 'Oregon' },
-  { value: 'PA', label: 'Pennsylvania' },
-  { value: 'RI', label: 'Rhode Island' },
-  { value: 'SC', label: 'South Carolina' },
-  { value: 'SD', label: 'South Dakota' },
-  { value: 'TN', label: 'Tennessee' },
-  { value: 'TX', label: 'Texas' },
-  { value: 'UT', label: 'Utah' },
-  { value: 'VT', label: 'Vermont' },
-  { value: 'VA', label: 'Virginia' },
-  { value: 'WA', label: 'Washington' },
-  { value: 'WV', label: 'West Virginia' },
-  { value: 'WI', label: 'Wisconsin' },
-  { value: 'WY', label: 'Wyoming' },
-];
 
 /**
  * Checkout Page
@@ -94,8 +42,31 @@ export default function CheckoutPage() {
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
   const [city, setCity] = useState('');
+  const [country, setCountry] = useState('CA'); // Default to Canada
   const [state, setState] = useState('');
   const [postalCode, setPostalCode] = useState('');
+
+  // Get current country data
+  const selectedCountry = useMemo(() => getCountryByCode(country), [country]);
+
+  // Get subdivisions for selected country
+  const subdivisions = useMemo(() => {
+    if (!selectedCountry || !hasSubdivisions(country)) {
+      return [];
+    }
+    return selectedCountry.subdivisions.map(s => ({ value: s.code, label: s.name }));
+  }, [selectedCountry, country]);
+
+  // Get all countries for dropdown
+  const countryOptions = useMemo(() => {
+    return getAllCountries().map(c => ({ value: c.code, label: c.name }));
+  }, []);
+
+  // Reset state/province when country changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Valid use case: synchronizing state field with country selection
+    setState('');
+  }, [country]);
 
   // Redirect if cart is empty (after hydration)
   useEffect(() => {
@@ -114,7 +85,7 @@ export default function CheckoutPage() {
     setIsLoading(true);
 
     try {
-      // Create checkout session
+      // Create checkout session with shipping address
       const session = await apiPost(
         API_ENDPOINTS.CHECKOUT_SESSION,
         z.object({ sessionId: z.string(), url: z.string() }),
@@ -129,6 +100,16 @@ export default function CheckoutPage() {
             variantValue: item.variantName,
           })),
           customerEmail: email,
+          shippingAddress: {
+            name,
+            email,
+            addressLine1,
+            addressLine2,
+            city,
+            state: state || 'N/A', // For countries without subdivisions
+            postalCode,
+            country,
+          },
           metadata: {},
         }
       );
@@ -204,6 +185,14 @@ export default function CheckoutPage() {
                         onChange={(e) => setAddressLine2(e.target.value)}
                         helperText="Optional"
                       />
+                      <Select
+                        name="country"
+                        label="Country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        required
+                        options={countryOptions}
+                      />
                       <div className="grid grid-cols-2 gap-4">
                         <Input
                           name="city"
@@ -212,23 +201,33 @@ export default function CheckoutPage() {
                           onChange={(e) => setCity(e.target.value)}
                           required
                         />
-                        <Select
-                          name="state"
-                          label="State"
-                          value={state}
-                          onChange={(e) => setState(e.target.value)}
-                          required
-                          options={US_STATES}
-                          placeholder="Select state"
-                        />
+                        {subdivisions.length > 0 ? (
+                          <Select
+                            name="state"
+                            label={selectedCountry?.subdivisionLabel || 'State/Province'}
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                            required
+                            options={subdivisions}
+                            placeholder={`Select ${selectedCountry?.subdivisionLabel.toLowerCase() || 'state/province'}`}
+                          />
+                        ) : (
+                          <Input
+                            name="state"
+                            label={selectedCountry?.subdivisionLabel || 'State/Province/Region'}
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                            placeholder="Optional"
+                          />
+                        )}
                       </div>
                       <Input
                         name="postalCode"
-                        label="Postal Code"
+                        label={selectedCountry?.postalCodeLabel || 'Postal Code'}
                         value={postalCode}
                         onChange={(e) => setPostalCode(e.target.value)}
                         required
-                        placeholder="12345"
+                        placeholder={selectedCountry?.code === 'US' ? '12345' : selectedCountry?.code === 'CA' ? 'A1A 1A1' : ''}
                       />
                     </div>
                   </div>

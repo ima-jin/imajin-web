@@ -7,7 +7,9 @@ import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { getHomePageContent } from "@/hooks/usePageContent";
 import { getAllProducts, getProductWithVariants } from "@/lib/services/product-service";
+import { getProductImageUrl } from "@/lib/utils/cloudinary";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 /**
@@ -128,8 +130,23 @@ export default async function HomePage() {
       <section className="bg-white py-20">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="h-[500px] bg-gray-100 flex items-center justify-center rounded">
-              <Text color="muted">Installation Photo - Residential Setting</Text>
+            <div className="relative h-[500px] bg-gray-100 rounded overflow-hidden">
+              {content.hero.cta_secondary.media &&
+               content.hero.cta_secondary.media.length > 0 &&
+               content.hero.cta_secondary.media[0].cloudinary_public_id ? (
+                <Image
+                  src={getProductImageUrl(content.hero.cta_secondary.media[0].cloudinary_public_id, 1200)}
+                  alt={content.hero.cta_secondary.media[0].alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Text color="muted">Installation Photo - Residential Setting</Text>
+                </div>
+              )}
             </div>
             <div>
               <Heading level={2} className="text-4xl md:text-5xl font-light mb-6">

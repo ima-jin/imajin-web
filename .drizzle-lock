@@ -1,0 +1,7 @@
+MIGRATIONS DISABLED - PRE-LAUNCH MODE
+
+Do not generate or run migrations before launch.
+Use `npm run db:push` to sync schema changes.
+
+This file exists to prevent accidental data loss.
+Delete this file only after launch when you need real migrations.

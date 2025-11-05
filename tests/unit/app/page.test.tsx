@@ -14,9 +14,24 @@ import { createMockProduct, createMockDbVariant } from '@/tests/fixtures/product
 vi.mock('@/hooks/usePageContent', () => ({
   getHomePageContent: vi.fn().mockResolvedValue({
     hero: {
-      headline: 'Transform Your Space',
-      subheadline: 'Modular LED Fixtures',
-      cta: { label: 'Shop Now', href: '/products', aria_label: 'Shop modular LED fixtures' },
+      heading: 'Transform Your Space',
+      subheading: 'Modular LED Fixtures',
+      cta_primary: { label: 'Shop Now', href: '/products', aria_label: 'Shop modular LED fixtures' },
+      cta_secondary: {
+        label: 'View Portfolio',
+        href: '/portfolio',
+        aria_label: 'View installation portfolio',
+        media: [{
+          local_path: 'Unit/8x8x8/home.jpg',
+          type: 'image',
+          mime_type: 'image/jpeg',
+          alt: 'Unit 8x8x8 in home setting',
+          category: 'lifestyle',
+          order: 1,
+          cloudinary_public_id: 'media/products/Unit/8x8x8/BLACK/home',
+          uploaded_at: '2025-10-31T06:53:58.871Z',
+        }],
+      },
     },
     value_props: [
       { id: '1', heading: 'Ready to Install', description: 'No assembly required' },

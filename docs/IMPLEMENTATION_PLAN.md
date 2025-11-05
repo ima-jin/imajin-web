@@ -173,6 +173,32 @@
 
 **See:** `/docs/tasks/Phase 2.5.2.1 - Pre-Sale Deposit Checkout Implementation.md` ⭐ **LEAN SPEC - Start here**
 
+### 2.5.3 Content Placeholder Cleanup ✅
+- [x] Automated searches for placeholder patterns (TODO, FIXME, lorem ipsum)
+- [x] Audit products.json for placeholder descriptions
+- [x] Review all page content files (home, about, contact, products)
+- [x] Verify product images have descriptive alt text
+- [x] Check UI components for generic/placeholder text
+- [x] **Result:** Zero placeholder content found - production ready
+
+**Status:** Complete - No changes required, codebase already production-ready
+
+**See:** `/docs/tasks/Phase 2.5.3 - Content Placeholder Cleanup.md`
+
+### 2.5.4 Stripe Link Integration Testing (IN PROGRESS)
+- [x] Code already updated: `payment_method_types: ['card', 'link']`
+- [ ] Verify Link appears in Stripe Checkout
+- [ ] Test first-time Link user signup flow
+- [ ] Test returning Link user autofill
+- [ ] Verify order creation with Link payments
+- [ ] Test webhook processing
+- [ ] Mobile device testing
+- [ ] Error handling scenarios
+
+**Status:** Testing in progress
+
+**See:** `/docs/tasks/Phase 2.5.4 - Stripe Link Integration Testing.md`
+
 ### 2.5.5 Real-Time Inventory Management (DEFERRED)
 - [ ] Inventory service and API endpoint (GET /api/inventory/:productId)
 - [ ] Polling hook (useInventory with 10s intervals)

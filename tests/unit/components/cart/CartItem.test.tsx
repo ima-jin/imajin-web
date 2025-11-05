@@ -32,8 +32,36 @@ describe('CartItem', () => {
     );
 
     expect(screen.getByText('Test Product')).toBeInTheDocument();
-    // Image placeholder is shown until real images are available
-    expect(screen.getByText('Image')).toBeInTheDocument();
+  });
+
+  it('renders product image', () => {
+    render(
+      <CartItemComponent
+        item={baseItem}
+        uiStrings={mockUIStrings}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemove={mockRemoveItem}
+      />
+    );
+
+    const image = screen.getByRole('img', { name: 'Test Product' });
+    expect(image).toBeInTheDocument();
+    expect(image).toHaveAttribute('src', expect.stringContaining('test-image.jpg'));
+  });
+
+  it('uses placeholder when image is not provided', () => {
+    const noImageItem = { ...baseItem, image: '/placeholder.jpg' };
+    render(
+      <CartItemComponent
+        item={noImageItem}
+        uiStrings={mockUIStrings}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemove={mockRemoveItem}
+      />
+    );
+
+    const image = screen.getByRole('img', { name: 'Test Product' });
+    expect(image).toHaveAttribute('src', expect.stringContaining('placeholder.jpg'));
   });
 
   it('displays unit price', () => {

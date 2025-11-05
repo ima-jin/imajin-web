@@ -1,13 +1,16 @@
 import { z } from 'zod';
+import { MediaItemSchema } from '@/config/schema';
 
 /**
  * CTA (Call to Action) Schema
  * Defines a button or link with label and href
+ * Optionally includes media assets (using shared MediaItemSchema)
  */
 const CTASchema = z.object({
   label: z.string(),
   href: z.string(),
   aria_label: z.string(),
+  media: z.array(MediaItemSchema).optional(),
 });
 
 /**

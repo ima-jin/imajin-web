@@ -12,7 +12,17 @@
     "cta_secondary": {
       "label": "View Portfolio",
       "href": "/portfolio",
-      "aria_label": "View installation portfolio"
+      "aria_label": "View installation portfolio",
+      "media":[{
+          "local_path": "Unit/8x8x8/home.jpg",
+          "type": "image",
+          "mime_type": "image/jpeg",
+          "alt": "Unit 8x8x8 Volumetric Cube in a home setting",
+          "category": "lifestyle",
+          "order": 1,
+          "cloudinary_public_id": "media/products/Unit/8x8x8/BLACK/home",
+          "uploaded_at": "2025-10-31T06:53:58.871Z"
+        }]
     }
   },
   "value_props": [

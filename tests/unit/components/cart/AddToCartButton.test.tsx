@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import type { CartItem } from '@/types/cart';
@@ -36,6 +36,10 @@ describe('AddToCartButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockAddItem.mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
   });
 
   it('renders add to cart button', () => {
@@ -84,8 +88,14 @@ describe('AddToCartButton', () => {
   });
 
   it('shows loading state while adding', async () => {
+    vi.useFakeTimers();
+
     // Mock a delayed addItem
-    mockAddItem.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+    let resolveAddItem: () => void;
+    const addItemPromise = new Promise<void>(resolve => {
+      resolveAddItem = resolve;
+    });
+    mockAddItem.mockReturnValue(addItemPromise);
 
     render(<AddToCartButton product={baseProduct} />);
 
@@ -96,6 +106,12 @@ describe('AddToCartButton', () => {
     await waitFor(() => {
       expect(button).toBeDisabled();
     });
+
+    // Resolve the promise
+    resolveAddItem!();
+    await vi.waitFor(() => expect(mockAddItem).toHaveBeenCalled());
+
+    vi.useRealTimers();
   });
 
   it('shows success feedback after adding', async () => {
@@ -132,7 +148,13 @@ describe('AddToCartButton', () => {
   });
 
   it('prevents multiple simultaneous clicks', async () => {
-    mockAddItem.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+    vi.useFakeTimers();
+
+    let resolveAddItem: () => void;
+    const addItemPromise = new Promise<void>(resolve => {
+      resolveAddItem = resolve;
+    });
+    mockAddItem.mockReturnValue(addItemPromise);
 
     render(<AddToCartButton product={baseProduct} />);
 
@@ -143,6 +165,12 @@ describe('AddToCartButton', () => {
 
     // Should only call addItem once
     expect(mockAddItem).toHaveBeenCalledTimes(1);
+
+    // Cleanup: resolve the promise
+    resolveAddItem!();
+    await vi.waitFor(() => expect(mockAddItem).toHaveBeenCalled());
+
+    vi.useRealTimers();
   });
 
   it('displays custom button text when provided', () => {
