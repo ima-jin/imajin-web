@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import type { CartItem } from '@/types/cart';
@@ -84,9 +84,7 @@ describe('AddToCartButton', () => {
   });
 
   it('shows loading state while adding', async () => {
-    vi.useFakeTimers();
-
-    // Mock a delayed addItem
+    // Mock a delayed addItem that we control
     let resolveAddItem: () => void;
     const addItemPromise = new Promise<void>(resolve => {
       resolveAddItem = resolve;
@@ -103,11 +101,9 @@ describe('AddToCartButton', () => {
       expect(button).toBeDisabled();
     });
 
-    // Resolve the promise
+    // Cleanup: resolve the promise so it doesn't leak
     resolveAddItem!();
-    await vi.waitFor(() => expect(mockAddItem).toHaveBeenCalled());
-
-    vi.useRealTimers();
+    await addItemPromise;
   });
 
   it('shows success feedback after adding', async () => {
@@ -144,8 +140,6 @@ describe('AddToCartButton', () => {
   });
 
   it('prevents multiple simultaneous clicks', async () => {
-    vi.useFakeTimers();
-
     let resolveAddItem: () => void;
     const addItemPromise = new Promise<void>(resolve => {
       resolveAddItem = resolve;
@@ -162,11 +156,9 @@ describe('AddToCartButton', () => {
     // Should only call addItem once
     expect(mockAddItem).toHaveBeenCalledTimes(1);
 
-    // Cleanup: resolve the promise
+    // Cleanup: resolve the promise so it doesn't leak
     resolveAddItem!();
-    await vi.waitFor(() => expect(mockAddItem).toHaveBeenCalled());
-
-    vi.useRealTimers();
+    await addItemPromise;
   });
 
   it('displays custom button text when provided', () => {
