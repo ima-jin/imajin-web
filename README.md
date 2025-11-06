@@ -60,7 +60,7 @@ npm run db:seed
 # 5. Start dev server
 npm run dev
 
-# 6. Open https://www-local.imajin.ai:3000
+# 6. Open https://localhost:3000
 ```
 
 ## Key Commands
@@ -84,9 +84,9 @@ npm run validate:content # Validate JSON configs
 
 ## Environments
 
-- **Local** (`www-local.imajin.ai`) - Development on Windows
-- **Dev** (`www-dev.imajin.ai`) - QA/Testing (planned)
-- **Live** (`www.imajin.ai`) - Production (planned)
+- **Local** (`localhost:3000`) - Development on Windows
+- **Dev** (`www-dev.imajin.ca`) - QA/Testing (planned)
+- **Live** (`www.imajin.ca`) - Production (planned)
 
 Config: `config/default.json` + environment-specific overrides. See [ENVIRONMENTS.md](./docs/ENVIRONMENTS.md).
 

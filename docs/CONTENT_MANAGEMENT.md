@@ -88,7 +88,7 @@ Save the file, validate, commit, done!
   "site": {
     "name": "Imajin",
     "tagline": "Modular LED Fixtures",
-    "contact_email": "hello@imajin.ai"
+    "contact_email": "info@imajin.ca"
   },
   "meta": {
     "default_title": "Imajin - Modular LED Fixtures",
@@ -759,9 +759,9 @@ If you ever need to recreate a file from scratch, here are the minimum required 
     "name": "Imajin",
     "tagline": "Modular LED Fixtures",
     "description": "Description here",
-    "url": "https://www.imajin.ai",
-    "contact_email": "hello@imajin.ai",
-    "support_email": "support@imajin.ai"
+    "url": "https://www.imajin.ca",
+    "contact_email": "info@imajin.ca",
+    "support_email": "info@imajin.ca"
   },
   "meta": {
     "default_title": "Imajin",

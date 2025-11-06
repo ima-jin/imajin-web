@@ -246,6 +246,7 @@ export default function CheckoutPage() {
                     size="lg"
                     fullWidth
                     disabled={isLoading}
+                    data-testid="proceed-to-payment"
                   >
                     {isLoading ? 'Processing...' : 'Continue to Payment'}
                   </Button>

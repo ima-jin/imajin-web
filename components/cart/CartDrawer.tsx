@@ -32,6 +32,8 @@ export function CartDrawer({ isOpen, onClose, uiStrings }: CartDrawerProps) {
 
       {/* Drawer */}
       <div
+        role="dialog"
+        aria-label="Shopping cart"
         data-testid="cart-drawer-content"
         className="fixed right-0 top-0 h-full bg-white shadow-xl z-50 flex flex-col"
         style={{ width: '100%', maxWidth: '28rem' }}
@@ -47,6 +49,7 @@ export function CartDrawer({ isOpen, onClose, uiStrings }: CartDrawerProps) {
             onClick={onClose}
             aria-label={uiStrings.aria.close_cart}
             className="p-2 text-gray-400 hover:text-gray-600"
+            data-testid="close-cart"
           >
             <svg
               className="w-6 h-6"
@@ -115,6 +118,7 @@ export function CartDrawer({ isOpen, onClose, uiStrings }: CartDrawerProps) {
                   onClose(); // Close cart drawer
                   window.location.href = '/checkout'; // Navigate to checkout
                 }}
+                data-testid="checkout-button"
               >
                 {cartStrings.actions.checkout}
               </Button>

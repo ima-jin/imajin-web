@@ -594,7 +594,7 @@ if (product.sellStatus === 'pre-order' && !userHasPaidDeposit(email, productId))
 
 **URL Structure:**
 ```
-https://imajin.ai/products/Unit-8x8x8-Founder?token=eyJvcmRlcl9pZCI6IjEyMzQ1Ni...
+https://imajin.ca/products/Unit-8x8x8-Founder?token=eyJvcmRlcl9pZCI6IjEyMzQ1Ni...
 ```
 
 **Token Format (JWT):**

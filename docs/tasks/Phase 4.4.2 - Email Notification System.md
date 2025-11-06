@@ -72,7 +72,7 @@ export async function sendEmail(params: SendEmailParams) {
     subject,
     html,
     text,
-    from = process.env.EMAIL_FROM || 'orders@imajin.ai',
+    from = process.env.EMAIL_FROM || 'info@imajin.ca',
     replyTo,
     tags = [],
   } = params;
@@ -280,7 +280,7 @@ export function orderConfirmationTemplate(data: OrderConfirmationData): string {
   <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
 
   <p style="font-size: 14px; color: #666;">
-    If you have any questions about your order, please reply to this email or contact us at support@imajin.ai.
+    If you have any questions about your order, please reply to this email or contact us at info@imajin.ca.
   </p>
 
   <p style="font-size: 14px; color: #666;">
@@ -334,7 +334,7 @@ export function depositConfirmationTemplate(
   <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
 
   <p style="font-size: 14px; color: #666;">
-    Questions? Reply to this email or contact us at support@imajin.ai.
+    Questions? Reply to this email or contact us at info@imajin.ca.
   </p>
 
   <p style="font-size: 14px; color: #666;">
@@ -399,7 +399,7 @@ export function preOrderReadyTemplate(data: PreOrderReadyData): string {
   <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
 
   <p style="font-size: 14px; color: #666;">
-    Questions? Reply to this email or contact us at support@imajin.ai.
+    Questions? Reply to this email or contact us at info@imajin.ca.
   </p>
 
   <p style="font-size: 14px; color: #666;">
@@ -450,7 +450,7 @@ export function refundConfirmationTemplate(
   <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
 
   <p style="font-size: 14px; color: #666;">
-    Questions about your refund? Reply to this email or contact us at support@imajin.ai.
+    Questions about your refund? Reply to this email or contact us at info@imajin.ca.
   </p>
 </body>
 </html>
@@ -605,8 +605,8 @@ Add to `.env.local` and production:
 ```env
 # Email Service (Resend)
 RESEND_API_KEY=re_...
-EMAIL_FROM=orders@imajin.ai
-EMAIL_REPLY_TO=support@imajin.ai
+EMAIL_FROM=info@imajin.ca
+EMAIL_REPLY_TO=info@imajin.ca
 
 # Base URL for email links
 NEXT_PUBLIC_BASE_URL=http://localhost:3000

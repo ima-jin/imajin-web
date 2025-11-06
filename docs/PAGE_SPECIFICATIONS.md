@@ -12,7 +12,7 @@ This document bridges the gap between:
 ## Site Map
 
 ```
-imajin.ai
+imajin.ca
 ├── / (Homepage)
 ├── /products (Product Listing)
 ├── /products/[id] (Product Detail)
@@ -589,7 +589,7 @@ imajin.ai
   - MessageTextarea
   - SubmitButton
 - ContactInfo
-  - Email: hello@imajin.ai
+  - Email: info@imajin.ca
   - Location: Toronto, Canada
   - Social links (Instagram, etc.)
 ```

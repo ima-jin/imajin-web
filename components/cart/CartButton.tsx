@@ -19,6 +19,7 @@ export function CartButton({ onClick }: CartButtonProps) {
       onClick={onClick}
       aria-label={`Shopping cart with ${itemCount} items`}
       className="relative p-2 text-gray-700 hover:text-gray-900"
+      data-testid="cart-button"
     >
       {/* Shopping Cart Icon */}
       <svg

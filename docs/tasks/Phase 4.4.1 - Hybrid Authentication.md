@@ -112,7 +112,7 @@ npm run db:push
 import bcrypt from 'bcryptjs';
 
 const adminUser = {
-  email: 'admin@imajin.ai',
+  email: 'info@imajin.ca',
   passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD, 10),
   role: 'admin',
   emailVerified: true

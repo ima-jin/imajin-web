@@ -201,10 +201,10 @@ export default async function OrderConfirmationPage({
                 <Text size="sm" color="muted">
                   Questions about your order? Contact us at{' '}
                   <a
-                    href="mailto:support@imajin.ai"
+                    href="mailto:info@imajin.ca"
                     className="text-black font-medium hover:underline"
                   >
-                    support@imajin.ai
+                    info@imajin.ca
                   </a>
                 </Text>
               </CardContent>

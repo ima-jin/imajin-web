@@ -3,7 +3,7 @@
 ## Quick Reference
 
 **Staging:** https://imajin-staging.vercel.app
-**Production:** https://www.imajin.ai (or imajin.vercel.app)
+**Production:** https://www.imajin.ca (or imajin.vercel.app)
 
 ---
 
@@ -75,7 +75,7 @@ Before deploying to ANY environment:
 
 **Post-Deploy Verification:**
 
-- [ ] Homepage loads: https://www.imajin.ai
+- [ ] Homepage loads: https://www.imajin.ca
 - [ ] Product pages render correctly
 - [ ] Test cart → checkout flow
 - [ ] Place small test order ($1 item)
@@ -147,7 +147,7 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=imajin
 - Staging uses `sk_test_` and `pk_test_` Stripe keys
 - Production uses `sk_live_` and `pk_live_` Stripe keys
 - Different `DATABASE_URL` (staging vs production Neon database)
-- Different `NEXT_PUBLIC_BASE_URL` (staging.vercel.app vs www.imajin.ai)
+- Different `NEXT_PUBLIC_BASE_URL` (staging.vercel.app vs www.imajin.ca)
 
 ### Updating Environment Variables
 
@@ -219,7 +219,7 @@ Neon automatically backs up daily:
 
 ```bash
 # Check if app is responding
-curl https://www.imajin.ai/api/health
+curl https://www.imajin.ca/api/health
 ```
 
 Expected response: `{"status": "ok", "timestamp": "..."}`
@@ -243,7 +243,7 @@ Expected response: `{"status": "ok", "timestamp": "..."}`
 - Signing secret: Stored in Vercel env vars as `STRIPE_WEBHOOK_SECRET`
 
 **Production:**
-- URL: `https://www.imajin.ai/api/webhooks/stripe`
+- URL: `https://www.imajin.ca/api/webhooks/stripe`
 - Events: Same as staging
 - Signing secret: Different from staging (separate webhook)
 

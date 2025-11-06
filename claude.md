@@ -129,9 +129,9 @@ The `web/` folder is a **monorepo** containing:
 
 ### Domain Structure (Environments)
 
-- **Local:** `www-local.imajin.ai` - Development workstation (Windows)
-- **Dev:** `www-dev.imajin.ai` - QA/Testing (TBD)
-- **Live:** `www.imajin.ai` - Production (Linux server, planned)
+- **Local:** `localhost:30000` - Development workstation (Windows)
+- **Dev:** `www-dev.imajin.ca` - QA/Testing (TBD)
+- **Live:** `www.imajin.ca` - Production (Linux server, planned)
 
 ### Database Containers
 

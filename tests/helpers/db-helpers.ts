@@ -13,7 +13,11 @@ import { getDatabaseConnectionString } from "@/lib/config/database";
  */
 export function createTestDbConnection() {
   const connectionString = getDatabaseConnectionString();
-  const client = postgres(connectionString);
+  const client = postgres(connectionString, {
+    max: 1, // Required for manual transaction control (BEGIN/ROLLBACK)
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
   const db = drizzle(client, { schema });
 
   return { client, db };

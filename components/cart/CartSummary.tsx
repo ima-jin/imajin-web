@@ -17,12 +17,12 @@ export function CartSummary({ uiStrings }: CartSummaryProps) {
   // Tax/shipping calculated at checkout
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-testid="order-summary">
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">
           {summaryStrings.subtotal} ({itemCount} {itemCountLabel})
         </span>
-        <span className="font-medium">{formatCurrency(subtotal)}</span>
+        <span className="font-medium" data-testid="cart-subtotal">{formatCurrency(subtotal)}</span>
       </div>
 
       <div className="flex justify-between text-sm text-gray-600">

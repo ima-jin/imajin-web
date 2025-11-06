@@ -338,7 +338,7 @@ Health check
 
 ## Authentication & Security
 
-**Public**: No auth, input validation, CORS for `imajin.ai` domains only
+**Public**: No auth, input validation, CORS for `imajin.ca` domains only
 **Admin**: MVP = password check (`ADMIN_PASSWORD`), session token (JWT/signed cookie, 24h expiry). Future = roles
 **Webhooks**: Verify Stripe signatures, reject invalid, log all events
 
