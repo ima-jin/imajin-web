@@ -8,7 +8,7 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL ||
   (process.env.NODE_ENV === 'production'
-    ? 'https://www.imajin.ai'
+    ? 'https://www.imajin.ca'
     : 'http://localhost:3000');
 
 // API endpoint paths

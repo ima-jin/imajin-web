@@ -452,6 +452,7 @@ describe('stripe-sync-service', () => {
         product: 'prod_test',
         unit_amount: 5000,
         currency: 'usd',
+        nickname: 'color: BLACK',
         metadata: {
           variant_id: 'variant-black',
           variant_type: 'color',
@@ -572,6 +573,138 @@ describe('stripe-sync-service', () => {
 
       expect(mockProducts.create).toHaveBeenCalledTimes(1);
       expect(mockPrices.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not create duplicate price when variant already has stripePriceId and price unchanged', async () => {
+      mockProducts.update.mockResolvedValue({ id: 'prod_existing' });
+      mockPrices.list.mockResolvedValue({
+        data: [
+          {
+            id: 'price_existing_black',
+            unit_amount: 10000,
+            active: true,
+            metadata: {
+              variant_id: 'variant-black',
+              variant_type: 'color',
+              variant_value: 'BLACK',
+            },
+          },
+        ],
+      });
+
+      const result = await syncProductToStripe(
+        {
+          id: 'test-product',
+          name: 'Test Product',
+          description: 'Test',
+          basePrice: 10000,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+          stripeProductId: 'prod_existing',
+        },
+        [
+          {
+            id: 'variant-black',
+            productId: 'test-product',
+            variantType: 'color',
+            variantValue: 'BLACK',
+            priceModifier: 0,
+            stripePriceId: 'price_existing_black',
+          },
+        ]
+      );
+
+      expect(result.action).toBe('updated');
+      expect(mockPrices.create).not.toHaveBeenCalled();
+      expect(result.variantPrices).toHaveLength(1);
+      expect(result.variantPrices?.[0].stripePriceId).toBe('price_existing_black');
+    });
+
+    it('should create new price when variant price has changed', async () => {
+      const newPrice = { id: 'price_new_black' };
+
+      mockProducts.update.mockResolvedValue({ id: 'prod_existing' });
+      mockPrices.list.mockResolvedValue({
+        data: [
+          {
+            id: 'price_old_black',
+            unit_amount: 10000,
+            active: true,
+          },
+        ],
+      });
+      mockPrices.update.mockResolvedValue({ id: 'price_old_black', active: false });
+      mockPrices.create.mockResolvedValue(newPrice);
+
+      const result = await syncProductToStripe(
+        {
+          id: 'test-product',
+          name: 'Test Product',
+          description: 'Test',
+          basePrice: 12000,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+          stripeProductId: 'prod_existing',
+        },
+        [
+          {
+            id: 'variant-black',
+            productId: 'test-product',
+            variantType: 'color',
+            variantValue: 'BLACK',
+            priceModifier: 0,
+            stripePriceId: 'price_old_black',
+          },
+        ]
+      );
+
+      expect(result.action).toBe('updated');
+      expect(mockPrices.update).toHaveBeenCalledWith('price_old_black', { active: false });
+      expect(mockPrices.create).toHaveBeenCalledTimes(1);
+      expect(result.variantPrices?.[0].stripePriceId).toBe('price_new_black');
+    });
+
+    it('should include variant type in price nickname', async () => {
+      const mockProduct = { id: 'prod_test' };
+      const mockPrice = { id: 'price_test' };
+
+      mockProducts.create.mockResolvedValue(mockProduct);
+      mockPrices.create.mockResolvedValue(mockPrice);
+
+      await syncProductToStripe(
+        {
+          id: 'test-product',
+          name: 'Test Product',
+          description: 'Test',
+          basePrice: 5000,
+          isLive: true,
+          sellStatus: 'for-sale',
+          hasVariants: true,
+        },
+        [
+          {
+            id: 'variant-black',
+            productId: 'test-product',
+            variantType: 'color',
+            variantValue: 'BLACK',
+            priceModifier: 0,
+          },
+        ]
+      );
+
+      expect(mockPrices.create).toHaveBeenCalledWith({
+        product: 'prod_test',
+        unit_amount: 5000,
+        currency: 'usd',
+        nickname: 'color: BLACK',
+        metadata: {
+          variant_id: 'variant-black',
+          variant_type: 'color',
+          variant_value: 'BLACK',
+        },
+      });
     });
   });
 });

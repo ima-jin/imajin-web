@@ -286,7 +286,7 @@ CLOUDINARY_API_SECRET=...
 3. Go to Vercel dashboard → Production tab
 4. Click "Promote to Production" on staging deployment
 5. Wait for deployment (~2 minutes)
-6. Verify production: https://www.imajin.ai
+6. Verify production: https://www.imajin.ca
 7. Monitor Vercel logs for 10 minutes
 8. Check Stripe webhook deliveries
 
@@ -368,7 +368,7 @@ CLOUDINARY_API_SECRET=...
 **Week 2: Parallel Deploy**
 1. Create `docker-compose.prod.yml` (based on existing local)
 2. Deploy to self-hosted server
-3. Point `test.imajin.ai` to self-hosted
+3. Point `test.imajin.ca` to self-hosted
 4. Run load tests
 5. Document ops runbook
 

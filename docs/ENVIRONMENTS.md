@@ -134,7 +134,7 @@ DATABASE_URL=<staging-connection-string> npm run db:sync
 - Neon PostgreSQL (Scale tier, $19/mo)
 - Manual promotion from staging
 
-**URL**: `https://www.imajin.ai`
+**URL**: `https://www.imajin.ca`
 
 **Environment Variables** (Vercel Dashboard):
 
@@ -243,7 +243,7 @@ Runs on every PR and push to main.
 - Trigger: Manual promotion via Vercel dashboard
 - Action: Click "Promote to Production"
 - Time: ~1 minute
-- URL: `https://www.imajin.ai`
+- URL: `https://www.imajin.ca`
 
 ---
 
@@ -253,12 +253,12 @@ Runs on every PR and push to main.
 
 - **Local**: `http://localhost:3000`
 - **Staging**: `https://imajin-staging.vercel.app` (Vercel subdomain)
-- **Production**: `https://www.imajin.ai` (custom domain)
+- **Production**: `https://www.imajin.ca` (custom domain)
 
 ### Custom Domain Setup (Production)
 
 1. Vercel dashboard → Domains
-2. Add `www.imajin.ai`
+2. Add `www.imajin.ca`
 3. Follow Vercel DNS instructions
 4. Wait for DNS propagation (~1 hour)
 5. SSL automatically provisioned

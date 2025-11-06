@@ -73,6 +73,7 @@ export function AddToCartButton({
       loading={isLoading}
       loadingText="Adding..."
       className={className}
+      data-testid="add-to-cart-button"
     >
       {showSuccess ? (
         <span className="flex items-center gap-2">

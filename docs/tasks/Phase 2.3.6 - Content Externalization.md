@@ -178,9 +178,9 @@ return { type: 'error', message: 'Cannot mix 5v and 24v components...' }
     "name": "Imajin",
     "tagline": "Sculptural LED Lighting for Modern Spaces",
     "description": "Modular LED fixtures designed and manufactured in Toronto. Pre-assembled units and DIY kits for residential and commercial installations.",
-    "url": "https://www.imajin.ai",
-    "contact_email": "hello@imajin.ai",
-    "support_email": "support@imajin.ai"
+    "url": "https://www.imajin.ca",
+    "contact_email": "info@imajin.ca",
+    "support_email": "info@imajin.ca"
   },
   "meta": {
     "default_title": "Imajin | Modular LED Fixtures",
@@ -380,13 +380,13 @@ export type SiteMetadata = z.infer<typeof SiteMetadataSchema>;
         "links": [
           {
             "label": "Instagram",
-            "href": "https://instagram.com/imajin.ai",
+            "href": "https://instagram.com/imajin.ca",
             "aria_label": "Follow us on Instagram",
             "external": true
           },
           {
             "label": "Facebook",
-            "href": "https://facebook.com/imajin.ai",
+            "href": "https://facebook.com/imajin.ca",
             "aria_label": "Follow us on Facebook",
             "external": true
           },

@@ -107,6 +107,7 @@ export function CartItem({ item, uiStrings, onUpdateQuantity, onRemove }: CartIt
               disabled={isAtMinQuantity}
               aria-label={cartItemStrings.aria.decrease_quantity}
               className="px-3 py-1 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="decrease-quantity"
             >
               −
             </button>
@@ -117,6 +118,7 @@ export function CartItem({ item, uiStrings, onUpdateQuantity, onRemove }: CartIt
               onChange={handleQuantityChange}
               className="w-12 text-center border-x border-gray-300 py-1 text-sm"
               aria-label={cartItemStrings.quantity_label}
+              data-testid="quantity-input"
             />
             <button
               type="button"
@@ -124,6 +126,7 @@ export function CartItem({ item, uiStrings, onUpdateQuantity, onRemove }: CartIt
               disabled={isAtMaxQuantity}
               aria-label={cartItemStrings.aria.increase_quantity}
               className="px-3 py-1 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="increase-quantity"
             >
               +
             </button>
@@ -135,6 +138,7 @@ export function CartItem({ item, uiStrings, onUpdateQuantity, onRemove }: CartIt
             onClick={handleRemove}
             aria-label={cartItemStrings.aria.remove_item}
             className="text-sm text-red-600 hover:text-red-700"
+            data-testid="remove-item-button"
           >
             {cartItemStrings.remove_label}
           </button>

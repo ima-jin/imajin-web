@@ -439,7 +439,7 @@ npm run test:e2e
 - Vercel: Auto-deploy staging on merge to `main`
 - Production: Manual promotion via Vercel dashboard
 
-**Domain**: `www.imajin.ai` (custom domain in Vercel)
+**Domain**: `www.imajin.ca` (custom domain in Vercel)
 
 **Backups**: Neon automatic daily backups (7-day retention)
 

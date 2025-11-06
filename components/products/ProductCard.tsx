@@ -47,7 +47,7 @@ export function ProductCard({ product, content, variantName, variantMedia, userH
   const mediaToUse = variantMedia && variantMedia.length > 0 ? variantMedia : product.media;
 
   return (
-    <Link href={`/products/${product.id}`} className="block">
+    <Link href={`/products/${product.id}`} className="block" data-testid="product-card">
       <Card hover noPadding>
         {/* Product Image */}
         <div className="aspect-square bg-gray-100 relative overflow-hidden">
@@ -100,7 +100,7 @@ export function ProductCard({ product, content, variantName, variantMedia, userH
                   <Badge variant="voltage" size="sm">
                     Deposit
                   </Badge>
-                  <Price amount={depositAmount} size="lg" />
+                  <Price amount={depositAmount} size="lg" data-testid="product-price" />
                 </div>
                 <Text size="caption" color="muted">
                   Refundable deposit to secure wholesale pricing
@@ -109,7 +109,7 @@ export function ProductCard({ product, content, variantName, variantMedia, userH
             ) : displayPrice ? (
               // Pre-order or For-sale: Show price
               <div className="flex items-baseline gap-2">
-                <Price amount={displayPrice.price} size="lg" />
+                <Price amount={displayPrice.price} size="lg" data-testid="product-price" />
                 {displayPrice.type === 'wholesale' && (
                   <Badge variant="success" size="sm">
                     Wholesale

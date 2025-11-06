@@ -547,8 +547,8 @@ export interface VariantConfig {
   "app": {
     "name": "Imajin",
     "tagline": "Modular LED Fixtures",
-    "contact_email": "hello@imajin.ai",
-    "support_email": "support@imajin.ai"
+    "contact_email": "info@imajin.ca",
+    "support_email": "info@imajin.ca"
   },
   "features": {
     "solana_checkout": false,
@@ -834,9 +834,9 @@ export async function getSiteMetadata(): Promise<SiteMetadata> {
     "name": "Imajin",
     "tagline": "Modular LED Fixtures",
     "description": "Sculptural LED lighting designed and manufactured in Toronto",
-    "url": "https://www.imajin.ai",
-    "contact_email": "hello@imajin.ai",
-    "support_email": "support@imajin.ai"
+    "url": "https://www.imajin.ca",
+    "contact_email": "info@imajin.ca",
+    "support_email": "info@imajin.ca"
   },
   "meta": {
     "default_title": "Imajin - Modular LED Fixtures",

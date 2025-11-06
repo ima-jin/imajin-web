@@ -377,31 +377,31 @@ Description: Explore our custom LED installations and case studies from venues a
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://www.imajin.ai/</loc>
+    <loc>https://www.imajin.ca/</loc>
     <lastmod>2025-10-24</lastmod>
     <priority>1.0</priority>
   </url>
 
   <!-- Static Pages -->
   <url>
-    <loc>https://www.imajin.ai/products</loc>
+    <loc>https://www.imajin.ca/products</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.imajin.ai/about</loc>
+    <loc>https://www.imajin.ca/about</loc>
     <priority>0.7</priority>
   </url>
 
   <!-- Products (dynamic) -->
   <url>
-    <loc>https://www.imajin.ai/products/Material-8x8-V</loc>
+    <loc>https://www.imajin.ca/products/Material-8x8-V</loc>
     <priority>0.8</priority>
   </url>
   <!-- ... more products -->
 
   <!-- Portfolio (dynamic) -->
   <url>
-    <loc>https://www.imajin.ai/portfolio</loc>
+    <loc>https://www.imajin.ca/portfolio</loc>
     <priority>0.7</priority>
   </url>
   <!-- ... case studies -->
@@ -427,7 +427,7 @@ Disallow: /checkout/
 Disallow: /orders/
 Disallow: /cart
 
-Sitemap: https://www.imajin.ai/sitemap.xml
+Sitemap: https://www.imajin.ca/sitemap.xml
 ```
 
 ---

@@ -111,15 +111,42 @@ export async function syncProductToStripe(
         stripeProductId = stripeProduct.id;
       }
 
-      // Create prices for each variant
+      // Create or update prices for each variant
       const variantPrices = [];
       for (const variant of variants) {
         const variantPrice = product.basePrice + variant.priceModifier;
+        let priceId = variant.stripePriceId;
 
+        // Check if we need to create a new price
+        if (priceId) {
+          // Verify the existing price is still valid (check if price amount matches)
+          const existingPrices = await stripe.prices.list({
+            product: stripeProductId,
+            active: true,
+          });
+
+          const currentPrice = existingPrices.data.find((p) => p.id === priceId);
+
+          if (currentPrice && currentPrice.unit_amount === variantPrice) {
+            // Price exists and amount matches, reuse it
+            variantPrices.push({
+              variantId: variant.id,
+              stripePriceId: priceId,
+            });
+            continue;
+          } else if (currentPrice) {
+            // Price exists but amount changed, archive old price
+            await stripe.prices.update(priceId, { active: false });
+            priceId = undefined;
+          }
+        }
+
+        // Create new price (either no existing price or price changed)
         const price = await stripe.prices.create({
           product: stripeProductId,
           unit_amount: variantPrice,
           currency: 'usd',
+          nickname: `${variant.variantType}: ${variant.variantValue}`,
           metadata: {
             variant_id: variant.id,
             variant_type: variant.variantType,
