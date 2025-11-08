@@ -105,7 +105,8 @@ export const variants = pgTable(
   (table) => ({
     productIdIdx: index("idx_variants_product_id").on(table.productId),
     availableIdx: index("idx_variants_available").on(table.isAvailable),
-    stripeIdx: uniqueIndex("idx_variants_stripe").on(table.stripeProductId),
+    stripeProductIdIdx: index("idx_variants_stripe_product").on(table.stripeProductId),
+    stripePriceIdIdx: uniqueIndex("idx_variants_stripe_price").on(table.stripePriceId),
   })
 );
 

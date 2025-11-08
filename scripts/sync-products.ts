@@ -83,6 +83,8 @@ async function syncProducts() {
           cogsPrice: product.cogs_price || null,
           presaleDepositPrice: product.presale_deposit_price || null,
           media: product.media || null,
+          stripeProductId: product.stripe_product_id || null,
+          stripePriceId: product.stripe_price_id || null,
           lastSyncedAt: new Date(),
         })
         .onConflictDoUpdate({
@@ -105,6 +107,8 @@ async function syncProducts() {
             cogsPrice: product.cogs_price || null,
             presaleDepositPrice: product.presale_deposit_price || null,
             media: product.media || null,
+            stripeProductId: product.stripe_product_id || null,
+            stripePriceId: product.stripe_price_id || null,
             lastSyncedAt: new Date(),
             updatedAt: new Date(),
           },
@@ -137,13 +141,28 @@ async function syncProducts() {
     }
     logger.info('Products synced', { totalProducts, totalSpecs });
 
+    // Create a map of products for variant lookup
+    const productsMap = new Map(data.products.map(p => [p.id, p]));
+
     // Upsert variants if present
     if (data.variants && data.variants.length > 0) {
       logger.info('Syncing variants', { variantCount: data.variants.length });
       for (const variant of data.variants) {
         // Skip variants without required IDs
-        if (!variant.id || !variant.product_id || !variant.stripe_product_id) {
+        if (!variant.id || !variant.product_id) {
           logger.warn('Skipping variant with missing ID fields', { variantId: variant.id });
+          continue;
+        }
+
+        // Get stripe_product_id from variant or parent product
+        const parentProduct = productsMap.get(variant.product_id);
+        const stripeProductId = variant.stripe_product_id || parentProduct?.stripe_product_id;
+
+        if (!stripeProductId) {
+          logger.warn('Skipping variant - no stripe_product_id found', {
+            variantId: variant.id,
+            productId: variant.product_id,
+          });
           continue;
         }
 
@@ -152,7 +171,8 @@ async function syncProducts() {
           .values({
             id: variant.id,
             productId: variant.product_id,
-            stripeProductId: variant.stripe_product_id,
+            stripeProductId: stripeProductId,
+            stripePriceId: variant.stripe_price_id || null,
             variantType: variant.variant_type,
             variantValue: variant.variant_value,
             priceModifier: variant.price_modifier || 0,
@@ -167,7 +187,8 @@ async function syncProducts() {
           .onConflictDoUpdate({
             target: variants.id,
             set: {
-              stripeProductId: variant.stripe_product_id,
+              stripeProductId: stripeProductId,
+              stripePriceId: variant.stripe_price_id || null,
               variantType: variant.variant_type,
               variantValue: variant.variant_value,
               priceModifier: variant.price_modifier || 0,

@@ -109,13 +109,13 @@ async function syncFromStripe() {
       if (productVariants.length > 0) {
         // Product with variants - check each variant's Stripe price
         for (const variant of productVariants) {
-          const stripePriceId = variant.stripe_product_id;
+          const stripePriceId = variant.stripe_price_id;
 
           if (!stripePriceId) {
             issues.push({
               severity: 'error',
               productId: localProduct.id,
-              message: `Variant "${variant.variant_value}" missing stripe_product_id`,
+              message: `Variant "${variant.variant_value}" missing stripe_price_id`,
               details: { variantId: variant.id },
             });
             if (verbose) {

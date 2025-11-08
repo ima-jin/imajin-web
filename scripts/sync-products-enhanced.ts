@@ -257,8 +257,12 @@ export async function syncProductsEnhanced(
     }
 
     if (data.variants && data.variants.length > 0) {
+      // Create a map of products for variant lookup
+      const productsMap = new Map(data.products.map(p => [p.id, p]));
+
       for (const variant of data.variants) {
-        await syncVariantToDb(variant, report);
+        const parentProduct = productsMap.get(variant.product_id);
+        await syncVariantToDb(variant, parentProduct, report);
       }
     }
 
@@ -591,6 +595,8 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
         wholesalePriceCents: product.wholesale_price_cents || null,
         presaleDepositPrice: product.presale_deposit_price ?? null,
         media: product.media || null,
+        stripeProductId: product.stripe_product_id || null,
+        stripePriceId: product.stripe_price_id || null,
         lastSyncedAt: product.last_synced_at ? new Date(product.last_synced_at) : null,
         showOnPortfolioPage: product.show_on_portfolio_page ?? false,
         portfolioCopy: product.portfolio_copy ?? null,
@@ -616,6 +622,8 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
           wholesalePriceCents: product.wholesale_price_cents || null,
           presaleDepositPrice: product.presale_deposit_price ?? null,
           media: product.media || null,
+          stripeProductId: product.stripe_product_id || null,
+          stripePriceId: product.stripe_price_id || null,
           lastSyncedAt: product.last_synced_at ? new Date(product.last_synced_at) : null,
           showOnPortfolioPage: product.show_on_portfolio_page ?? false,
           portfolioCopy: product.portfolio_copy ?? null,
@@ -635,14 +643,18 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
  * Sync variant to database
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> {
+async function syncVariantToDb(variant: any, parentProduct: any, report: SyncReport): Promise<void> {
   try {
+    // Use variant's stripe_product_id if present, otherwise use parent product's
+    const stripeProductId = variant.stripe_product_id || parentProduct?.stripe_product_id || null;
+
     await db
       .insert(variants)
       .values({
         id: variant.id,
         productId: variant.product_id,
-        stripeProductId: variant.stripe_product_id || null,
+        stripeProductId: stripeProductId,
+        stripePriceId: variant.stripe_price_id || null,
         variantType: variant.variant_type,
         variantValue: variant.variant_value,
         priceModifier: variant.price_modifier,
@@ -657,7 +669,8 @@ async function syncVariantToDb(variant: any, report: SyncReport): Promise<void> 
         target: variants.id,
         set: {
           productId: variant.product_id,
-          stripeProductId: variant.stripe_product_id || null,
+          stripeProductId: stripeProductId,
+          stripePriceId: variant.stripe_price_id || null,
           variantType: variant.variant_type,
           variantValue: variant.variant_value,
           priceModifier: variant.price_modifier,
