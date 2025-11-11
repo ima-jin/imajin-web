@@ -19,14 +19,12 @@ import { logger } from "@/lib/utils/logger";
 import { readFileSync } from "fs";
 import { join } from "path";
 
-// Config file path
-const configFile = join(process.cwd(), "config", "content", "products.json");
-
 /**
  * Load and validate products.json
+ * @param filePath - Path to products.json file
  */
-function loadProductsJson() {
-  const fileContent = readFileSync(configFile, "utf-8");
+function loadProductsJson(filePath: string) {
+  const fileContent = readFileSync(filePath, "utf-8");
   const jsonData = JSON.parse(fileContent);
 
   const validation = ProductsJsonSchema.safeParse(jsonData);
@@ -43,10 +41,12 @@ function loadProductsJson() {
 
 /**
  * Sync products to database
+ * @param configPath - Optional path to products.json (defaults to config/content/products.json)
  */
-async function syncProducts() {
+export async function syncProducts(configPath?: string) {
   logger.syncStart('product_sync');
 
+  const filePath = configPath ?? join(process.cwd(), "config", "content", "products.json");
   let totalProducts = 0;
   let totalVariants = 0;
   let totalSpecs = 0;
@@ -55,7 +55,7 @@ async function syncProducts() {
   try {
     // Load products.json
     logger.info('Loading config/products.json');
-    const data = loadProductsJson();
+    const data = loadProductsJson(filePath);
     logger.info('Loaded products', { productCount: data.products.length });
 
     // Upsert products
@@ -238,11 +238,17 @@ async function syncProducts() {
     });
   } catch (error) {
     logger.syncError('product_sync', error as Error);
-    process.exit(1);
+    throw error; // Let tests handle the error, don't exit process
   }
-
-  process.exit(0);
 }
 
-// Run the sync
-syncProducts();
+// Only run if this file is executed directly (not imported)
+if (require.main === module || import.meta.url === `file://${process.argv[1]}`) {
+  syncProducts()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch(() => {
+      process.exit(1);
+    });
+}

@@ -421,6 +421,9 @@ describe('Deposit Flow Integration Tests', () => {
         name: 'Second Test Product',
       };
 
+      // Clean up second product if it exists
+      await db.delete(products).where(eq(products.id, secondProduct.id));
+
       // Insert second product
       await db.insert(products).values({
         id: secondProduct.id,
