@@ -28,7 +28,7 @@ describe('Deposit Flow Integration Tests', () => {
     devStatus: 5,
     basePrice: 100000, // $1,000
     wholesalePriceCents: 75000, // $750
-    presaleDepositPrice: 25000, // $250
+    presaleDepositPriceCents: 25000, // $250
     hasVariants: true,
     requiresAssembly: false,
     isActive: true,
@@ -84,7 +84,7 @@ describe('Deposit Flow Integration Tests', () => {
       devStatus: testProduct.devStatus,
       basePrice: testProduct.basePrice,
       wholesalePriceCents: testProduct.wholesalePriceCents,
-      presaleDepositPrice: testProduct.presaleDepositPrice,
+      presaleDepositPriceCents: testProduct.presaleDepositPriceCents,
       hasVariants: testProduct.hasVariants,
       requiresAssembly: testProduct.requiresAssembly,
       maxQuantity: null,
@@ -433,7 +433,7 @@ describe('Deposit Flow Integration Tests', () => {
         devStatus: secondProduct.devStatus,
         basePrice: secondProduct.basePrice,
         wholesalePriceCents: secondProduct.wholesalePriceCents,
-        presaleDepositPrice: secondProduct.presaleDepositPrice,
+        presaleDepositPriceCents: secondProduct.presaleDepositPriceCents,
         hasVariants: false,
         requiresAssembly: secondProduct.requiresAssembly,
         maxQuantity: null,

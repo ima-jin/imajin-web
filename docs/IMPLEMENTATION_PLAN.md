@@ -310,25 +310,147 @@
 - [ ] Mobile responsiveness
 - [ ] Cross-browser testing
 
-### 4.4 Auth & Admin
+### 4.4 Authentication & User Management
 
-#### 4.4.1 Authentication (Auth options TBD)
-- [ ] Auth strategy decision (NextAuth, Clerk, Supabase, custom, etc.)
-- [ ] User accounts setup
-- [ ] Login/logout flow
-- [ ] Session management
-- [ ] Role-based access (customer, admin)
+**Strategy:** NextAuth.js (Auth.js v5) with email/password, DID-ready schema for future wallet auth
 
-#### 4.4.5 Admin Tools
+**See:** `docs/AUTH_STRATEGY.md` and `docs/tasks/Phase 4.4 - Authentication.md`
+
+#### 4.4.1 Database Schema (3 hours)
+- [ ] Auth tables: users, accounts, sessions, verification_tokens
+- [ ] DID-ready fields (nullable: did, wallet_address, credentials)
+- [ ] Add user_id to orders table
+- [ ] Migration + indexes
+- [ ] Seed test users (admin + customer)
+
+**Files:**
+- `db/schema-auth.ts`
+- `db/migrations/XXXX_add_auth_tables.sql`
+
+#### 4.4.2 NextAuth Configuration (4 hours)
+- [ ] Install next-auth@beta, @auth/drizzle-adapter, bcryptjs
+- [ ] Configure Credentials provider (email/password only, no OAuth)
+- [ ] Set up Drizzle adapter
+- [ ] JWT session strategy
+- [ ] Role-based callbacks (admin vs customer)
+- [ ] API route handler
+
+**Files:**
+- `lib/auth/config.ts`
+- `lib/auth/password.ts`
+- `app/api/auth/[...nextauth]/route.ts`
+
+#### 4.4.3 Auth UI Components (5 hours)
+- [ ] Sign in page + form
+- [ ] Sign up page + form
+- [ ] Password reset request + form
+- [ ] Email verification page
+- [ ] Error page
+- [ ] User navigation dropdown
+- [ ] Password validation (10+ chars, strength checks)
+
+**Files:**
+- `app/auth/signin/page.tsx`
+- `app/auth/signup/page.tsx`
+- `app/auth/reset-password/page.tsx`
+- `components/auth/SignInForm.tsx`
+- `components/auth/SignUpForm.tsx`
+- `components/auth/UserNav.tsx`
+
+#### 4.4.4 Protected Routes & Middleware (2 hours)
+- [ ] Auth middleware for route protection
+- [ ] Admin route guards
+- [ ] Account route guards
+- [ ] Server-side session helpers
+- [ ] Redirect logic (with callback URLs)
+
+**Files:**
+- `middleware.ts`
+- `lib/auth/guards.ts`
+- `lib/auth/session.ts`
+
+#### 4.4.5 Integration with Existing Features (4 hours)
+- [ ] Link orders to users (user_id field)
+- [ ] Order history page (my orders)
+- [ ] Account page (profile, settings)
+- [ ] Pre-fill checkout with user info
+- [ ] Backfill existing orders by email
+
+**Files:**
+- `app/account/page.tsx`
+- `app/account/orders/page.tsx`
+- Update `app/api/checkout/session/route.ts`
+
+#### 4.4.6 SendGrid Email Integration (3 hours)
+- [ ] SendGrid client setup
+- [ ] Email verification template
+- [ ] Password reset template
+- [ ] Send verification on signup
+- [ ] Send reset link on request
+- [ ] Configure sender (noreply@imajin.ca)
+
+**Files:**
+- `lib/email/sendgrid.ts`
+- `lib/email/templates.ts`
+- `app/api/auth/send-verification/route.ts`
+
+#### 4.4.7 Testing (4 hours)
+- [ ] Unit tests: password hashing, JWT encoding
+- [ ] Integration tests: signin, signup, password reset
+- [ ] E2E tests: full auth flow, protected routes
+- [ ] Test coverage >80%
+
+**Files:**
+- `tests/unit/lib/auth/password.test.ts`
+- `tests/integration/auth/signin.test.ts`
+- `tests/integration/auth/signup.test.ts`
+- `tests/integration/auth/password-reset.test.ts`
+- `tests/integration/auth/protected-routes.test.ts`
+- `tests/e2e/auth/auth-flow.spec.ts`
+
+**Total Estimated:** 20-25 hours
+
+**Gate Criteria:**
+- [ ] Users can sign up with email/password
+- [ ] Users can sign in and sign out
+- [ ] Users can reset forgotten passwords
+- [ ] Email verification works (SendGrid)
+- [ ] Users can view order history
+- [ ] Admin routes protected by role check
+- [ ] All auth tests passing
+
+### 4.5 Admin Tools
 - [ ] Admin interface:
   - [ ] View orders
   - [ ] Manage limited edition quantities
   - [ ] View inventory
   - [ ] Manage pre-sale deposits
-  - [ ] Transition products (pre-sale → pre-order)
-- [ ] Admin authentication (protected routes)
+  - [ ] User management
+- [ ] Admin authentication (protected routes via 4.4.4)
 
-### 4.5 Phase 4 Testing
+### 4.6 Email Notifications (Orders)
+
+**Status:** Not Started (Needs SendGrid Update)
+**Estimated Duration:** 6-10 hours
+**Dependencies:** Phase 4.4.6 (SendGrid integration)
+
+**Scope:** Order-related transactional emails (separate from auth emails in 4.4.6)
+
+- [ ] Order confirmation email template
+- [ ] Deposit confirmation email template
+- [ ] Pre-order ready notification template
+- [ ] Refund confirmation email template
+- [ ] Bulk email sending with rate limiting
+- [ ] Email delivery tracking (optional)
+- [ ] Integration with webhook handler
+- [ ] Integration with admin notification API
+
+**See:** `docs/tasks/Phase 4.6 - Email Notifications (Orders).md`
+
+**Note:** Document originally used Resend but needs updating to use SendGrid (project standard).
+
+### 4.7 Phase 4 Testing
+
 **Tests:**
 - [ ] `tests/integration/api/admin/orders.test.ts`
 - [ ] `tests/unit/components/admin/OrdersList.test.tsx`
@@ -338,9 +460,13 @@
 
 **Gate Criteria:**
 - [ ] All previous tests pass
-- [ ] Admin auth works
+- [ ] User auth works (sign up, sign in, sign out)
+- [ ] Email verification works (SendGrid)
+- [ ] Password reset works
+- [ ] Admin auth works (role-based access)
 - [ ] Order management functional
-- [ ] NFT tracking works
+- [ ] Users can view order history
+- [ ] Order confirmation emails sent
 - [ ] Lighthouse >90
 - [ ] No accessibility errors
 - [ ] Phase 4 smoke tests pass
@@ -351,30 +477,50 @@
 
 ## Phase 5: Future Enhancements
 
-### 5.1 Solana/Web3
+### 5.1 Wallet Authentication & DID Integration
+
+**Status:** Future Enhancement (Post-Launch)
+**Estimated Duration:** 4-6 days
+**Dependencies:** Phase 4.4 complete (email/password auth with DID-ready schema)
+
+**Scope:** Add Solana wallet authentication as primary login method, migrate to DID-first identity
+
+- [ ] Solana wallet adapter integration (@solana/wallet-adapter-react)
+- [ ] Wallet signature verification (nacl, bs58)
+- [ ] DID generation and storage (did:sol:...)
+- [ ] Link wallet to existing email accounts
+- [ ] Wallet login API routes
+- [ ] Wallet login UI components
+- [ ] Protected routes support wallet auth
+- [ ] Testing (unit, integration, E2E)
+
+**See:** `docs/tasks/Phase 5.1 - Wallet Authentication & DID Integration.md`
+
+**Note:** Database schema already supports this (nullable wallet fields from Phase 4.4.1). No breaking changes required.
+
+### 5.2 Solana/Web3 (NFT & Payments)
 - [ ] Solana Pay integration
 - [ ] MJN token smart contract
-- [ ] Solflare wallet connection
 - [ ] Crypto payment flow
 - [ ] NFT minting service
 - [ ] NFT → physical unit association
 - [ ] Customer NFT delivery
 
-### 5.2 Visual Configurator
+### 5.3 Visual Configurator
 - [ ] 3D/2D fixture model
 - [ ] Interactive component selection
 - [ ] Real-time visual updates
 - [ ] Drag-and-drop
 - [ ] Export/save configurations
 
-### 5.3 Fixture Scoping Tool
+### 5.4 Fixture Scoping Tool
 - [ ] Input fixture dimensions
 - [ ] Calculate voltage/power
 - [ ] Generate wiring diagrams
 - [ ] BOM generation
 - [ ] Export specs as PDF
 
-### 5.4 Additional Features
+### 5.5 Additional Features
 - [ ] Customer accounts (order history, saved configs)
 - [ ] Bulk ordering (commercial clients)
 - [ ] Quote requests (custom installations)

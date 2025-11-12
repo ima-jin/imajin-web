@@ -10,6 +10,7 @@
 
 import { MediaItem } from '@/types/product';
 import { logger } from '@/lib/utils/logger';
+import { parseMediaArray } from '@/lib/utils/media-parser';
 
 /**
  * Database variant type (from Drizzle schema - camelCase TypeScript properties)
@@ -80,33 +81,7 @@ export function mapDbVariantToVariant(dbVariant: DbVariant): Variant {
   }
 
   // Parse media JSONB field (array of MediaItem objects with full metadata)
-  interface DbMediaItem {
-    localPath?: string;
-    local_path?: string;
-    cloudinaryPublicId?: string;
-    cloudinary_public_id?: string;
-    type?: string;
-    mimeType?: string;
-    mime_type?: string;
-    alt?: string;
-    category?: string;
-    order?: number;
-    uploadedAt?: string;
-    uploaded_at?: string;
-  }
-
-  const media: MediaItem[] = Array.isArray(dbVariant.media)
-    ? (dbVariant.media as DbMediaItem[]).map((item: DbMediaItem) => ({
-        localPath: item.localPath || item.local_path || '',
-        cloudinaryPublicId: item.cloudinaryPublicId || item.cloudinary_public_id,
-        type: (item.type as MediaItem['type']) || 'image',
-        mimeType: item.mimeType || item.mime_type || '',
-        alt: item.alt || '',
-        category: (item.category as MediaItem['category']) || 'main',
-        order: item.order || 0,
-        uploadedAt: (item.uploadedAt || item.uploaded_at) ? new Date(item.uploadedAt || item.uploaded_at!) : undefined,
-      }))
-    : [];
+  const media = parseMediaArray(dbVariant.media);
 
   return {
     id: dbVariant.id,

@@ -22,7 +22,7 @@ async function checkFounder() {
   console.log('is_active:', product.isActive);
   console.log('is_live:', product.isLive);
   console.log('sell_status:', product.sellStatus);
-  console.log('presale_deposit_price:', product.presaleDepositPrice);
+  console.log('presale_deposit_price:', product.presaleDepositPriceCents);
   console.log('base_price:', product.basePrice);
   console.log('wholesale_price_cents:', product.wholesalePriceCents);
 

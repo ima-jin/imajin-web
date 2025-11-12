@@ -84,8 +84,8 @@ export interface Product {
   isLive: boolean;
   costCents?: number;
   wholesalePriceCents?: number;
-  cogsPrice?: number;
-  presaleDepositPrice?: number;
+  cogsPriceCents?: number;
+  presaleDepositPriceCents?: number;
   sellStatus: SellStatus;
   sellStatusNote?: string;
   lastSyncedAt?: Date;
@@ -122,7 +122,7 @@ export interface Variant {
   variantValue: string;
   priceModifier: number | null; // Price difference in cents
   wholesalePriceModifier: number | null; // Adjusts wholesalePrice
-  presaleDepositModifier: number | null; // Adjusts presaleDepositPrice
+  presaleDepositModifier: number | null; // Adjusts presaleDepositPriceCents
   isLimitedEdition: boolean | null;
   maxQuantity: number | null;
   soldQuantity: number | null;
@@ -246,8 +246,8 @@ export const ProductSchema = z.object({
   isLive: z.boolean(),
   costCents: z.number().optional(),
   wholesalePriceCents: z.number().optional(),
-  cogsPrice: z.number().optional(),
-  presaleDepositPrice: z.number().optional(),
+  cogsPriceCents: z.number().optional(),
+  presaleDepositPriceCents: z.number().optional(),
   sellStatus: z.enum(['for-sale', 'pre-order', 'pre-sale', 'sold-out', 'internal']),
   sellStatusNote: z.string().optional(),
   lastSyncedAt: z.coerce.date().optional(),

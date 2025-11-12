@@ -29,9 +29,17 @@ For detailed phase completion status and task breakdowns, see:
   - Homepage, Portfolio, About, Contact, Policy Pages (32 tests)
 
 **Next Up:**
-- Phase 2.5.4: Stripe Link Integration Testing (manual testing in progress)
-- Phase 2.6: E2E & Smoke Tests (comprehensive test suite)
-- Phase 4: Polish & Optimization (performance, SEO, UX)
+- **Phase 4.4: Authentication & User Management** (ACTIVE)
+  - 4.4.1: Database Schema (auth tables, DID-ready)
+  - 4.4.2: NextAuth Configuration (email/password, no OAuth)
+  - 4.4.3: Auth UI Components (signin/signup, password reset)
+  - 4.4.4: Protected Routes & Middleware
+  - 4.4.5: Integration (order history, account pages)
+  - 4.4.6: SendGrid Email (verification, password reset)
+  - 4.4.7: Testing (unit, integration, E2E)
+- Phase 2.5.4: Stripe Link Integration Testing (manual testing)
+- Phase 2.6: E2E & Smoke Tests
+- Phase 4.5: Admin Tools (order management, inventory)
 
 ---
 
