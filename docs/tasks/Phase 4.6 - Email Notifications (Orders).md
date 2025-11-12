@@ -1,19 +1,29 @@
-# Phase 4.1.1 - Email Notification System
+# Phase 4.6 - Email Notifications (Orders)
 
-**Status:** 📋 Not Started
-**Priority:** MEDIUM (blocks Phase 2.5.2 pre-sale email notifications)
+**Status:** 📋 Not Started (Needs SendGrid Update)
+**Priority:** MEDIUM - Required for order confirmations and pre-sale notifications
 **Estimated Duration:** 6-10 hours
-**Dependencies:** None (standalone infrastructure)
-**Blocks:** Phase 2.5.2 (pre-sale email notifications)
+**Dependencies:** Phase 4.4.6 (SendGrid integration for auth emails)
+**Blocks:** Phase 2.5.2.2 (automated pre-sale notifications)
+
+---
+
+> **NOTE:** This document was originally Phase 4.4.2 and has been moved to Phase 4.6.
+>
+> **Scope Change:** This document covers **ORDER-related emails** (order confirmations, deposit confirmations, pre-order ready, refunds). For **AUTH-related emails** (verification, password reset), see Phase 4.4.6.
+>
+> **Service Change Required:** This document originally specified Resend, but the project standard is **SendGrid**. All code examples should be updated to use SendGrid instead of Resend before implementation.
+>
+> **Email Templates:** The HTML templates in this document are valuable and can be used with SendGrid with minor modifications.
 
 ---
 
 ## Overview
 
-Implement a comprehensive email notification system to handle all transactional emails across the platform. This includes order confirmations, deposit notifications, pre-sale transitions, refund confirmations, and future needs.
+Implement a comprehensive email notification system to handle all **order-related transactional emails** across the platform. This includes order confirmations, deposit notifications, pre-sale transitions, refund confirmations, and future needs.
 
 **Goals:**
-- Centralized email service abstraction
+- Centralized email service abstraction (SendGrid-based)
 - Template system for all email types
 - Queue/batch sending for bulk notifications
 - Delivery tracking and error handling
@@ -23,25 +33,22 @@ Implement a comprehensive email notification system to handle all transactional 
 
 ## Email Service Selection
 
-### Recommended: Resend
+### Selected: SendGrid
 
-**Why Resend?**
-- Modern API (simple, RESTful)
-- Built for developers
-- Excellent documentation
-- React Email template support (JSX-based templates)
-- Generous free tier (3,000 emails/month)
-- Good deliverability
+**Why SendGrid?**
+- Industry-standard email service
+- Comprehensive API
+- Excellent deliverability
+- Template management dashboard
 - Webhook support for tracking opens/clicks
-- $20/month for 50k emails (scales well)
+- Free tier: 100 emails/day
+- $19.95/month for 50k emails
 
-**Alternatives considered:**
-- **SendGrid**: More enterprise, complex API, overkill for our needs
-- **Postmark**: Great for transactional, but more expensive
-- **Nodemailer + SMTP**: Self-hosted, requires managing email server
-- **AWS SES**: Cheapest, but requires more setup and AWS infrastructure
-
-**Decision:** Start with Resend, can migrate later if needed.
+**Implementation Notes:**
+- Use `@sendgrid/mail` npm package
+- Store API key in environment variables
+- Reuse connection with Phase 4.4.6 auth emails
+- HTML templates can be used as-is (minor modifications needed)
 
 ---
 

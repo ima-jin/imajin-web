@@ -7,19 +7,15 @@ import { ProductAddToCart } from "@/components/products/ProductAddToCart";
 import { MediaCarousel } from "@/components/products/MediaCarousel";
 import { DepositRefundButton } from "@/components/products/DepositRefundButton";
 import { Badge } from "@/components/ui/Badge";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { getProductDetailContent } from "@/hooks/usePageContent";
 import { getNavigation } from "@/hooks/useNavigation";
 import { apiGet, ApiClientError } from "@/lib/utils/api-client";
 import { API_ENDPOINTS } from "@/lib/config/api";
 import { ProductWithVariantsSchema } from "@/types/product";
 import type { Variant } from "@/types/product";
-import { formatCurrency } from "@/lib/utils/price";
 import { getProductImageUrl } from "@/lib/utils/cloudinary";
-import {
-  getProductDisplayStatus,
-  getDisplayPrice,
-  getDepositAmount
-} from "@/lib/utils/product-display";
+import { getProductDisplayStatus } from "@/lib/utils/product-display";
 import { userHasPaidDeposit as checkDeposit } from "@/lib/services/order-service";
 
 interface ProductDetailPageProps {
@@ -117,10 +113,6 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
       ? await checkDeposit(userEmail, product.id)
       : false;
 
-    // Get conditional pricing based on sell status and deposit status
-    const displayPrice = getDisplayPrice(product, undefined, userHasPaidDeposit);
-    const depositAmount = getDepositAmount(product);
-
     return (
       <div className="min-h-screen bg-white">
         {/* Breadcrumb */}
@@ -161,60 +153,12 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
               </h1>
 
               {/* Price */}
-              <div className="space-y-3">
-                {product.sellStatus === 'pre-sale' && depositAmount !== null ? (
-                  // Pre-sale: Show deposit amount with badge
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="voltage" size="md">
-                        Deposit
-                      </Badge>
-                      <div className="text-3xl font-bold text-gray-900">
-                        {formatCurrency(depositAmount)}
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      Refundable deposit to secure wholesale pricing when this product moves to pre-order
-                    </p>
-                    {displayStatus.message && (
-                      <p className="text-sm text-gray-600">
-                        {displayStatus.message}
-                      </p>
-                    )}
-                  </div>
-                ) : displayPrice ? (
-                  // Pre-order or For-sale: Show price
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-3xl font-bold text-gray-900">
-                        {formatCurrency(displayPrice.price)}
-                      </div>
-                      {displayPrice.type === 'wholesale' && (
-                        <Badge variant="success" size="md">
-                          Wholesale Price
-                        </Badge>
-                      )}
-                    </div>
-                    {displayStatus.message && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        {displayStatus.message}
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  // Price hidden (fallback)
-                  <div>
-                    <p className="text-lg text-gray-600">
-                      Pricing will be available soon
-                    </p>
-                    {displayStatus.message && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        {displayStatus.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
+              <PriceDisplay
+                product={product}
+                variant="detail"
+                userHasPaidDeposit={userHasPaidDeposit}
+                content={content}
+              />
 
               {/* Limited Edition Badges for Variants */}
               {product.variants && product.variants.length > 0 && (
@@ -280,7 +224,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
                     // @ts-expect-error - Type mismatch in variant fields (pre-existing)
                     variants: product.variants,
                     sellStatus: product.sellStatus,
-                    presaleDepositPrice: product.presaleDepositPrice,
+                    presaleDepositPriceCents: product.presaleDepositPriceCents,
                     maxQuantityPerOrder: product.maxQuantityPerOrder,
                   }}
                 />

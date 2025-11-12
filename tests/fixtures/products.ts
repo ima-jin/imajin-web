@@ -32,8 +32,8 @@ const baseProductDefaults = {
   isLive: true,
   costCents: null,
   wholesalePriceCents: null,
-  cogsPrice: null,
-  presaleDepositPrice: null,
+  cogsPriceCents: null,
+  presaleDepositPriceCents: null,
   sellStatus: 'for-sale' as const,
   sellStatusNote: null,
   lastSyncedAt: null,
@@ -52,8 +52,8 @@ const baseDbProductDefaults = {
   ...baseProductDefaults,
   costCents: null,
   wholesalePriceCents: null,
-  cogsPrice: null,
-  presaleDepositPrice: null,
+  cogsPriceCents: null,
+  presaleDepositPriceCents: null,
   sellStatusNote: null,
   lastSyncedAt: null,
 };
@@ -160,8 +160,8 @@ export interface DbProduct {
   isLive: boolean;
   costCents: number | null;
   wholesalePriceCents: number | null;
-  cogsPrice: number | null;
-  presaleDepositPrice: number | null;
+  cogsPriceCents: number | null;
+  presaleDepositPriceCents: number | null;
   sellStatus: string;
   sellStatusNote: string | null;
   lastSyncedAt: Date | null;
@@ -300,8 +300,8 @@ export function createTestProductConfig(overrides: Partial<{
   max_quantity?: number | null;
   cost_cents?: number;
   wholesale_price_cents?: number;
-  cogs_price?: number;
-  presale_deposit_price?: number;
+  cogs_price_cents?: number;
+  presale_deposit_price_cents?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }> & { id: string; name: string }): any {
   return {
@@ -327,8 +327,8 @@ export function createTestProductConfig(overrides: Partial<{
     ...(overrides.max_quantity !== undefined && { max_quantity: overrides.max_quantity }),
     ...(overrides.cost_cents !== undefined && { cost_cents: overrides.cost_cents }),
     ...(overrides.wholesale_price_cents !== undefined && { wholesale_price_cents: overrides.wholesale_price_cents }),
-    ...(overrides.cogs_price !== undefined && { cogs_price: overrides.cogs_price }),
-    ...(overrides.presale_deposit_price !== undefined && { presale_deposit_price: overrides.presale_deposit_price }),
+    ...(overrides.cogs_price_cents !== undefined && { cogs_price_cents: overrides.cogs_price_cents }),
+    ...(overrides.presale_deposit_price_cents !== undefined && { presale_deposit_price_cents: overrides.presale_deposit_price_cents }),
   };
 }
 

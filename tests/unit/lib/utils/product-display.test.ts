@@ -437,7 +437,7 @@ describe('product-display utilities', () => {
         sellStatus: 'pre-sale',
         basePrice: 100000,
         wholesalePriceCents: 80000,
-        presaleDepositPrice: 25000,
+        presaleDepositPriceCents: 25000,
       });
 
       const result = getDisplayPrice(product, undefined, false);
@@ -581,7 +581,7 @@ describe('product-display utilities', () => {
     it('returns deposit amount for pre-sale products', () => {
       const product = createTestProduct({
         sellStatus: 'pre-sale',
-        presaleDepositPrice: 25000,
+        presaleDepositPriceCents: 25000,
       });
 
       const result = getDepositAmount(product);
@@ -592,7 +592,7 @@ describe('product-display utilities', () => {
     it('returns null for non-pre-sale products', () => {
       const product = createTestProduct({
         sellStatus: 'for-sale',
-        presaleDepositPrice: 25000,
+        presaleDepositPriceCents: 25000,
       });
 
       const result = getDepositAmount(product);
@@ -603,7 +603,7 @@ describe('product-display utilities', () => {
     it('returns null for pre-order products', () => {
       const product = createTestProduct({
         sellStatus: 'pre-order',
-        presaleDepositPrice: 25000,
+        presaleDepositPriceCents: 25000,
       });
 
       const result = getDepositAmount(product);
@@ -614,7 +614,7 @@ describe('product-display utilities', () => {
     it('applies variant deposit modifier', () => {
       const product = createTestProduct({
         sellStatus: 'pre-sale',
-        presaleDepositPrice: 25000,
+        presaleDepositPriceCents: 25000,
       });
       const variant = createTestVariant({
         presaleDepositModifier: 5000,
@@ -625,10 +625,10 @@ describe('product-display utilities', () => {
       expect(result).toBe(30000); // 25000 + 5000
     });
 
-    it('handles missing presaleDepositPrice', () => {
+    it('handles missing presaleDepositPriceCents', () => {
       const product = createTestProduct({
         sellStatus: 'pre-sale',
-        presaleDepositPrice: undefined,
+        presaleDepositPriceCents: undefined,
       });
 
       const result = getDepositAmount(product);
@@ -639,7 +639,7 @@ describe('product-display utilities', () => {
     it('handles null variant gracefully', () => {
       const product = createTestProduct({
         sellStatus: 'pre-sale',
-        presaleDepositPrice: 25000,
+        presaleDepositPriceCents: 25000,
       });
 
       const result = getDepositAmount(product, undefined);

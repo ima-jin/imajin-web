@@ -2,15 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { Price } from "@/components/ui/Price";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { getBestImageUrl } from "@/lib/utils/cloudinary";
-import {
-  getProductDisplayStatus,
-  getDisplayPrice,
-  getDepositAmount
-} from "@/lib/utils/product-display";
+import { getProductDisplayStatus } from "@/lib/utils/product-display";
 import type { Product, MediaItem } from "@/types/product";
 import type { ProductDetailContent } from "@/config/schema/page-content-schema";
 
@@ -38,10 +34,6 @@ interface ProductCardProps {
 export function ProductCard({ product, content, variantName, variantMedia, userHasPaidDeposit = false }: ProductCardProps) {
   const displayStatus = getProductDisplayStatus(product);
   const displayName = variantName ? `${product.name} - ${variantName}` : product.name;
-
-  // Get conditional pricing based on sell status and deposit status
-  const displayPrice = getDisplayPrice(product, undefined, userHasPaidDeposit);
-  const depositAmount = getDepositAmount(product);
 
   // Use variant media if provided, otherwise fall back to product media
   const mediaToUse = variantMedia && variantMedia.length > 0 ? variantMedia : product.media;
@@ -93,40 +85,12 @@ export function ProductCard({ product, content, variantName, variantMedia, userH
 
           {/* Price */}
           <div className="pt-2">
-            {product.sellStatus === 'pre-sale' && depositAmount !== null ? (
-              // Pre-sale: Show deposit amount with badge
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Badge variant="voltage" size="sm">
-                    Deposit
-                  </Badge>
-                  <Price amount={depositAmount} size="lg" data-testid="product-price" />
-                </div>
-                <Text size="caption" color="muted">
-                  Refundable deposit to secure wholesale pricing
-                </Text>
-              </div>
-            ) : displayPrice ? (
-              // Pre-order or For-sale: Show price
-              <div className="flex items-baseline gap-2">
-                <Price amount={displayPrice.price} size="lg" data-testid="product-price" />
-                {displayPrice.type === 'wholesale' && (
-                  <Badge variant="success" size="sm">
-                    Wholesale
-                  </Badge>
-                )}
-                {displayStatus.message && (
-                  <span className="text-xs text-gray-600">
-                    ({displayStatus.message})
-                  </span>
-                )}
-              </div>
-            ) : (
-              // Price hidden (fallback)
-              <Text size="sm" color="muted">
-                Pricing available soon
-              </Text>
-            )}
+            <PriceDisplay
+              product={product}
+              variant="card"
+              userHasPaidDeposit={userHasPaidDeposit}
+              content={content}
+            />
           </div>
 
           {/* Variants Indicator - only show if product has variants AND no specific variant is being shown */}

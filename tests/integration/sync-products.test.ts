@@ -53,6 +53,9 @@ describe('sync-products.ts - Stripe ID Persistence', () => {
             sell_status: 'for-sale',
             stripe_product_id: 'prod_test_parent_123',
             specs: [],
+            media: [],
+            show_on_portfolio_page: false,
+            is_featured: false,
           },
         ],
         variants: [
@@ -64,7 +67,10 @@ describe('sync-products.ts - Stripe ID Persistence', () => {
             variant_type: 'color',
             variant_value: 'BLACK',
             price_modifier: 0,
+            wholesale_price_modifier: 0,
+            presale_deposit_modifier: 0,
             is_limited_edition: false,
+            media: [],
           },
           {
             id: 'test-product-white',
@@ -74,7 +80,10 @@ describe('sync-products.ts - Stripe ID Persistence', () => {
             variant_type: 'color',
             variant_value: 'WHITE',
             price_modifier: 500,
+            wholesale_price_modifier: 0,
+            presale_deposit_modifier: 0,
             is_limited_edition: false,
+            media: [],
           },
         ],
       };
@@ -126,6 +135,9 @@ describe('sync-products.ts - Stripe ID Persistence', () => {
             sell_status: 'for-sale',
             stripe_product_id: 'prod_test_parent_999',
             specs: [],
+            media: [],
+            show_on_portfolio_page: false,
+            is_featured: false,
           },
         ],
         variants: [
@@ -137,7 +149,10 @@ describe('sync-products.ts - Stripe ID Persistence', () => {
             variant_type: 'color',
             variant_value: 'RED',
             price_modifier: 0,
+            wholesale_price_modifier: 0,
+            presale_deposit_modifier: 0,
             is_limited_edition: false,
+            media: [],
           },
         ],
       };

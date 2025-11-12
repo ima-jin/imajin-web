@@ -1,9 +1,17 @@
-# Phase 4.4.1 - Hybrid Authentication (Wallet + Email)
+# Phase 5.1 - Wallet Authentication & DID Integration
 
-**Status:** 🟡 Ready to Start
-**Priority:** HIGH - Required for user accounts, order history, pre-sale deposits
+**Status:** 📋 Future Enhancement (Post-Launch)
+**Priority:** LOW - Deferred until after Phase 4.4 (email/password auth) is complete
 **Estimated Duration:** 4-6 days
 **Target Completion:** TBD
+
+---
+
+> **NOTE:** This document was originally Phase 4.4.1 and has been moved to Phase 5.1.
+>
+> **Current Strategy:** Phase 4.4 implements email/password authentication using NextAuth.js with a DID-ready database schema (nullable wallet fields). This enables a smooth migration path to wallet authentication without breaking changes.
+>
+> **See:** `docs/AUTH_STRATEGY.md` and Phase 4.4.1-4.4.7 task documents for the current implementation approach.
 
 ---
 
@@ -11,7 +19,7 @@
 
 Implement hybrid authentication system supporting both:
 1. **Solana Wallet Login** - For crypto-native users and Founder Edition buyers
-2. **Email/Password Login** - For general customers (accessibility)
+2. **Email/Password Login** - For general customers (accessibility, implemented in Phase 4.4)
 
 This enables a gradual transition to decentralized identity (DIDs) while maintaining accessibility for non-crypto users.
 

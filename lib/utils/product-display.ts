@@ -316,7 +316,7 @@ export function getDepositAmount(
     return null;
   }
 
-  const baseDeposit = product.presaleDepositPrice || 0;
+  const baseDeposit = product.presaleDepositPriceCents || 0;
   const modifier = variant?.presaleDepositModifier || 0;
 
   return baseDeposit + modifier;

@@ -39,8 +39,8 @@ export const products = pgTable(
     isLive: boolean("is_live").default(false).notNull(),
     costCents: integer("cost_cents"),
     wholesalePriceCents: integer("wholesale_price_cents"),
-    cogsPrice: integer("cogs_price"), // Cost of goods sold (internal tracking)
-    presaleDepositPrice: integer("presale_deposit_price"), // Refundable deposit amount for pre-sale
+    cogsPriceCents: integer("cogs_price_cents"), // Cost of goods sold (internal tracking)
+    presaleDepositPriceCents: integer("presale_deposit_price_cents"), // Refundable deposit amount for pre-sale
     sellStatus: text("sell_status").default("internal").notNull(),
     sellStatusNote: text("sell_status_note"),
     lastSyncedAt: timestamp("last_synced_at"),

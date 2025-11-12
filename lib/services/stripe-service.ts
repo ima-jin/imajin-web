@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { paginateStripeList } from '@/lib/utils/stripe-pagination';
 
 // Initialize Stripe - will be configured with actual keys from environment
 export function getStripeInstance(): Stripe {
@@ -266,26 +267,10 @@ export async function createRefund(
 export async function fetchStripeProducts(): Promise<Stripe.Product[]> {
   const stripe = getStripeInstance();
 
-  const products: Stripe.Product[] = [];
-  let hasMore = true;
-  let startingAfter: string | undefined;
-
-  while (hasMore) {
-    const response = await stripe.products.list({
-      active: true,
-      limit: 100,
-      ...(startingAfter && { starting_after: startingAfter }),
-    });
-
-    products.push(...response.data);
-    hasMore = response.has_more;
-
-    if (hasMore && response.data.length > 0) {
-      startingAfter = response.data[response.data.length - 1].id;
-    }
-  }
-
-  return products;
+  return paginateStripeList(
+    (params) => stripe.products.list(params),
+    { active: true, limit: 100 }
+  );
 }
 
 /**
@@ -307,26 +292,10 @@ export async function fetchStripeProduct(productId: string): Promise<Stripe.Prod
 export async function fetchStripePrices(): Promise<Stripe.Price[]> {
   const stripe = getStripeInstance();
 
-  const prices: Stripe.Price[] = [];
-  let hasMore = true;
-  let startingAfter: string | undefined;
-
-  while (hasMore) {
-    const response = await stripe.prices.list({
-      active: true,
-      limit: 100,
-      ...(startingAfter && { starting_after: startingAfter }),
-    });
-
-    prices.push(...response.data);
-    hasMore = response.has_more;
-
-    if (hasMore && response.data.length > 0) {
-      startingAfter = response.data[response.data.length - 1].id;
-    }
-  }
-
-  return prices;
+  return paginateStripeList(
+    (params) => stripe.prices.list(params),
+    { active: true, limit: 100 }
+  );
 }
 
 /**
@@ -338,27 +307,10 @@ export async function fetchStripePrices(): Promise<Stripe.Price[]> {
 export async function fetchPricesForProduct(productId: string): Promise<Stripe.Price[]> {
   const stripe = getStripeInstance();
 
-  const prices: Stripe.Price[] = [];
-  let hasMore = true;
-  let startingAfter: string | undefined;
-
-  while (hasMore) {
-    const response = await stripe.prices.list({
-      product: productId,
-      active: true,
-      limit: 100,
-      ...(startingAfter && { starting_after: startingAfter }),
-    });
-
-    prices.push(...response.data);
-    hasMore = response.has_more;
-
-    if (hasMore && response.data.length > 0) {
-      startingAfter = response.data[response.data.length - 1].id;
-    }
-  }
-
-  return prices;
+  return paginateStripeList(
+    (params) => stripe.prices.list(params),
+    { product: productId, active: true, limit: 100 }
+  );
 }
 
 /**
