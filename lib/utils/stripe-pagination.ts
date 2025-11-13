@@ -27,7 +27,7 @@ export interface StripeListResponse<T> {
 export type StripeListParams = {
   limit?: number;
   starting_after?: string;
-  [key: string]: any; // Allow additional endpoint-specific parameters
+  [key: string]: unknown; // Allow additional endpoint-specific parameters
 };
 
 /**

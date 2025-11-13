@@ -49,8 +49,7 @@ export function PriceDisplay({
   product,
   variant,
   selectedVariant,
-  userHasPaidDeposit = false,
-  content
+  userHasPaidDeposit = false
 }: PriceDisplayProps) {
   // Handle internal products first (no pricing shown)
   if (product.sellStatus === 'internal') {

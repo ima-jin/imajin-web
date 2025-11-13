@@ -6,7 +6,6 @@ import { LimitedEditionBadge } from "@/components/products/LimitedEditionBadge";
 import { ProductAddToCart } from "@/components/products/ProductAddToCart";
 import { MediaCarousel } from "@/components/products/MediaCarousel";
 import { DepositRefundButton } from "@/components/products/DepositRefundButton";
-import { Badge } from "@/components/ui/Badge";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { getProductDetailContent } from "@/hooks/usePageContent";
 import { getNavigation } from "@/hooks/useNavigation";
