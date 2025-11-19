@@ -16,22 +16,148 @@
 ## Schema Overview
 
 ```
+users (shadow of Ory Kratos identities)
+├── orders (1:many) - individual ownership
+├── nft_tokens (1:many) - individual ownership
+├── user_collectives (1:many) - created collectives
+└── user_collective_memberships (1:many) - membership in collectives
+
+user_collectives (organizational entities)
+├── products (1:many) - creator attribution
+├── portfolio_items (1:many) - creator attribution
+├── user_collective_memberships (1:many) - members
+└── users (many:1) - founder
+
 products
 ├── variants (1:many)
 ├── product_dependencies (many:many)
-└── product_specs (1:many)
+├── product_specs (1:many)
+└── user_collectives (many:1) - created by collective
 
 orders
 ├── order_items (1:many)
-└── nft_tokens (1:1 for Founder Editions)
+├── nft_tokens (1:1 for Founder Editions)
+└── users (many:1) - customer
+
+nft_tokens
+├── orders (many:1) - purchased in order
+└── users (many:1) - current owner
 
 portfolio_items
-└── portfolio_images (1:many)
+├── portfolio_images (1:many)
+└── user_collectives (many:1) - created by collective
 ```
 
 ---
 
 ## Tables
+
+### `users`
+
+Local shadow of Ory Kratos identities. Ory manages passwords, sessions, MFA credentials. Local table stores user metadata and app-specific fields.
+
+```sql
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  kratos_id UUID UNIQUE NOT NULL,  -- Links to Ory Kratos identity
+
+  -- Denormalized from Ory (for query performance)
+  email TEXT UNIQUE NOT NULL,
+  name TEXT,
+  role TEXT NOT NULL DEFAULT 'customer',  -- 'customer' | 'admin'
+
+  -- DID/wallet authentication (Phase 5+)
+  did TEXT UNIQUE,
+  public_key TEXT,
+  wallet_address TEXT UNIQUE,
+
+  -- App-specific metadata
+  metadata JSONB DEFAULT '{}'::jsonb,
+
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_users_kratos_id ON users(kratos_id);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_wallet_address ON users(wallet_address) WHERE wallet_address IS NOT NULL;
+CREATE INDEX idx_users_did ON users(did) WHERE did IS NOT NULL;
+```
+
+**Sync Strategy:**
+- Ory webhooks sync identity changes to local users table
+- Fallback: Create user on-demand if webhook missed
+
+---
+
+### `user_collectives`
+
+Organizational entities that create and sell products/portfolio items. Enables marketplace and decentralization features.
+
+```sql
+CREATE TABLE user_collectives (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  description TEXT,
+
+  -- DID/wallet for future decentralization
+  did TEXT UNIQUE,
+  wallet_address TEXT UNIQUE,
+  public_key TEXT,
+
+  -- Metadata
+  metadata JSONB DEFAULT '{}'::jsonb,
+
+  -- Founder/creator
+  created_by_user_id UUID NOT NULL REFERENCES users(id),
+
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_user_collectives_slug ON user_collectives(slug);
+CREATE INDEX idx_user_collectives_creator ON user_collectives(created_by_user_id);
+CREATE INDEX idx_user_collectives_wallet ON user_collectives(wallet_address) WHERE wallet_address IS NOT NULL;
+CREATE INDEX idx_user_collectives_did ON user_collectives(did) WHERE did IS NOT NULL;
+```
+
+**Use Cases:**
+- Official Imajin collective for all existing products
+- Community members can create collectives
+- Collectives build reputation via product/portfolio attribution
+- Future: Collectives own wallets, receive royalties
+
+---
+
+### `user_collective_memberships`
+
+Many-to-many relationship between users and collectives.
+
+```sql
+CREATE TABLE user_collective_memberships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  collective_id UUID NOT NULL REFERENCES user_collectives(id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'member',  -- 'owner' | 'admin' | 'member'
+
+  joined_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+  UNIQUE(user_id, collective_id)
+);
+
+CREATE INDEX idx_memberships_user ON user_collective_memberships(user_id);
+CREATE INDEX idx_memberships_collective ON user_collective_memberships(collective_id);
+CREATE INDEX idx_memberships_role ON user_collective_memberships(role);
+```
+
+**Roles:**
+- `owner` - Created the collective, full control
+- `admin` - Can manage members, edit collective info
+- `member` - Can contribute content, view collective data
+
+---
 
 ### `products`
 
@@ -81,6 +207,9 @@ CREATE TABLE products (
   is_featured BOOLEAN NOT NULL DEFAULT false,              -- Show in featured products section?
   -- Note: Hero image uses media JSONB array with category="hero"
 
+  -- Creator attribution (marketplace/decentralization)
+  created_by_collective_id UUID NOT NULL REFERENCES user_collectives(id),  -- Collective that created this product
+
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -93,6 +222,7 @@ CREATE INDEX idx_products_live ON products(is_live);
 CREATE INDEX idx_products_sell_status ON products(sell_status);
 CREATE INDEX idx_products_portfolio ON products(show_on_portfolio_page);
 CREATE INDEX idx_products_featured ON products(is_featured);
+CREATE INDEX idx_products_collective ON products(created_by_collective_id);
 ```
 
 **Example:**
@@ -261,6 +391,7 @@ CREATE TABLE orders (
   stripe_payment_intent_id TEXT,
   customer_email TEXT NOT NULL,
   customer_name TEXT,
+  user_id UUID REFERENCES users(id),      -- Link to user account (nullable for guest checkout)
   status TEXT NOT NULL DEFAULT 'pending', -- "pending", "paid", "applied", "refunded", "fulfilled", "shipped", "delivered", "cancelled"
   subtotal INTEGER NOT NULL,
   tax INTEGER DEFAULT 0,
@@ -291,6 +422,7 @@ CREATE TABLE orders (
 );
 
 CREATE INDEX idx_orders_email ON orders(customer_email);
+CREATE INDEX idx_orders_user ON orders(user_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_created ON orders(created_at DESC);
 CREATE UNIQUE INDEX idx_orders_payment_intent ON orders(stripe_payment_intent_id);
@@ -345,6 +477,7 @@ CREATE TABLE nft_tokens (
   order_item_id INTEGER NOT NULL,
   variant_id TEXT NOT NULL,
   unit_number INTEGER NOT NULL,           -- Sequential within color (1-500 for BLACK)
+  user_id UUID REFERENCES users(id),      -- Current owner (nullable, updated on transfer)
 
   -- Blockchain info (when minted)
   blockchain TEXT DEFAULT 'solana',
@@ -367,6 +500,7 @@ CREATE TABLE nft_tokens (
 
 CREATE INDEX idx_nft_order ON nft_tokens(order_id);
 CREATE INDEX idx_nft_variant ON nft_tokens(variant_id);
+CREATE INDEX idx_nft_user ON nft_tokens(user_id);
 CREATE UNIQUE INDEX idx_nft_serial ON nft_tokens(serial_number);
 CREATE INDEX idx_nft_minted ON nft_tokens(minted_at);
 ```
@@ -396,6 +530,7 @@ CREATE TABLE portfolio_items (
   is_published BOOLEAN DEFAULT false,
   is_featured BOOLEAN DEFAULT false,
   display_order INTEGER DEFAULT 0,
+  created_by_collective_id UUID NOT NULL REFERENCES user_collectives(id),  -- Collective that created this portfolio item
   metadata JSONB,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
@@ -405,6 +540,7 @@ CREATE INDEX idx_portfolio_slug ON portfolio_items(slug);
 CREATE INDEX idx_portfolio_published ON portfolio_items(is_published);
 CREATE INDEX idx_portfolio_featured ON portfolio_items(is_featured);
 CREATE INDEX idx_portfolio_category ON portfolio_items(category);
+CREATE INDEX idx_portfolio_collective ON portfolio_items(created_by_collective_id);
 ```
 
 ---
@@ -508,13 +644,16 @@ export const dependencies = [
 
 ## Open Questions
 
-1. **User accounts:** Not in MVP, would need `users` table
+1. ~~**User accounts:**~~ ✅ Implemented in Phase 4.4 (users, user_collectives, memberships)
 2. **Inventory management:** Only tracking limited editions currently
 3. **Pricing history:** Rely on Stripe or track separately?
 4. **Product images:** Store URLs in `metadata` JSONB or separate table?
 5. **Reviews/ratings:** Future feature - need `product_reviews` table
 6. **Bulk discounts:** Handle in Stripe or custom logic?
+7. **Collective permissions:** How to manage who can create/edit products within a collective?
+8. **Marketplace moderation:** Approval workflow for community-created products?
+9. **Royalty distribution:** How to split payments within collectives with multiple members?
 
 ---
 
-**Last Updated:** 2025-10-24
+**Last Updated:** 2025-11-17

@@ -9,12 +9,12 @@
 
 ## Overview
 
-Integrate authentication with existing e-commerce features: link orders to users, display order history, pre-fill checkout forms, and enable account management.
+Integrate Ory Kratos authentication with existing e-commerce features: link orders to users, display order history, pre-fill checkout forms, and enable account management.
 
 **Key Integrations:**
 1. Link orders to users at checkout
 2. Display order history for authenticated users
-3. Pre-fill checkout with user info
+3. Pre-fill checkout with user info from Ory identity
 4. Backfill existing orders by email
 5. Create account dashboard page
 
@@ -27,14 +27,24 @@ Integrate authentication with existing e-commerce features: link orders to users
 **File:** `app/api/checkout/session/route.ts`
 
 ```typescript
-import { getSession } from '@/lib/auth/session';
+import { getLocalUserId, getServerSession } from '@/lib/auth/session';
 
 export async function POST(request: NextRequest) {
   // ... existing code
 
   // Get authenticated user if logged in
-  const session = await getSession();
-  const userId = session?.user?.id || null;
+  const session = await getServerSession();
+  let userId: string | null = null;
+
+  if (session) {
+    // Map Kratos ID to local user ID
+    try {
+      userId = await getLocalUserId();
+    } catch (error) {
+      // User not found in local DB, continue as guest
+      console.warn('User not found in local database:', session.identity.id);
+    }
+  }
 
   // Create order in database
   const [order] = await db
@@ -46,7 +56,7 @@ export async function POST(request: NextRequest) {
       totalAmount: checkoutTotal,
       status: 'pending',
       stripeCheckoutSessionId: checkoutSession.id,
-      userId, // Link to user if authenticated
+      userId, // Link to local user ID if authenticated
     })
     .returning();
 
@@ -55,9 +65,10 @@ export async function POST(request: NextRequest) {
 ```
 
 **Why This Works:**
-- Nullable `userId` → Guest checkout supported (future)
-- Authenticated users automatically linked
+- Nullable `userId` → Guest checkout supported
+- Authenticated users automatically linked via local user ID
 - Email still stored for backfill matching
+- Handles case where Ory identity exists but local user doesn't (webhook race condition)
 
 ---
 
@@ -67,6 +78,7 @@ export async function POST(request: NextRequest) {
 
 ```typescript
 import { requireAuth } from '@/lib/auth/guards';
+import { getLocalUser } from '@/lib/auth/guards';
 import { db } from '@/db';
 import { orders, orderItems } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -81,10 +93,11 @@ export const metadata = {
 
 export default async function OrderHistoryPage() {
   const session = await requireAuth();
+  const localUser = await getLocalUser(); // Get local user from Kratos ID
 
   // Fetch user's orders with items
   const userOrders = await db.query.orders.findMany({
-    where: eq(orders.userId, session.user.id),
+    where: eq(orders.userId, localUser.id),
     orderBy: [desc(orders.createdAt)],
     with: {
       orderItems: {
@@ -211,6 +224,7 @@ export function OrderCard({ order }: { order: OrderWithItems }) {
 
 ```typescript
 import { requireAuth } from '@/lib/auth/guards';
+import { getLocalUser } from '@/lib/auth/guards';
 import { db } from '@/db';
 import { orders } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -226,12 +240,13 @@ export default async function OrderDetailPage({
   params: { orderId: string };
 }) {
   const session = await requireAuth();
+  const localUser = await getLocalUser();
 
   // Fetch order (must belong to user)
   const order = await db.query.orders.findFirst({
     where: and(
       eq(orders.id, params.orderId),
-      eq(orders.userId, session.user.id)
+      eq(orders.userId, localUser.id)
     ),
     with: {
       orderItems: {
@@ -338,6 +353,7 @@ export default async function OrderDetailPage({
 
 ```typescript
 import { requireAuth } from '@/lib/auth/guards';
+import { getLocalUser } from '@/lib/auth/guards';
 import { db } from '@/db';
 import { orders } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -352,10 +368,11 @@ export const metadata = {
 
 export default async function AccountPage() {
   const session = await requireAuth();
+  const localUser = await getLocalUser();
 
   // Fetch recent orders
   const recentOrders = await db.query.orders.findMany({
-    where: eq(orders.userId, session.user.id),
+    where: eq(orders.userId, localUser.id),
     orderBy: [desc(orders.createdAt)],
     limit: 5,
   });
@@ -363,7 +380,7 @@ export default async function AccountPage() {
   return (
     <Container className="py-12">
       <Heading level={1} className="mb-8">
-        Welcome, {session.user.name}!
+        Welcome, {session.identity.traits.name}!
       </Heading>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -373,15 +390,15 @@ export default async function AccountPage() {
           <div className="space-y-2">
             <div>
               <p className="text-sm text-gray-600">Name</p>
-              <p className="font-medium">{session.user.name}</p>
+              <p className="font-medium">{session.identity.traits.name}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Email</p>
-              <p className="font-medium">{session.user.email}</p>
+              <p className="font-medium">{session.identity.traits.email}</p>
             </div>
             <div className="pt-4">
               <Link
-                href="/account/settings"
+                href="/auth/settings"
                 className="text-sm text-blue-600 hover:underline"
               >
                 Edit Profile
@@ -436,7 +453,7 @@ export default async function AccountPage() {
           <p className="text-sm text-gray-600">View all your past orders</p>
         </Link>
         <Link
-          href="/account/settings"
+          href="/auth/settings"
           className="bg-white border rounded-lg p-6 hover:bg-gray-50"
         >
           <h3 className="font-medium mb-2">Account Settings</h3>
@@ -455,6 +472,11 @@ export default async function AccountPage() {
 }
 ```
 
+**Key Changes from NextAuth:**
+- User data accessed via `session.identity.traits.name` / `session.identity.traits.email`
+- Settings link points to `/auth/settings` (Ory settings flow, not custom page)
+- Use `getLocalUser()` to get database user record
+
 ---
 
 ## Pre-fill Checkout Form
@@ -462,16 +484,16 @@ export default async function AccountPage() {
 **File:** `app/checkout/page.tsx`
 
 ```typescript
-import { getSession } from '@/lib/auth/session';
+import { getServerSession } from '@/lib/auth/session';
 
 export default async function CheckoutPage() {
-  const session = await getSession();
+  const session = await getServerSession();
 
-  // Pre-fill form with user info if authenticated
+  // Pre-fill form with user info from Ory identity
   const defaultValues = session
     ? {
-        name: session.user.name || '',
-        email: session.user.email,
+        name: session.identity.traits.name || '',
+        email: session.identity.traits.email,
       }
     : {
         name: '',
@@ -517,7 +539,7 @@ import { eq, isNull } from 'drizzle-orm';
 
 /**
  * Backfill user_id for orders placed before auth was implemented
- * Matches orders to users by email
+ * Matches orders to local users by email
  */
 async function backfillOrderUsers() {
   console.log('Backfilling order user IDs...');
@@ -533,13 +555,13 @@ async function backfillOrderUsers() {
   let unmatched = 0;
 
   for (const order of ordersWithoutUser) {
-    // Find user with matching email
+    // Find local user with matching email
     const user = await db.query.users.findFirst({
       where: eq(users.email, order.customerEmail),
     });
 
     if (user) {
-      // Update order with user_id
+      // Update order with local user_id
       await db
         .update(orders)
         .set({ userId: user.id })
@@ -572,21 +594,51 @@ backfillOrderUsers()
 npx tsx scripts/backfill-orders-users.ts
 ```
 
+**Note:** This script matches orders to local users table (which shadows Ory identities). The local users table is synced from Ory via webhooks.
+
+---
+
+## Webhook Sync (from Phase 4.4.2)
+
+**Reminder:** Ory webhook already creates local user records on registration:
+
+```typescript
+// app/api/auth/webhook/route.ts
+export async function POST(request: NextRequest) {
+  const event = await request.json();
+
+  if (event.type === 'identity.created') {
+    // Create local user record
+    await db.insert(users).values({
+      kratosId: event.identity.id,
+      email: event.identity.traits.email,
+      name: event.identity.traits.name,
+      role: event.identity.traits.role || 'customer',
+    });
+  }
+
+  return NextResponse.json({ received: true });
+}
+```
+
+This ensures local users exist for order linking.
+
 ---
 
 ## Implementation Steps
 
 ### Step 1: Update Checkout (45 min)
 
-- [ ] Add userId to checkout session creation
-- [ ] Get session in checkout API route
+- [ ] Add getLocalUserId to checkout session creation
+- [ ] Get Ory session in checkout API route
+- [ ] Handle case where Ory identity exists but local user doesn't
 - [ ] Test authenticated checkout
 - [ ] Test unauthenticated checkout (guest)
 
 ### Step 2: Create Order History (90 min)
 
 - [ ] Create OrderCard component
-- [ ] Create order history page
+- [ ] Create order history page with getLocalUser
 - [ ] Create order detail page
 - [ ] Test with multiple orders
 - [ ] Test with no orders
@@ -594,14 +646,15 @@ npx tsx scripts/backfill-orders-users.ts
 ### Step 3: Create Account Dashboard (60 min)
 
 - [ ] Create account page
-- [ ] Display user info
-- [ ] Display recent orders
-- [ ] Add quick links
+- [ ] Display user info from session.identity.traits
+- [ ] Display recent orders using local user ID
+- [ ] Add quick links (note: settings links to /auth/settings)
 - [ ] Test layout responsive
 
 ### Step 4: Pre-fill Checkout (30 min)
 
-- [ ] Get session in checkout page
+- [ ] Get Ory session in checkout page
+- [ ] Extract name/email from session.identity.traits
 - [ ] Pass default values to form
 - [ ] Update CheckoutForm to accept defaults
 - [ ] Test pre-fill when signed in
@@ -610,6 +663,7 @@ npx tsx scripts/backfill-orders-users.ts
 ### Step 5: Backfill Script (15 min)
 
 - [ ] Create backfill script
+- [ ] Match orders to local users (not Kratos IDs)
 - [ ] Test on dev database
 - [ ] Document usage
 
@@ -617,13 +671,15 @@ npx tsx scripts/backfill-orders-users.ts
 
 ## Acceptance Criteria
 
-- [ ] Orders linked to users at checkout
+- [ ] Orders linked to local users at checkout
 - [ ] Order history displays correctly
 - [ ] Order detail page shows all info
 - [ ] Account dashboard functional
+- [ ] User info pulled from Ory identity traits
 - [ ] Checkout form pre-fills for authenticated users
-- [ ] Backfill script works
+- [ ] Backfill script works with local users table
 - [ ] No errors for users without orders
+- [ ] Graceful handling of webhook race condition
 - [ ] Mobile responsive
 
 ---
@@ -633,9 +689,9 @@ npx tsx scripts/backfill-orders-users.ts
 ### Manual Testing Checklist
 
 **Checkout Integration:**
-- [ ] Sign in, checkout → Order has user_id
+- [ ] Sign in, checkout → Order has user_id (local user ID)
 - [ ] Sign out, checkout → Order has no user_id (guest)
-- [ ] Checkout form pre-fills name and email when signed in
+- [ ] Checkout form pre-fills name and email from Ory identity
 
 **Order History:**
 - [ ] View order history (multiple orders)
@@ -644,22 +700,60 @@ npx tsx scripts/backfill-orders-users.ts
 - [ ] Order detail shows items, status, address
 
 **Account Dashboard:**
-- [ ] Dashboard shows user info
+- [ ] Dashboard shows user info from Ory identity
 - [ ] Dashboard shows recent orders (limit 5)
 - [ ] "View All" link works
+- [ ] "Edit Profile" links to /auth/settings (Ory flow)
 - [ ] Quick links work
 
 **Backfill:**
 - [ ] Run backfill script
-- [ ] Verify orders matched by email
+- [ ] Verify orders matched by email to local users
 - [ ] Check unmatched orders logged
+
+**Webhook Sync:**
+- [ ] New signup creates local user via webhook
+- [ ] Checkout immediately after signup works (local user exists)
+
+---
+
+## Troubleshooting
+
+**Orders not linked to users:**
+```bash
+# Check if local user record exists
+SELECT * FROM users WHERE kratos_id = '{kratos_id}';
+
+# Check webhook logs
+# Verify app/api/auth/webhook/route.ts received identity.created event
+
+# Run backfill script to fix existing orders
+npx tsx scripts/backfill-orders-users.ts
+```
+
+**Pre-fill not working:**
+```bash
+# Check session exists
+# Verify session.identity.traits.name and .email are populated
+
+# Check Ory identity schema includes name field
+curl http://localhost:4434/admin/identities/{id} | jq '.traits'
+```
+
+**Order history empty:**
+```bash
+# Verify orders.user_id matches local users.id (not kratos_id)
+SELECT o.id, o.order_number, u.email
+FROM orders o
+JOIN users u ON o.user_id = u.id;
+```
 
 ---
 
 ## Next Steps
 
 After Phase 4.4.5 complete:
-1. **Phase 4.4.6:** SendGrid email integration
+1. **Phase 4.4.6:** SendGrid email integration (Ory SMTP config)
 2. **Phase 4.4.7:** Testing (unit, integration, E2E)
 
 ---
@@ -667,4 +761,5 @@ After Phase 4.4.5 complete:
 **See Also:**
 - `docs/tasks/Phase 4.4.4 - Protected Routes & Middleware.md` - Previous phase
 - `docs/tasks/Phase 4.4.6 - SendGrid Email Integration.md` - Next phase
+- `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Webhook setup
 - `docs/DATABASE_SCHEMA.md` - Orders schema

@@ -312,112 +312,136 @@
 
 ### 4.4 Authentication & User Management
 
-**Strategy:** NextAuth.js (Auth.js v5) with email/password, DID-ready schema for future wallet auth
+**Strategy:** Ory Kratos (self-hosted identity provider) with email/password, DID-ready schema with trust hub federation for future decentralization
 
 **See:** `docs/AUTH_STRATEGY.md` and `docs/tasks/Phase 4.4 - Authentication.md`
 
-#### 4.4.1 Database Schema (3 hours)
-- [ ] Auth tables: users, accounts, sessions, verification_tokens
-- [ ] DID-ready fields (nullable: did, wallet_address, credentials)
-- [ ] Add user_id to orders table
+**Architecture:** Local shadow pattern + federated trust hubs
+- Users table shadows Ory Kratos identities (Ory manages passwords/sessions/MFA)
+- Trust hubs enable federation (every device can be a hub)
+- Collectives for marketplace/creator attribution
+- Phase 5+: Wallet auth, federated hubs, full decentralization
+
+#### 4.4.1 Database Schema (2 hours)
+- [ ] Auth tables: users (shadow), trust_hubs, user_collectives, user_collective_memberships
+- [ ] DID-ready fields (nullable: did, wallet_address, public_key)
+- [ ] Hub federation fields (hosted_on_hub_id, origin_hub_id, is_cached)
+- [ ] Add user_id to orders, nft_tokens
+- [ ] Add created_by_collective_id to products, portfolio_items (NON-NULLABLE)
 - [ ] Migration + indexes
-- [ ] Seed test users (admin + customer)
+- [ ] Seed script: local hub, Imajin collective, admin user
 
 **Files:**
 - `db/schema-auth.ts`
 - `db/migrations/XXXX_add_auth_tables.sql`
+- `scripts/seed-users.ts`
 
-#### 4.4.2 NextAuth Configuration (4 hours)
-- [ ] Install next-auth@beta, @auth/drizzle-adapter, bcryptjs
-- [ ] Configure Credentials provider (email/password only, no OAuth)
-- [ ] Set up Drizzle adapter
-- [ ] JWT session strategy
-- [ ] Role-based callbacks (admin vs customer)
-- [ ] API route handler
+#### 4.4.2 Ory Kratos Setup (4 hours)
+- [ ] Docker compose for Kratos + PostgreSQL
+- [ ] Identity schema with email + wallet/DID fields
+- [ ] SendGrid SMTP configuration (via Ory Courier)
+- [ ] Webhook configuration (identity sync)
+- [ ] Ory SDK integration (@ory/client)
 
 **Files:**
-- `lib/auth/config.ts`
-- `lib/auth/password.ts`
-- `app/api/auth/[...nextauth]/route.ts`
+- `docker/docker-compose.auth.yml`
+- `config/kratos/kratos.yml`
+- `config/kratos/identity.schema.json`
+- `lib/auth/kratos.ts`
 
-#### 4.4.3 Auth UI Components (5 hours)
-- [ ] Sign in page + form
-- [ ] Sign up page + form
-- [ ] Password reset request + form
-- [ ] Email verification page
-- [ ] Error page
+#### 4.4.3 Auth UI Components (2.5 hours)
+- [ ] Reusable OryFlowForm component (dynamic form renderer)
+- [ ] Sign in page (Ory login flow)
+- [ ] Sign up page (Ory registration flow)
+- [ ] Recovery page (password reset flow)
+- [ ] Verification page (email verification flow)
+- [ ] Settings page (MFA setup flow)
+- [ ] MFA required page (admin enforcement)
 - [ ] User navigation dropdown
-- [ ] Password validation (10+ chars, strength checks)
 
 **Files:**
 - `app/auth/signin/page.tsx`
 - `app/auth/signup/page.tsx`
-- `app/auth/reset-password/page.tsx`
-- `components/auth/SignInForm.tsx`
-- `components/auth/SignUpForm.tsx`
+- `app/auth/recovery/page.tsx`
+- `app/auth/verification/page.tsx`
+- `app/auth/settings/page.tsx`
+- `components/auth/OryFlowForm.tsx`
 - `components/auth/UserNav.tsx`
 
-#### 4.4.4 Protected Routes & Middleware (2 hours)
-- [ ] Auth middleware for route protection
-- [ ] Admin route guards
-- [ ] Account route guards
-- [ ] Server-side session helpers
-- [ ] Redirect logic (with callback URLs)
+#### 4.4.4 Protected Routes & Middleware (3 hours)
+- [ ] Middleware with Ory session validation
+- [ ] Guard functions (requireAuth, requireAdmin, requireAdminWithMFA)
+- [ ] Session helpers (getSession, getLocalUserId)
+- [ ] Role-based access control
+- [ ] MFA enforcement for admin routes (AAL2)
 
 **Files:**
 - `middleware.ts`
 - `lib/auth/guards.ts`
 - `lib/auth/session.ts`
 
-#### 4.4.5 Integration with Existing Features (4 hours)
+#### 4.4.5 Integration with Existing Features (1.5 hours)
 - [ ] Link orders to users (user_id field)
 - [ ] Order history page (my orders)
 - [ ] Account page (profile, settings)
 - [ ] Pre-fill checkout with user info
 - [ ] Backfill existing orders by email
+- [ ] Backfill products/portfolio to Imajin collective
 
 **Files:**
 - `app/account/page.tsx`
 - `app/account/orders/page.tsx`
 - Update `app/api/checkout/session/route.ts`
 
-#### 4.4.6 SendGrid Email Integration (3 hours)
-- [ ] SendGrid client setup
-- [ ] Email verification template
-- [ ] Password reset template
-- [ ] Send verification on signup
-- [ ] Send reset link on request
-- [ ] Configure sender (noreply@imajin.ca)
+#### 4.4.6 SendGrid Email Integration (2 hours)
+- [ ] Ory Courier SMTP configuration (SendGrid)
+- [ ] Email templates (verification, recovery) - Go template syntax
+- [ ] Branded email styling
+- [ ] SendGrid sender verification
 
 **Files:**
-- `lib/email/sendgrid.ts`
-- `lib/email/templates.ts`
-- `app/api/auth/send-verification/route.ts`
+- `config/kratos/email-templates/` (*.gotmpl files)
+- Update `config/kratos/kratos.yml` (SMTP section)
 
-#### 4.4.7 Testing (4 hours)
-- [ ] Unit tests: password hashing, JWT encoding
-- [ ] Integration tests: signin, signup, password reset
-- [ ] E2E tests: full auth flow, protected routes
-- [ ] Test coverage >80%
+#### 4.4.7 Testing (3 hours)
+- [ ] Unit tests: session helpers, guards
+- [ ] Integration tests: webhook sync, middleware
+- [ ] E2E tests: Ory self-service flows (registration, login, recovery, settings)
+- [ ] Test helpers: Ory identity creation
+- [ ] MFA enforcement tests
+- [ ] Test coverage >70%
 
 **Files:**
-- `tests/unit/lib/auth/password.test.ts`
-- `tests/integration/auth/signin.test.ts`
-- `tests/integration/auth/signup.test.ts`
-- `tests/integration/auth/password-reset.test.ts`
-- `tests/integration/auth/protected-routes.test.ts`
-- `tests/e2e/auth/auth-flow.spec.ts`
+- `tests/unit/lib/auth/session.test.ts`
+- `tests/unit/lib/auth/guards.test.ts`
+- `tests/integration/auth/webhook-sync.test.ts`
+- `tests/integration/auth/middleware.test.ts`
+- `tests/e2e/auth/registration-flow.spec.ts`
+- `tests/e2e/auth/login-flow.spec.ts`
+- `tests/e2e/auth/mfa-flow.spec.ts`
 
-**Total Estimated:** 20-25 hours
+**Total Estimated:** 13 hours (vs 20-25 hours with DIY NextAuth)
+
+**Why Ory Kratos:**
+- Self-hosted, open-source (Apache 2.0)
+- Built-in MFA (TOTP), email verification, password reset
+- Security hardening (rate limiting, brute force protection)
+- Saves 7-12 hours vs building from scratch
+- No vendor lock-in
 
 **Gate Criteria:**
+- [ ] Ory Kratos running in Docker
 - [ ] Users can sign up with email/password
 - [ ] Users can sign in and sign out
 - [ ] Users can reset forgotten passwords
-- [ ] Email verification works (SendGrid)
+- [ ] Email verification works (SendGrid via Ory)
+- [ ] Users can enable optional MFA (TOTP)
+- [ ] Admin accounts require MFA (enforced in middleware)
 - [ ] Users can view order history
-- [ ] Admin routes protected by role check
-- [ ] All auth tests passing
+- [ ] Admin routes protected by role + MFA check
+- [ ] Local users table synced via webhooks
+- [ ] Trust hub + Imajin collective created
+- [ ] All tests passing (unit, integration, E2E)
 
 ### 4.5 Admin Tools
 - [ ] Admin interface:

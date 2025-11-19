@@ -1,20 +1,26 @@
-# Phase 4.4.6: SendGrid Email Integration
+# Phase 4.4.6: SendGrid Email Integration (Ory Kratos)
 
 **Status:** Ready for Implementation 🟡
-**Estimated Effort:** 3 hours
-**Dependencies:** Phase 4.4.5 complete (Auth flow integrated)
+**Estimated Effort:** 2 hours
+**Dependencies:** Phase 4.4.5 complete (Auth flow integrated), Ory Kratos running
 **Next Phase:** Phase 4.4.7 (Testing)
 
 ---
 
 ## Overview
 
-Integrate SendGrid for email verification and password reset functionality. Set up email templates, configure sender authentication, and implement email sending logic.
+Configure Ory Kratos to send emails via SendGrid SMTP for verification, recovery, and authentication flows. Customize email templates with Imajin branding.
 
-**Email Types:**
-1. Email verification (signup)
-2. Password reset
-3. Welcome email (optional)
+**Key Difference from DIY Email:**
+- Ory Kratos handles all email logic (token generation, expiration, validation)
+- We only configure SMTP and customize templates
+- No custom verification/reset APIs needed
+
+**Email Types (Auto-sent by Ory):**
+1. Email verification (registration flow)
+2. Password recovery (recovery flow)
+3. Email change verification (settings flow)
+4. Login code (passwordless flow - optional)
 
 ---
 
@@ -24,8 +30,13 @@ Integrate SendGrid for email verification and password reset functionality. Set 
 
 1. Sign up at https://sendgrid.com (free tier: 100 emails/day)
 2. Verify sender identity: `noreply@imajin.ca`
-3. Create API key with "Mail Send" permission
-4. Add to environment variables
+3. Get SMTP credentials (not API key):
+   - SMTP server: `smtp.sendgrid.net`
+   - Port: `587` (TLS) or `465` (SSL)
+   - Username: `apikey` (literal string)
+   - Password: Your SendGrid API key
+
+**Note:** Ory Kratos uses SMTP relay, not SendGrid API.
 
 ### Sender Authentication
 
@@ -46,9 +57,12 @@ Integrate SendGrid for email verification and password reset functionality. Set 
 **File:** `.env.local`
 
 ```bash
-# SendGrid
-SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# SendGrid SMTP (for Ory Kratos)
+SMTP_CONNECTION_URI=smtps://apikey:SG.your_sendgrid_api_key@smtp.sendgrid.net:465
+
+# Email settings
 EMAIL_FROM=noreply@imajin.ca
+EMAIL_FROM_NAME=Imajin
 
 # Base URL for email links
 NEXT_PUBLIC_BASE_URL=http://localhost:30000
@@ -57,814 +71,440 @@ NEXT_PUBLIC_BASE_URL=http://localhost:30000
 **File:** `.env.example`
 
 ```bash
-# SendGrid Email Service
-SENDGRID_API_KEY=your_sendgrid_api_key_here
+# SendGrid SMTP for Ory Kratos
+SMTP_CONNECTION_URI=smtps://apikey:your_sendgrid_api_key@smtp.sendgrid.net:465
 EMAIL_FROM=noreply@imajin.ca
+EMAIL_FROM_NAME=Imajin
 NEXT_PUBLIC_BASE_URL=http://localhost:30000
 ```
 
----
-
-## SendGrid Client
-
-**Install:**
-
-```bash
-npm install @sendgrid/mail
+**SMTP URI Format:**
+```
+smtps://username:password@smtp.sendgrid.net:465
 ```
 
-**File:** `lib/email/sendgrid.ts`
+- `smtps://` → SSL (port 465)
+- `smtp://` → TLS (port 587)
+- Username: `apikey` (literal)
+- Password: Your SendGrid API key
 
-```typescript
-import sgMail from '@sendgrid/mail';
+---
 
-// Initialize SendGrid with API key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+## Ory Kratos Configuration
 
-export type EmailOptions = {
-  to: string;
-  subject: string;
-  html: string;
-  text?: string;
-};
+### Update Kratos Config
 
-/**
- * Send email via SendGrid
- * @param options - Email options
- */
-export async function sendEmail(options: EmailOptions): Promise<void> {
-  const { to, subject, html, text } = options;
+**File:** `config/kratos/kratos.yml`
 
-  try {
-    await sgMail.send({
-      to,
-      from: process.env.EMAIL_FROM!,
-      subject,
-      html,
-      text: text || stripHtml(html), // Fallback to stripped HTML
-    });
+```yaml
+# ... existing config
 
-    console.log(`Email sent to ${to}: ${subject}`);
-  } catch (error) {
-    console.error('SendGrid error:', error);
-    throw new Error('Failed to send email');
-  }
-}
+courier:
+  smtp:
+    connection_uri: ${SMTP_CONNECTION_URI}
+    from_address: ${EMAIL_FROM}
+    from_name: ${EMAIL_FROM_NAME}
 
-/**
- * Strip HTML tags for plain text fallback
- * @param html - HTML string
- * @returns Plain text
- */
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '');
-}
+  # Email template overrides
+  templates:
+    verification:
+      valid:
+        email:
+          body:
+            html: /etc/config/kratos/email_templates/verification.html.gotmpl
+            plaintext: /etc/config/kratos/email_templates/verification.txt.gotmpl
+          subject: /etc/config/kratos/email_templates/verification_subject.txt.gotmpl
 
-/**
- * Send email verification
- * @param to - Recipient email
- * @param verificationUrl - Verification link
- */
-export async function sendVerificationEmail(
-  to: string,
-  verificationUrl: string
-): Promise<void> {
-  const template = getVerificationEmailTemplate(verificationUrl);
-  await sendEmail({
-    to,
-    subject: template.subject,
-    html: template.html,
-  });
-}
+    recovery:
+      valid:
+        email:
+          body:
+            html: /etc/config/kratos/email_templates/recovery.html.gotmpl
+            plaintext: /etc/config/kratos/email_templates/recovery.txt.gotmpl
+          subject: /etc/config/kratos/email_templates/recovery_subject.txt.gotmpl
 
-/**
- * Send password reset email
- * @param to - Recipient email
- * @param resetUrl - Password reset link
- */
-export async function sendPasswordResetEmail(
-  to: string,
-  resetUrl: string
-): Promise<void> {
-  const template = getPasswordResetEmailTemplate(resetUrl);
-  await sendEmail({
-    to,
-    subject: template.subject,
-    html: template.html,
-  });
-}
+selfservice:
+  flows:
+    verification:
+      enabled: true
+      ui_url: ${NEXT_PUBLIC_BASE_URL}/auth/verify
+      after:
+        default_browser_return_url: ${NEXT_PUBLIC_BASE_URL}/account
 
-/**
- * Send welcome email (optional)
- * @param to - Recipient email
- * @param name - User's name
- */
-export async function sendWelcomeEmail(
-  to: string,
-  name: string
-): Promise<void> {
-  const template = getWelcomeEmailTemplate(name);
-  await sendEmail({
-    to,
-    subject: template.subject,
-    html: template.html,
-  });
-}
+    recovery:
+      enabled: true
+      ui_url: ${NEXT_PUBLIC_BASE_URL}/auth/recovery
+      after:
+        default_browser_return_url: ${NEXT_PUBLIC_BASE_URL}/auth/settings
+
+    settings:
+      ui_url: ${NEXT_PUBLIC_BASE_URL}/auth/settings
+      after:
+        default_browser_return_url: ${NEXT_PUBLIC_BASE_URL}/account
 ```
 
 ---
 
 ## Email Templates
 
-**File:** `lib/email/templates.ts`
+### Verification Email
 
-```typescript
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:30000';
+**File:** `config/kratos/email_templates/verification_subject.txt.gotmpl`
 
-type EmailTemplate = {
-  subject: string;
-  html: string;
-};
-
-/**
- * Email verification template
- */
-export function getVerificationEmailTemplate(
-  verificationUrl: string
-): EmailTemplate {
-  return {
-    subject: 'Verify your email - Imajin',
-    html: `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              line-height: 1.6;
-              color: #333;
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-            }
-            .button {
-              display: inline-block;
-              background: #000;
-              color: #fff !important;
-              padding: 12px 24px;
-              text-decoration: none;
-              border-radius: 4px;
-              margin: 20px 0;
-            }
-            .footer {
-              margin-top: 40px;
-              padding-top: 20px;
-              border-top: 1px solid #eee;
-              font-size: 12px;
-              color: #666;
-            }
-          </style>
-        </head>
-        <body>
-          <h1>Verify Your Email</h1>
-          <p>Thank you for signing up for Imajin! Click the button below to verify your email address:</p>
-
-          <a href="${verificationUrl}" class="button">Verify Email</a>
-
-          <p>Or copy and paste this link into your browser:</p>
-          <p style="word-break: break-all; color: #666;">${verificationUrl}</p>
-
-          <p>This link expires in 24 hours.</p>
-
-          <div class="footer">
-            <p>If you didn't create an account with Imajin, you can safely ignore this email.</p>
-            <p>© ${new Date().getFullYear()} Imajin. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `,
-  };
-}
-
-/**
- * Password reset template
- */
-export function getPasswordResetEmailTemplate(resetUrl: string): EmailTemplate {
-  return {
-    subject: 'Reset your password - Imajin',
-    html: `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              line-height: 1.6;
-              color: #333;
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-            }
-            .button {
-              display: inline-block;
-              background: #000;
-              color: #fff !important;
-              padding: 12px 24px;
-              text-decoration: none;
-              border-radius: 4px;
-              margin: 20px 0;
-            }
-            .footer {
-              margin-top: 40px;
-              padding-top: 20px;
-              border-top: 1px solid #eee;
-              font-size: 12px;
-              color: #666;
-            }
-          </style>
-        </head>
-        <body>
-          <h1>Reset Your Password</h1>
-          <p>You requested to reset your password. Click the button below to set a new password:</p>
-
-          <a href="${resetUrl}" class="button">Reset Password</a>
-
-          <p>Or copy and paste this link into your browser:</p>
-          <p style="word-break: break-all; color: #666;">${resetUrl}</p>
-
-          <p>This link expires in 1 hour.</p>
-
-          <div class="footer">
-            <p>If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.</p>
-            <p>© ${new Date().getFullYear()} Imajin. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `,
-  };
-}
-
-/**
- * Welcome email template (optional)
- */
-export function getWelcomeEmailTemplate(name: string): EmailTemplate {
-  return {
-    subject: 'Welcome to Imajin!',
-    html: `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              line-height: 1.6;
-              color: #333;
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-            }
-            .button {
-              display: inline-block;
-              background: #000;
-              color: #fff !important;
-              padding: 12px 24px;
-              text-decoration: none;
-              border-radius: 4px;
-              margin: 20px 0;
-            }
-            .footer {
-              margin-top: 40px;
-              padding-top: 20px;
-              border-top: 1px solid #eee;
-              font-size: 12px;
-              color: #666;
-            }
-          </style>
-        </head>
-        <body>
-          <h1>Welcome to Imajin, ${name}!</h1>
-          <p>Thank you for creating an account. We're excited to have you join us.</p>
-
-          <p>Explore our collection of modular LED fixtures:</p>
-
-          <a href="${BASE_URL}/shop" class="button">Start Shopping</a>
-
-          <p>If you have any questions, feel free to contact us.</p>
-
-          <div class="footer">
-            <p>© ${new Date().getFullYear()} Imajin. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `,
-  };
-}
+```
+Verify your email - Imajin
 ```
 
----
+**File:** `config/kratos/email_templates/verification.html.gotmpl`
 
-## Email Verification Flow
-
-### Update Signup API
-
-**File:** `app/api/auth/signup/route.ts`
-
-```typescript
-import { sendVerificationEmail } from '@/lib/email/sendgrid';
-import { randomBytes } from 'crypto';
-
-export async function POST(request: NextRequest) {
-  // ... existing validation
-
-  // Create user
-  const [newUser] = await db.insert(users).values({
-    email,
-    passwordHash,
-    name,
-    role: 'customer',
-    emailVerified: null, // Not verified yet
-  }).returning();
-
-  // Generate verification token
-  const token = randomBytes(32).toString('hex');
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-  // Store verification token
-  await db.insert(verificationTokens).values({
-    identifier: email,
-    token,
-    expires,
-  });
-
-  // Send verification email
-  const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify/${token}?email=${encodeURIComponent(email)}`;
-  await sendVerificationEmail(email, verificationUrl);
-
-  return NextResponse.json(
-    { message: 'User created successfully. Please check your email to verify your account.' },
-    { status: 201 }
-  );
-}
-```
-
-### Verification Handler
-
-**File:** `app/auth/verify/[token]/page.tsx`
-
-```typescript
-import { db } from '@/db';
-import { users, verificationTokens } from '@/db/schema';
-import { eq, and, gt } from 'drizzle-orm';
-import { notFound, redirect } from 'next/navigation';
-import { Container } from '@/components/ui/Container';
-import { Heading } from '@/components/ui/Heading';
-
-export default async function VerifyTokenPage({
-  params,
-  searchParams,
-}: {
-  params: { token: string };
-  searchParams: { email?: string };
-}) {
-  const { token } = params;
-  const email = searchParams.email;
-
-  if (!email) {
-    notFound();
-  }
-
-  // Find valid token
-  const verificationToken = await db.query.verificationTokens.findFirst({
-    where: and(
-      eq(verificationTokens.identifier, email),
-      eq(verificationTokens.token, token),
-      gt(verificationTokens.expires, new Date())
-    ),
-  });
-
-  if (!verificationToken) {
-    return (
-      <Container className="py-12">
-        <div className="max-w-md mx-auto text-center">
-          <Heading level={1} className="mb-4">
-            Invalid or Expired Link
-          </Heading>
-          <p className="text-gray-600 mb-6">
-            This verification link is invalid or has expired.
-          </p>
-          <a
-            href="/auth/signin"
-            className="inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
-          >
-            Back to Sign In
-          </a>
-        </div>
-      </Container>
-    );
-  }
-
-  // Update user as verified
-  await db
-    .update(users)
-    .set({ emailVerified: new Date() })
-    .where(eq(users.email, email));
-
-  // Delete used token
-  await db
-    .delete(verificationTokens)
-    .where(and(
-      eq(verificationTokens.identifier, email),
-      eq(verificationTokens.token, token)
-    ));
-
-  // Success - redirect to sign in
-  redirect('/auth/signin?verified=true');
-}
-```
-
----
-
-## Password Reset Flow
-
-### Reset Request API
-
-**File:** `app/api/auth/reset-password/route.ts`
-
-```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { users, verificationTokens } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { randomBytes } from 'crypto';
-import { sendPasswordResetEmail } from '@/lib/email/sendgrid';
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { email } = body;
-
-    if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
-    }
-
-    // Check if user exists (don't reveal if email exists or not - security)
-    const user = await db.query.users.findFirst({
-      where: eq(users.email, email),
-    });
-
-    // Always return success even if user doesn't exist
-    // This prevents email enumeration attacks
-    if (!user) {
-      return NextResponse.json(
-        { message: 'If that email exists, a reset link has been sent.' },
-        { status: 200 }
-      );
-    }
-
-    // Generate reset token
-    const token = randomBytes(32).toString('hex');
-    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-
-    // Store reset token
-    await db.insert(verificationTokens).values({
-      identifier: email,
-      token,
-      expires,
-    });
-
-    // Send reset email
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/reset-password/${token}?email=${encodeURIComponent(email)}`;
-    await sendPasswordResetEmail(email, resetUrl);
-
-    return NextResponse.json(
-      { message: 'If that email exists, a reset link has been sent.' },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Password reset error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### Reset Form Page
-
-**File:** `app/auth/reset-password/[token]/page.tsx`
-
-```typescript
-import { db } from '@/db';
-import { verificationTokens } from '@/db/schema';
-import { eq, and, gt } from 'drizzle-orm';
-import { notFound } from 'next/navigation';
-import { Container } from '@/components/ui/Container';
-import { Heading } from '@/components/ui/Heading';
-import { ResetPasswordTokenForm } from '@/components/auth/ResetPasswordTokenForm';
-
-export default async function ResetPasswordTokenPage({
-  params,
-  searchParams,
-}: {
-  params: { token: string };
-  searchParams: { email?: string };
-}) {
-  const { token } = params;
-  const email = searchParams.email;
-
-  if (!email) {
-    notFound();
-  }
-
-  // Verify token exists and is valid
-  const verificationToken = await db.query.verificationTokens.findFirst({
-    where: and(
-      eq(verificationTokens.identifier, email),
-      eq(verificationTokens.token, token),
-      gt(verificationTokens.expires, new Date())
-    ),
-  });
-
-  if (!verificationToken) {
-    return (
-      <Container className="py-12">
-        <div className="max-w-md mx-auto text-center">
-          <Heading level={1} className="mb-4">
-            Invalid or Expired Link
-          </Heading>
-          <p className="text-gray-600 mb-6">
-            This password reset link is invalid or has expired.
-          </p>
-          <a
-            href="/auth/reset-password"
-            className="inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
-          >
-            Request New Link
-          </a>
-        </div>
-      </Container>
-    );
-  }
-
-  return (
-    <Container className="py-12">
-      <div className="max-w-md mx-auto">
-        <Heading level={1} className="text-center mb-8">
-          Set New Password
-        </Heading>
-        <div className="bg-white border rounded-lg p-6">
-          <ResetPasswordTokenForm token={token} email={email} />
-        </div>
-      </div>
-    </Container>
-  );
-}
-```
-
-**File:** `components/auth/ResetPasswordTokenForm.tsx`
-
-```typescript
-'use client';
-
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/form/Input';
-import { Label } from '@/components/ui/form/Label';
-import { validatePasswordStrength } from '@/lib/auth/password';
-
-export function ResetPasswordTokenForm({
-  token,
-  email,
-}: {
-  token: string;
-  email: string;
-}) {
-  const router = useRouter();
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErrors([]);
-    setLoading(true);
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
-      setErrors(['Passwords do not match']);
-      setLoading(false);
-      return;
-    }
-
-    // Validate password strength
-    const validation = validatePasswordStrength(password);
-    if (!validation.valid) {
-      setErrors(validation.errors);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/auth/reset-password/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email, password }),
-      });
-
-      if (response.ok) {
-        router.push('/auth/signin?reset=success');
-      } else {
-        const data = await response.json();
-        setErrors([data.error || 'Something went wrong']);
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
       }
-    } catch (err) {
-      setErrors(['Something went wrong. Please try again.']);
-    } finally {
-      setLoading(false);
-    }
-  }
+      .button {
+        display: inline-block;
+        background: #000;
+        color: #fff !important;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Verify Your Email</h1>
+    <p>Thank you for signing up for Imajin! Click the button below to verify your email address:</p>
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-          <ul className="text-sm space-y-1">
-            {errors.map((error, i) => (
-              <li key={i}>{error}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+    <a href="{{ .VerificationURL }}" class="button">Verify Email</a>
 
-      <div>
-        <Label htmlFor="password">New Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={loading}
-        />
-      </div>
+    <p>Or copy and paste this link into your browser:</p>
+    <p style="word-break: break-all; color: #666;">{{ .VerificationURL }}</p>
 
-      <div>
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          disabled={loading}
-        />
-      </div>
+    <p>This link expires in {{ .ExpiresInMinutes }} minutes.</p>
 
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading ? 'Resetting...' : 'Reset Password'}
-      </Button>
-    </form>
-  );
-}
+    <div class="footer">
+      <p>If you didn't create an account with Imajin, you can safely ignore this email.</p>
+      <p>© {{ now.Year }} Imajin. All rights reserved.</p>
+    </div>
+  </body>
+</html>
 ```
 
-**File:** `app/api/auth/reset-password/confirm/route.ts`
+**File:** `config/kratos/email_templates/verification.txt.gotmpl`
 
-```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { users, verificationTokens } from '@/db/schema';
-import { eq, and, gt } from 'drizzle-orm';
-import { hashPassword, validatePasswordStrength } from '@/lib/auth/password';
+```
+Verify Your Email
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { token, email, password } = body;
+Thank you for signing up for Imajin!
 
-    if (!token || !email || !password) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
+Click this link to verify your email address:
+{{ .VerificationURL }}
 
-    // Validate password strength
-    const validation = validatePasswordStrength(password);
-    if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.errors.join(', ') },
-        { status: 400 }
-      );
-    }
+This link expires in {{ .ExpiresInMinutes }} minutes.
 
-    // Verify token
-    const verificationToken = await db.query.verificationTokens.findFirst({
-      where: and(
-        eq(verificationTokens.identifier, email),
-        eq(verificationTokens.token, token),
-        gt(verificationTokens.expires, new Date())
-      ),
-    });
+If you didn't create an account with Imajin, you can safely ignore this email.
 
-    if (!verificationToken) {
-      return NextResponse.json(
-        { error: 'Invalid or expired token' },
-        { status: 400 }
-      );
-    }
+© {{ now.Year }} Imajin. All rights reserved.
+```
 
-    // Hash new password
-    const passwordHash = await hashPassword(password);
+---
 
-    // Update user password
-    await db
-      .update(users)
-      .set({ passwordHash })
-      .where(eq(users.email, email));
+### Recovery Email (Password Reset)
 
-    // Delete used token
-    await db
-      .delete(verificationTokens)
-      .where(and(
-        eq(verificationTokens.identifier, email),
-        eq(verificationTokens.token, token)
-      ));
+**File:** `config/kratos/email_templates/recovery_subject.txt.gotmpl`
 
-    return NextResponse.json(
-      { message: 'Password reset successfully' },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Password reset confirm error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
+```
+Reset your password - Imajin
+```
+
+**File:** `config/kratos/email_templates/recovery.html.gotmpl`
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .button {
+        display: inline-block;
+        background: #000;
+        color: #fff !important;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Reset Your Password</h1>
+    <p>You requested to reset your password. Click the button below to set a new password:</p>
+
+    <a href="{{ .RecoveryURL }}" class="button">Reset Password</a>
+
+    <p>Or copy and paste this link into your browser:</p>
+    <p style="word-break: break-all; color: #666;">{{ .RecoveryURL }}</p>
+
+    <p>This link expires in {{ .ExpiresInMinutes }} minutes.</p>
+
+    <div class="footer">
+      <p>If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.</p>
+      <p>© {{ now.Year }} Imajin. All rights reserved.</p>
+    </div>
+  </body>
+</html>
+```
+
+**File:** `config/kratos/email_templates/recovery.txt.gotmpl`
+
+```
+Reset Your Password
+
+You requested to reset your password.
+
+Click this link to set a new password:
+{{ .RecoveryURL }}
+
+This link expires in {{ .ExpiresInMinutes }} minutes.
+
+If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.
+
+© {{ now.Year }} Imajin. All rights reserved.
+```
+
+---
+
+## Docker Compose Update
+
+**File:** `docker/docker-compose.auth.yml`
+
+```yaml
+services:
+  kratos:
+    image: oryd/kratos:v1.1
+    ports:
+      - "4433:4433"
+      - "4434:4434"
+    environment:
+      - DSN=postgres://kratos:kratos_password@kratos-db:5432/kratos
+      - SMTP_CONNECTION_URI=${SMTP_CONNECTION_URI}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+    volumes:
+      - ../config/kratos:/etc/config/kratos:ro
+    command: serve -c /etc/config/kratos/kratos.yml --watch-courier
+    depends_on:
+      - kratos-db
+    networks:
+      - intranet
+
+  kratos-db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=kratos_password
+      - POSTGRES_DB=kratos
+    volumes:
+      - kratos_db_data:/var/lib/postgresql/data
+    networks:
+      - intranet
+
+volumes:
+  kratos_db_data:
+
+networks:
+  intranet:
+```
+
+**Key Addition:** `--watch-courier` flag enables Courier (email service).
+
+---
+
+## Template Variables (Ory Provided)
+
+### Verification Email
+
+```go
+.VerificationURL      // Full verification link
+.ExpiresInMinutes     // Token expiration time
+.Identity             // User identity object
+.Identity.traits      // User traits (email, name, etc.)
+now.Year              // Current year
+```
+
+### Recovery Email
+
+```go
+.RecoveryURL          // Full recovery link
+.ExpiresInMinutes     // Token expiration time
+.Identity             // User identity object
+.Identity.traits      // User traits (email, name, etc.)
+now.Year              // Current year
+```
+
+**Go Template Functions:**
+- `{{ .Variable }}` - Print variable
+- `{{ if .Variable }}...{{ end }}` - Conditional
+- `{{ range .Array }}...{{ end }}` - Loop
+- `{{ now.Year }}` - Current year
+
+---
+
+## Testing Email Configuration
+
+### Test SMTP Connection
+
+**File:** `scripts/test-smtp.sh`
+
+```bash
+#!/bin/bash
+
+# Test SendGrid SMTP connection
+docker exec -it imajin-kratos sh -c '
+  wget -O - -q --post-data="" http://localhost:4434/health/ready && echo "Kratos is ready"
+'
+
+# Send test email via Kratos
+curl -X POST http://localhost:4434/admin/courier/messages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "recipient": "your-email@example.com",
+    "subject": "Test Email",
+    "body": "This is a test email from Ory Kratos."
+  }'
+```
+
+### Test Verification Flow
+
+```bash
+# 1. Create registration flow
+curl http://localhost:4433/self-service/registration/browser
+
+# 2. Submit registration form (triggers verification email)
+curl -X POST http://localhost:4433/self-service/registration \
+  -H "Content-Type: application/json" \
+  -d '{
+    "traits": {
+      "email": "test@example.com",
+      "name": "Test User",
+      "role": "customer"
+    },
+    "password": "TestPassword123!",
+    "method": "password"
+  }'
+
+# 3. Check Kratos logs for email delivery
+docker logs imajin-kratos | grep courier
+```
+
+### Test Recovery Flow
+
+```bash
+# 1. Create recovery flow
+curl http://localhost:4433/self-service/recovery/browser
+
+# 2. Submit recovery request (triggers recovery email)
+curl -X POST http://localhost:4433/self-service/recovery \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "method": "code"
+  }'
+
+# 3. Check Kratos logs for email delivery
+docker logs imajin-kratos | grep courier
 ```
 
 ---
 
 ## Implementation Steps
 
-### Step 1: SendGrid Setup (20 min)
+### Step 1: SendGrid Setup (15 min)
 
 - [ ] Create SendGrid account
 - [ ] Verify sender identity (noreply@imajin.ca)
-- [ ] Create API key
-- [ ] Add to .env.local
-- [ ] Test API key with curl
+- [ ] Get SendGrid API key
+- [ ] Add SMTP_CONNECTION_URI to .env.local
+- [ ] Test SMTP credentials with curl
 
-### Step 2: Email Client (30 min)
+### Step 2: Kratos Configuration (20 min)
 
-- [ ] Install @sendgrid/mail
-- [ ] Create sendgrid.ts client
-- [ ] Create email templates
-- [ ] Test send function manually
+- [ ] Update kratos.yml with Courier config
+- [ ] Add SMTP environment variables to docker-compose
+- [ ] Enable verification and recovery flows
+- [ ] Set UI URLs for flows
+- [ ] Restart Kratos container
 
-### Step 3: Email Verification (45 min)
+### Step 3: Email Templates (30 min)
 
-- [ ] Update signup API to send verification
-- [ ] Create verification handler page
-- [ ] Test verification flow
-- [ ] Handle expired tokens
+- [ ] Create email_templates directory
+- [ ] Create verification templates (HTML, TXT, subject)
+- [ ] Create recovery templates (HTML, TXT, subject)
+- [ ] Test template rendering with Ory
 
-### Step 4: Password Reset (60 min)
+### Step 4: Testing (30 min)
 
-- [ ] Create reset request API
-- [ ] Create reset form page
-- [ ] Create reset confirm API
-- [ ] Test reset flow
-- [ ] Handle expired tokens
+- [ ] Test registration → verification email sent
+- [ ] Test recovery → recovery email sent
+- [ ] Test email rendering (Gmail, Outlook, mobile)
+- [ ] Test expired links
+- [ ] Check spam folder
 
-### Step 5: Testing (45 min)
+### Step 5: Production Setup (25 min)
 
-- [ ] Test email delivery (check spam folder)
-- [ ] Test verification link click
-- [ ] Test password reset link click
-- [ ] Test expired tokens
-- [ ] Test email formatting (multiple clients)
+- [ ] Configure domain authentication in SendGrid
+- [ ] Update SMTP_CONNECTION_URI for production
+- [ ] Test production email delivery
+- [ ] Monitor delivery rates
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] SendGrid configured and working
-- [ ] Verification email sends on signup
-- [ ] Verification link verifies account
-- [ ] Password reset email sends
-- [ ] Password reset link works
-- [ ] Expired tokens handled gracefully
-- [ ] Emails render correctly (HTML + plain text)
-- [ ] No sensitive info leaked in error messages
+- [ ] SendGrid SMTP configured in Ory Kratos
+- [ ] Verification email sends on registration
+- [ ] Recovery email sends on password reset request
+- [ ] Email templates branded with Imajin styling
+- [ ] Plain text fallback renders correctly
+- [ ] Links in emails work correctly
+- [ ] Expired tokens handled by Ory
+- [ ] Emails don't land in spam folder
 
 ---
 
@@ -872,24 +512,122 @@ export async function POST(request: NextRequest) {
 
 ### Manual Testing Checklist
 
-**Email Verification:**
-- [ ] Sign up → Verification email received
-- [ ] Click link → Account verified
-- [ ] Try expired link → Error message
-- [ ] Try invalid link → Error message
+**Email Delivery:**
+- [ ] Register new user → Verification email received
+- [ ] Click verification link → Account verified
+- [ ] Request password reset → Recovery email received
+- [ ] Click recovery link → Password reset form loads
 
-**Password Reset:**
-- [ ] Request reset → Email received
-- [ ] Click link → Reset form loads
-- [ ] Set new password → Success
-- [ ] Sign in with new password → Works
-- [ ] Try expired link → Error message
-
-**Email Formatting:**
-- [ ] Gmail renders correctly
-- [ ] Outlook renders correctly
+**Email Rendering:**
+- [ ] Gmail renders HTML correctly
+- [ ] Outlook renders HTML correctly
 - [ ] Mobile email clients render correctly
-- [ ] Plain text fallback works
+- [ ] Plain text version works
+
+**Links & Tokens:**
+- [ ] Verification link works
+- [ ] Recovery link works
+- [ ] Expired verification link shows error
+- [ ] Expired recovery link shows error
+
+**Spam Prevention:**
+- [ ] Emails land in inbox (not spam)
+- [ ] Domain authentication configured
+- [ ] SPF/DKIM records correct
+
+---
+
+## Troubleshooting
+
+**Emails not sending:**
+```bash
+# Check Kratos logs
+docker logs imajin-kratos | grep courier
+
+# Test SMTP connection
+docker exec -it imajin-kratos sh -c 'nc -zv smtp.sendgrid.net 465'
+
+# Verify environment variables
+docker exec -it imajin-kratos env | grep SMTP
+```
+
+**Emails in spam folder:**
+```bash
+# Check domain authentication in SendGrid
+# Verify SPF record: v=spf1 include:sendgrid.net ~all
+# Verify DKIM records match SendGrid settings
+# Use SendGrid email validation API
+```
+
+**Template not loading:**
+```bash
+# Check template file paths in kratos.yml
+# Verify files mounted in Docker volume
+docker exec -it imajin-kratos ls /etc/config/kratos/email_templates/
+
+# Check template syntax (Go templates)
+# Test with simple template first
+```
+
+**Links not working:**
+```bash
+# Verify NEXT_PUBLIC_BASE_URL is correct
+# Check UI URLs in kratos.yml selfservice flows
+# Test with curl to see redirect URLs
+```
+
+---
+
+## Environment-Specific Configuration
+
+### Local Development
+
+```bash
+SMTP_CONNECTION_URI=smtps://apikey:SG.xxx@smtp.sendgrid.net:465
+EMAIL_FROM=noreply@imajin.ca
+NEXT_PUBLIC_BASE_URL=http://localhost:30000
+```
+
+### Dev/Staging
+
+```bash
+SMTP_CONNECTION_URI=smtps://apikey:SG.xxx@smtp.sendgrid.net:465
+EMAIL_FROM=noreply@imajin.ca
+NEXT_PUBLIC_BASE_URL=https://www-dev.imajin.ca
+```
+
+### Production
+
+```bash
+SMTP_CONNECTION_URI=smtps://apikey:SG.xxx@smtp.sendgrid.net:465
+EMAIL_FROM=noreply@imajin.ca
+NEXT_PUBLIC_BASE_URL=https://www.imajin.ca
+```
+
+---
+
+## Security Considerations
+
+### SMTP Credentials
+
+- Store SMTP_CONNECTION_URI in environment variables (not code)
+- Use secrets management in production
+- Rotate SendGrid API keys periodically
+- Restrict API key permissions (Mail Send only)
+
+### Email Content
+
+- No sensitive data in email bodies
+- Use generic messages ("Reset your password" not "Your password is...")
+- Links expire after short duration (Ory default: 1 hour)
+- Tokens are single-use (Ory handles invalidation)
+
+### Spam Prevention
+
+- Configure SPF, DKIM, DMARC records
+- Use verified sender domain
+- Monitor SendGrid delivery metrics
+- Handle bounces and complaints
 
 ---
 
@@ -903,4 +641,6 @@ After Phase 4.4.6 complete:
 **See Also:**
 - `docs/tasks/Phase 4.4.5 - Integration with Existing Features.md` - Previous phase
 - `docs/tasks/Phase 4.4.7 - Testing.md` - Next phase
-- SendGrid documentation: https://docs.sendgrid.com
+- `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Kratos configuration
+- Ory Kratos Courier Docs: https://www.ory.sh/docs/kratos/emails-sms/sending-emails
+- SendGrid SMTP Docs: https://docs.sendgrid.com/for-developers/sending-email/integrating-with-the-smtp-api

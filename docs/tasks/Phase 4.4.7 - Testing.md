@@ -1,20 +1,85 @@
-# Phase 4.4.7: Testing
+# Phase 4.4.7: Testing (Ory Kratos Integration)
 
 **Status:** Ready for Implementation 🟡
-**Estimated Effort:** 4 hours
-**Dependencies:** Phase 4.4.6 complete (All features implemented)
+**Estimated Effort:** 3 hours
+**Dependencies:** Phase 4.4.6 complete (All features implemented), Ory Kratos running
 **Next Phase:** Phase 4.5 (Admin Tools)
+
+**Reviews:**
+- ✅ **Dr. Testalot** (2025-11-19): Test strategy approved. Coverage targets achievable (70% realistic). Test structure excellent (unit/integration/E2E separation). Grade: A-. Test count shows ~32-35 enumerated (claim: >80) - recommend enumerate all tests OR revise count. Missing: TDD workflow section, webhook edge cases, email verification E2E. **APPROVED WITH RECOMMENDATIONS**
 
 ---
 
 ## Overview
 
-Comprehensive testing suite for authentication system including unit tests, integration tests, and end-to-end tests. Achieve >80% code coverage for auth modules.
+Comprehensive testing suite for Ory Kratos authentication integration including unit tests for local helpers, integration tests for session management and webhooks, and end-to-end tests for complete authentication flows.
+
+**Key Difference from DIY Auth Testing:**
+- Ory handles password hashing, validation, token generation (no unit tests needed)
+- Focus on integration: Webhook sync, session helpers, middleware
+- E2E tests interact with Ory self-service flows (not custom APIs)
 
 **Test Coverage:**
-- Unit tests: Password hashing, validation, utilities
-- Integration tests: Sign in, sign up, password reset, protected routes
-- E2E tests: Full authentication flows
+- Unit tests: Session helpers, guards, local user mapping
+- Integration tests: Webhooks, middleware, session validation
+- E2E tests: Full Ory self-service flows
+
+---
+
+## Test Count Summary
+
+| Category | File | Tests | Notes |
+|----------|------|-------|-------|
+| **Unit Tests** | session.test.ts | 5 | Session helpers (getServerSession, isAuthenticatedRequest) |
+| | guards.test.ts | 5 | Auth guards (requireAuth, requireAdmin, requireAdminWithMFA) |
+| **Integration Tests** | webhook.test.ts | 2 | Ory webhook sync (create, update) |
+| | middleware.test.ts | 5 | Protected routes, MFA enforcement |
+| | local-user-sync.test.ts | 3 | Kratos ID → local user mapping |
+| **E2E Tests** | registration-flow.spec.ts | 3 | Sign up, duplicate email, password validation |
+| | login-flow.spec.ts | 4 | Sign in, incorrect password, protected routes, sign out |
+| | recovery-flow.spec.ts | 2 | Password reset, invalid link |
+| | settings-flow.spec.ts | 3 | Settings page, MFA setup, admin enforcement |
+| **Helpers** | ory-helpers.ts | 3 | Test utilities (create, delete, session token) |
+| **TOTAL** | | **35** | **Core enumerated tests** |
+
+**Additional Tests (Recommended):**
+- Webhook edge cases (5-8 tests): Failures, race conditions, security
+- Email verification E2E (1 test): Click verification link
+- MFA recovery codes (1 test): Lost TOTP device scenario
+- Session expiry (1 test): Mid-request expiration
+- **Extended Total: ~50 tests**
+
+---
+
+## TDD Workflow
+
+This phase follows **Test-Driven Development (TDD)**:
+
+### RED: Write Failing Tests First
+
+**Step 1: Unit Tests (45 min)**
+- [ ] Write session helper tests → Run → All fail ❌
+- [ ] Write guard tests → Run → All fail ❌
+- [ ] Verify tests fail for correct reasons (not found errors)
+
+### GREEN: Implement Minimum Code
+
+**Step 2: Make Tests Pass**
+- [ ] Implement `lib/auth/session.ts` → Run → Pass ✅
+- [ ] Implement `lib/auth/guards.ts` → Run → Pass ✅
+- [ ] Verify all unit tests pass
+
+### REFACTOR: Clean Up
+
+**Step 3: Improve Code**
+- [ ] Extract common logic (DRY principle)
+- [ ] Improve error handling
+- [ ] Add JSDoc comments
+- [ ] Run tests → Still pass ✅
+
+**Repeat for Integration & E2E:**
+- Integration tests: RED → GREEN → REFACTOR
+- E2E tests: RED → GREEN → REFACTOR
 
 ---
 
@@ -25,119 +90,228 @@ tests/
 ├── unit/
 │   └── lib/
 │       └── auth/
-│           ├── password.test.ts (Password utilities)
-│           └── guards.test.ts (Server-side guards)
+│           ├── guards.test.ts (Server-side guards)
+│           └── session.test.ts (Session helpers)
 ├── integration/
 │   └── auth/
-│       ├── signin.test.ts (Sign in API)
-│       ├── signup.test.ts (Sign up API)
-│       ├── password-reset.test.ts (Password reset API)
-│       ├── protected-routes.test.ts (Middleware)
-│       └── session.test.ts (Session management)
+│       ├── webhook.test.ts (Ory webhook sync)
+│       ├── middleware.test.ts (Protected routes with Ory)
+│       ├── session-validation.test.ts (Ory session checking)
+│       └── local-user-sync.test.ts (Kratos ID → local user mapping)
 └── e2e/
     └── auth/
-        ├── auth-flow.spec.ts (Full sign up/in flow)
-        └── password-reset-flow.spec.ts (Full password reset)
+        ├── registration-flow.spec.ts (Ory registration)
+        ├── login-flow.spec.ts (Ory login)
+        ├── recovery-flow.spec.ts (Ory password reset)
+        └── settings-flow.spec.ts (Ory settings/MFA)
 ```
 
 ---
 
 ## Unit Tests
 
-### Password Utilities
+### Session Helpers
 
-**File:** `tests/unit/lib/auth/password.test.ts`
+**File:** `tests/unit/lib/auth/session.test.ts`
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { hashPassword, verifyPassword, validatePasswordStrength } from '@/lib/auth/password';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getServerSession, isAuthenticatedRequest, getLocalUserId } from '@/lib/auth/session';
+import { kratosFrontend } from '@/lib/auth/kratos';
 
-describe('Password Utilities', () => {
-  describe('hashPassword', () => {
-    it('should hash password', async () => {
-      const password = 'SecurePassword123';
-      const hash = await hashPassword(password);
+// Mock Ory SDK
+vi.mock('@/lib/auth/kratos', () => ({
+  kratosFrontend: {
+    toSession: vi.fn(),
+  },
+}));
 
-      expect(hash).toBeDefined();
-      expect(hash).not.toBe(password);
-      expect(hash.startsWith('$2a$')).toBe(true); // bcrypt hash
+describe('Session Helpers', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('getServerSession', () => {
+    it('should return session when valid cookie exists', async () => {
+      const mockSession = {
+        active: true,
+        identity: {
+          id: 'kratos-123',
+          traits: {
+            email: 'test@example.com',
+            name: 'Test User',
+            role: 'customer',
+          },
+        },
+      };
+
+      (kratosFrontend.toSession as any).mockResolvedValue({ data: mockSession });
+
+      // Mock cookies
+      const mockCookies = () => ({
+        get: () => ({ value: 'mock_session_token' }),
+      });
+      vi.mock('next/headers', () => ({
+        cookies: mockCookies,
+      }));
+
+      const session = await getServerSession();
+
+      expect(session).toEqual(mockSession);
+      expect(kratosFrontend.toSession).toHaveBeenCalledWith({
+        cookie: 'ory_session_imajinweb=mock_session_token',
+      });
     });
 
-    it('should generate different hashes for same password', async () => {
-      const password = 'SecurePassword123';
-      const hash1 = await hashPassword(password);
-      const hash2 = await hashPassword(password);
+    it('should return null when no cookie exists', async () => {
+      // Mock no cookie
+      const mockCookies = () => ({
+        get: () => undefined,
+      });
+      vi.mock('next/headers', () => ({
+        cookies: mockCookies,
+      }));
 
-      expect(hash1).not.toBe(hash2); // Different salts
+      const session = await getServerSession();
+
+      expect(session).toBeNull();
+      expect(kratosFrontend.toSession).not.toHaveBeenCalled();
+    });
+
+    it('should return null when session is invalid', async () => {
+      (kratosFrontend.toSession as any).mockRejectedValue(new Error('Unauthorized'));
+
+      const mockCookies = () => ({
+        get: () => ({ value: 'invalid_token' }),
+      });
+      vi.mock('next/headers', () => ({
+        cookies: mockCookies,
+      }));
+
+      const session = await getServerSession();
+
+      expect(session).toBeNull();
     });
   });
 
-  describe('verifyPassword', () => {
-    it('should verify correct password', async () => {
-      const password = 'SecurePassword123';
-      const hash = await hashPassword(password);
-      const isValid = await verifyPassword(password, hash);
+  describe('isAuthenticatedRequest', () => {
+    it('should return true when session exists', async () => {
+      const mockSession = {
+        active: true,
+        identity: { id: 'kratos-123' },
+      };
 
-      expect(isValid).toBe(true);
+      (kratosFrontend.toSession as any).mockResolvedValue({ data: mockSession });
+
+      const isAuth = await isAuthenticatedRequest();
+
+      expect(isAuth).toBe(true);
     });
 
-    it('should reject incorrect password', async () => {
-      const password = 'SecurePassword123';
-      const hash = await hashPassword(password);
-      const isValid = await verifyPassword('WrongPassword', hash);
+    it('should return false when no session', async () => {
+      (kratosFrontend.toSession as any).mockRejectedValue(new Error('Unauthorized'));
 
-      expect(isValid).toBe(false);
+      const isAuth = await isAuthenticatedRequest();
+
+      expect(isAuth).toBe(false);
+    });
+  });
+});
+```
+
+### Guards
+
+**File:** `tests/unit/lib/auth/guards.test.ts`
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+import { requireAuth, requireAdmin, requireAdminWithMFA } from '@/lib/auth/guards';
+import { redirect } from 'next/navigation';
+
+// Mock Next.js redirect
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn(),
+}));
+
+describe('Auth Guards', () => {
+  describe('requireAuth', () => {
+    it('should redirect when not authenticated', async () => {
+      // Mock getSession to return null
+      vi.mock('@/lib/auth/guards', () => ({
+        getSession: vi.fn().mockResolvedValue(null),
+      }));
+
+      try {
+        await requireAuth();
+      } catch (e) {
+        // Redirect throws
+      }
+
+      expect(redirect).toHaveBeenCalledWith('/auth/signin');
     });
 
-    it('should reject empty password', async () => {
-      const hash = await hashPassword('SecurePassword123');
-      const isValid = await verifyPassword('', hash);
+    it('should return session when authenticated', async () => {
+      const mockSession = {
+        active: true,
+        identity: {
+          id: 'kratos-123',
+          traits: { email: 'test@example.com' },
+        },
+      };
 
-      expect(isValid).toBe(false);
+      vi.mock('@/lib/auth/guards', () => ({
+        getSession: vi.fn().mockResolvedValue(mockSession),
+      }));
+
+      const session = await requireAuth();
+
+      expect(session).toEqual(mockSession);
     });
   });
 
-  describe('validatePasswordStrength', () => {
-    it('should accept strong password', () => {
-      const result = validatePasswordStrength('SecurePassword123');
+  describe('requireAdmin', () => {
+    it('should redirect when user is not admin', async () => {
+      const mockSession = {
+        active: true,
+        identity: {
+          id: 'kratos-123',
+          traits: { role: 'customer' },
+        },
+      };
 
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
+      vi.mock('@/lib/auth/guards', () => ({
+        getSession: vi.fn().mockResolvedValue(mockSession),
+      }));
+
+      try {
+        await requireAdmin();
+      } catch (e) {
+        // Redirect throws
+      }
+
+      expect(redirect).toHaveBeenCalledWith('/');
     });
+  });
 
-    it('should reject password too short', () => {
-      const result = validatePasswordStrength('Short1');
+  describe('requireAdminWithMFA', () => {
+    it('should redirect when admin has no MFA', async () => {
+      const mockSession = {
+        active: true,
+        identity: { traits: { role: 'admin' } },
+        authenticator_assurance_level: 'aal1', // No MFA
+      };
 
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Password must be at least 10 characters');
-    });
+      vi.mock('@/lib/auth/guards', () => ({
+        requireAdmin: vi.fn().mockResolvedValue(mockSession),
+      }));
 
-    it('should reject password without uppercase', () => {
-      const result = validatePasswordStrength('securepassword123');
+      try {
+        await requireAdminWithMFA();
+      } catch (e) {
+        // Redirect throws
+      }
 
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one uppercase letter');
-    });
-
-    it('should reject password without lowercase', () => {
-      const result = validatePasswordStrength('SECUREPASSWORD123');
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one lowercase letter');
-    });
-
-    it('should reject password without number', () => {
-      const result = validatePasswordStrength('SecurePassword');
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Password must contain at least one number');
-    });
-
-    it('should reject common passwords', () => {
-      const result = validatePasswordStrength('Password123');
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('Password is too common');
+      expect(redirect).toHaveBeenCalledWith('/auth/mfa-required');
     });
   });
 });
@@ -147,86 +321,9 @@ describe('Password Utilities', () => {
 
 ## Integration Tests
 
-### Sign In API
+### Webhook Integration
 
-**File:** `tests/integration/auth/signin.test.ts`
-
-```typescript
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { db } from '@/db';
-import { users } from '@/db/schema-auth';
-import { hashPassword } from '@/lib/auth/password';
-
-describe('Sign In API', () => {
-  const testUser = {
-    email: 'test@example.com',
-    password: 'TestPassword123',
-    name: 'Test User',
-  };
-
-  beforeEach(async () => {
-    // Clean up
-    await db.delete(users).where(eq(users.email, testUser.email));
-
-    // Create test user
-    await db.insert(users).values({
-      email: testUser.email,
-      passwordHash: await hashPassword(testUser.password),
-      name: testUser.name,
-      role: 'customer',
-      emailVerified: new Date(),
-    });
-  });
-
-  afterEach(async () => {
-    // Clean up
-    await db.delete(users).where(eq(users.email, testUser.email));
-  });
-
-  it('should sign in with correct credentials', async () => {
-    const response = await fetch('http://localhost:30000/api/auth/signin/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: testUser.email,
-        password: testUser.password,
-      }),
-    });
-
-    expect(response.status).toBe(200);
-  });
-
-  it('should reject incorrect password', async () => {
-    const response = await fetch('http://localhost:30000/api/auth/signin/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: testUser.email,
-        password: 'WrongPassword',
-      }),
-    });
-
-    expect(response.status).toBe(401);
-  });
-
-  it('should reject non-existent user', async () => {
-    const response = await fetch('http://localhost:30000/api/auth/signin/credentials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: 'nonexistent@example.com',
-        password: testUser.password,
-      }),
-    });
-
-    expect(response.status).toBe(401);
-  });
-});
-```
-
-### Sign Up API
-
-**File:** `tests/integration/auth/signup.test.ts`
+**File:** `tests/integration/auth/webhook.test.ts`
 
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -234,140 +331,204 @@ import { db } from '@/db';
 import { users } from '@/db/schema-auth';
 import { eq } from 'drizzle-orm';
 
-describe('Sign Up API', () => {
-  const testEmail = 'newuser@example.com';
-
-  beforeEach(async () => {
-    // Clean up
-    await db.delete(users).where(eq(users.email, testEmail));
-  });
+describe('Ory Webhook Integration', () => {
+  const testEmail = `webhook-test-${Date.now()}@example.com`;
 
   afterEach(async () => {
-    // Clean up
     await db.delete(users).where(eq(users.email, testEmail));
   });
 
-  it('should create new user', async () => {
-    const response = await fetch('http://localhost:30000/api/auth/signup', {
+  it('should create local user on identity.created webhook', async () => {
+    const webhookPayload = {
+      type: 'identity.created',
+      identity: {
+        id: `kratos-${Date.now()}`,
+        traits: {
+          email: testEmail,
+          name: 'Webhook Test User',
+          role: 'customer',
+        },
+      },
+    };
+
+    const response = await fetch('http://localhost:30000/api/auth/webhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: testEmail,
-        password: 'SecurePassword123',
-        name: 'New User',
-      }),
+      body: JSON.stringify(webhookPayload),
     });
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(200);
 
-    // Verify user created
+    // Verify local user created
     const user = await db.query.users.findFirst({
       where: eq(users.email, testEmail),
     });
 
     expect(user).toBeDefined();
+    expect(user!.kratosId).toBe(webhookPayload.identity.id);
     expect(user!.email).toBe(testEmail);
-    expect(user!.name).toBe('New User');
-    expect(user!.emailVerified).toBeNull(); // Not verified yet
+    expect(user!.role).toBe('customer');
   });
 
-  it('should reject duplicate email', async () => {
-    // Create first user
-    await fetch('http://localhost:30000/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: testEmail,
-        password: 'SecurePassword123',
-        name: 'First User',
-      }),
+  it('should update local user on identity.updated webhook', async () => {
+    // Create initial user
+    const kratosId = `kratos-${Date.now()}`;
+    await db.insert(users).values({
+      kratosId,
+      email: testEmail,
+      name: 'Old Name',
+      role: 'customer',
     });
 
-    // Try to create second user with same email
-    const response = await fetch('http://localhost:30000/api/auth/signup', {
+    const webhookPayload = {
+      type: 'identity.updated',
+      identity: {
+        id: kratosId,
+        traits: {
+          email: testEmail,
+          name: 'New Name',
+          role: 'customer',
+        },
+      },
+    };
+
+    const response = await fetch('http://localhost:30000/api/auth/webhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: testEmail,
-        password: 'SecurePassword123',
-        name: 'Second User',
-      }),
+      body: JSON.stringify(webhookPayload),
     });
 
-    expect(response.status).toBe(400);
-    const data = await response.json();
-    expect(data.error).toContain('already exists');
-  });
+    expect(response.status).toBe(200);
 
-  it('should reject weak password', async () => {
-    const response = await fetch('http://localhost:30000/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: testEmail,
-        password: 'weak',
-        name: 'New User',
-      }),
+    // Verify local user updated
+    const user = await db.query.users.findFirst({
+      where: eq(users.kratosId, kratosId),
     });
 
-    expect(response.status).toBe(400);
-    const data = await response.json();
-    expect(data.error).toBeDefined();
-  });
-
-  it('should reject invalid email', async () => {
-    const response = await fetch('http://localhost:30000/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: 'invalid-email',
-        password: 'SecurePassword123',
-        name: 'New User',
-      }),
-    });
-
-    expect(response.status).toBe(400);
+    expect(user!.name).toBe('New Name');
   });
 });
 ```
 
-### Protected Routes
+### Middleware Integration
 
-**File:** `tests/integration/auth/protected-routes.test.ts`
+**File:** `tests/integration/auth/middleware.test.ts`
 
 ```typescript
 import { describe, it, expect } from 'vitest';
+import { NextRequest } from 'next/server';
+import { middleware } from '@/middleware';
 
-describe('Protected Routes Middleware', () => {
-  it('should redirect to signin for /account without auth', async () => {
-    const response = await fetch('http://localhost:30000/account', {
-      redirect: 'manual',
-    });
+describe('Auth Middleware with Ory', () => {
+  it('should redirect unauthenticated users from /account', async () => {
+    const req = new NextRequest('http://localhost:30000/account');
+    const response = await middleware(req);
 
-    expect(response.status).toBe(307); // Temporary redirect
+    expect(response.status).toBe(307);
     expect(response.headers.get('location')).toContain('/auth/signin');
-    expect(response.headers.get('location')).toContain('callbackUrl');
+    expect(response.headers.get('location')).toContain('return_to=%2Faccount');
   });
 
-  it('should redirect to signin for /admin without auth', async () => {
-    const response = await fetch('http://localhost:30000/admin', {
-      redirect: 'manual',
-    });
+  it('should redirect unauthenticated users from /admin', async () => {
+    const req = new NextRequest('http://localhost:30000/admin');
+    const response = await middleware(req);
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toContain('/auth/signin');
   });
 
-  it('should allow /auth/signin without auth', async () => {
-    const response = await fetch('http://localhost:30000/auth/signin');
+  it('should allow authenticated admin with MFA to /admin', async () => {
+    const req = new NextRequest('http://localhost:30000/admin');
 
-    expect(response.status).toBe(200);
+    // Mock Ory session cookie (would be set by Kratos)
+    req.cookies.set('ory_session_imajinweb', 'valid_admin_mfa_session');
+
+    // Mock kratosFrontend.toSession to return admin session
+    // (In real test, this would be a valid Ory session)
+
+    const response = await middleware(req);
+
+    expect(response).toBeNull(); // No redirect, request proceeds
   });
 
-  it('should allow homepage without auth', async () => {
-    const response = await fetch('http://localhost:30000');
+  it('should redirect admin without MFA to /auth/mfa-required', async () => {
+    const req = new NextRequest('http://localhost:30000/admin');
+    req.cookies.set('ory_session_imajinweb', 'valid_admin_no_mfa_session');
 
-    expect(response.status).toBe(200);
+    const response = await middleware(req);
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/auth/mfa-required');
+  });
+
+  it('should allow unauthenticated access to /auth/signin', async () => {
+    const req = new NextRequest('http://localhost:30000/auth/signin');
+    const response = await middleware(req);
+
+    expect(response).toBeNull(); // No redirect
+  });
+});
+```
+
+### Local User Sync
+
+**File:** `tests/integration/auth/local-user-sync.test.ts`
+
+```typescript
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { db } from '@/db';
+import { users } from '@/db/schema-auth';
+import { getLocalUser } from '@/lib/auth/guards';
+import { eq } from 'drizzle-orm';
+
+describe('Local User Sync', () => {
+  const kratosId = `kratos-${Date.now()}`;
+  const testEmail = `sync-test-${Date.now()}@example.com`;
+
+  beforeEach(async () => {
+    // Create test user
+    await db.insert(users).values({
+      kratosId,
+      email: testEmail,
+      name: 'Sync Test User',
+      role: 'customer',
+    });
+  });
+
+  afterEach(async () => {
+    await db.delete(users).where(eq(users.email, testEmail));
+  });
+
+  it('should map Kratos ID to local user', async () => {
+    const mockSession = {
+      active: true,
+      identity: {
+        id: kratosId,
+        traits: { email: testEmail },
+      },
+    };
+
+    // Mock requireAuth to return session
+    // Then call getLocalUser
+    // (Implementation depends on test setup)
+
+    const localUser = await db.query.users.findFirst({
+      where: eq(users.kratosId, kratosId),
+    });
+
+    expect(localUser).toBeDefined();
+    expect(localUser!.email).toBe(testEmail);
+  });
+
+  it('should throw error when local user not found', async () => {
+    const invalidKratosId = 'non-existent-kratos-id';
+
+    await expect(async () => {
+      // Try to get local user for non-existent Kratos ID
+      await db.query.users.findFirst({
+        where: eq(users.kratosId, invalidKratosId),
+      });
+    }).rejects.toThrow();
   });
 });
 ```
@@ -376,143 +537,239 @@ describe('Protected Routes Middleware', () => {
 
 ## End-to-End Tests
 
-### Full Authentication Flow
+### Registration Flow
 
-**File:** `tests/e2e/auth/auth-flow.spec.ts`
+**File:** `tests/e2e/auth/registration-flow.spec.ts`
 
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test.describe('Authentication Flow', () => {
-  const testEmail = `test-${Date.now()}@example.com`;
-  const testPassword = 'TestPassword123';
+test.describe('Ory Registration Flow', () => {
+  const testEmail = `e2e-reg-${Date.now()}@example.com`;
+  const testPassword = 'TestPassword123!';
   const testName = 'E2E Test User';
 
-  test('complete signup and signin flow', async ({ page }) => {
-    // Navigate to signup page
+  test('complete registration flow', async ({ page }) => {
+    // Navigate to signup page (initializes Ory registration flow)
     await page.goto('/auth/signup');
 
-    // Fill in signup form
-    await page.fill('input[name="name"]', testName);
-    await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="password"]', testPassword);
-    await page.fill('input[name="confirmPassword"]', testPassword);
+    // Wait for Ory form to load
+    await page.waitForSelector('input[name="traits.email"]');
 
-    // Submit form
-    await page.click('button[type="submit"]');
-
-    // Should see success message
-    await expect(page.locator('text=/check your email/i')).toBeVisible();
-
-    // Navigate to signin page
-    await page.goto('/auth/signin');
-
-    // Fill in signin form
-    await page.fill('input[name="email"]', testEmail);
+    // Fill in Ory self-service registration form
+    await page.fill('input[name="traits.name"]', testName);
+    await page.fill('input[name="traits.email"]', testEmail);
     await page.fill('input[name="password"]', testPassword);
 
     // Submit form
     await page.click('button[type="submit"]');
 
-    // Should redirect to account page
+    // Should redirect to account page after successful registration
     await expect(page).toHaveURL('/account');
 
-    // Should see user name
+    // Should see welcome message with user name
     await expect(page.locator(`text=${testName}`)).toBeVisible();
   });
 
-  test('protected route redirects to signin', async ({ page }) => {
-    // Try to access protected route
-    await page.goto('/account');
-
-    // Should redirect to signin with callback URL
-    await expect(page).toHaveURL(/\/auth\/signin\?callbackUrl/);
-  });
-
-  test('signin redirects to callback URL', async ({ page }) => {
-    // Setup: Create user (assumes signup works)
-    // ...
-
-    // Try to access protected route (redirects to signin)
-    await page.goto('/account/orders');
-    await expect(page).toHaveURL(/\/auth\/signin\?callbackUrl/);
-
-    // Sign in
-    await page.fill('input[name="email"]', testEmail);
+  test('reject duplicate email', async ({ page }) => {
+    // First registration
+    await page.goto('/auth/signup');
+    await page.fill('input[name="traits.name"]', testName);
+    await page.fill('input[name="traits.email"]', testEmail);
     await page.fill('input[name="password"]', testPassword);
     await page.click('button[type="submit"]');
 
-    // Should redirect to originally requested URL
-    await expect(page).toHaveURL('/account/orders');
-  });
+    // Wait for success
+    await page.waitForURL('/account');
 
-  test('signout works', async ({ page }) => {
-    // Setup: Sign in first
-    // ...
-
-    // Click signout in dropdown
-    await page.click('button:has-text("Test User")'); // Open dropdown
+    // Sign out
+    await page.click('button:has-text("' + testName + '")');
     await page.click('button:has-text("Sign Out")');
 
-    // Should redirect to homepage
-    await expect(page).toHaveURL('/');
+    // Try to register again with same email
+    await page.goto('/auth/signup');
+    await page.fill('input[name="traits.name"]', 'Different Name');
+    await page.fill('input[name="traits.email"]', testEmail);
+    await page.fill('input[name="password"]', testPassword);
+    await page.click('button[type="submit"]');
 
-    // Should show "Sign In" button
-    await expect(page.locator('text=Sign In')).toBeVisible();
+    // Should see error from Ory
+    await expect(page.locator('text=/already exists|already registered/i')).toBeVisible();
   });
 
-  test('password validation works', async ({ page }) => {
+  test('validate password strength via Ory', async ({ page }) => {
     await page.goto('/auth/signup');
 
     // Try weak password
-    await page.fill('input[name="name"]', 'Test User');
-    await page.fill('input[name="email"]', 'test@example.com');
+    await page.fill('input[name="traits.name"]', testName);
+    await page.fill('input[name="traits.email"]', testEmail);
     await page.fill('input[name="password"]', 'weak');
-    await page.fill('input[name="confirmPassword"]', 'weak');
     await page.click('button[type="submit"]');
 
-    // Should see error messages
-    await expect(page.locator('text=/at least 10 characters/i')).toBeVisible();
+    // Ory should reject weak password
+    await expect(page.locator('text=/password.*too.*short|at least.*characters/i')).toBeVisible();
   });
 });
 ```
 
-### Password Reset Flow
+### Login Flow
 
-**File:** `tests/e2e/auth/password-reset-flow.spec.ts`
+**File:** `tests/e2e/auth/login-flow.spec.ts`
 
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test.describe('Password Reset Flow', () => {
-  const testEmail = 'reset-test@example.com';
+test.describe('Ory Login Flow', () => {
+  const testEmail = 'login-e2e@example.com';
+  const testPassword = 'TestPassword123!';
 
-  test('password reset request and confirmation', async ({ page }) => {
-    // Navigate to password reset page
-    await page.goto('/auth/reset-password');
+  test.beforeEach(async () => {
+    // Create test user via Ory Admin API
+    // (Assumes user already exists from registration test)
+  });
+
+  test('successful login redirects to account', async ({ page }) => {
+    await page.goto('/auth/signin');
+
+    // Fill in Ory login form
+    await page.fill('input[name="identifier"]', testEmail);
+    await page.fill('input[name="password"]', testPassword);
+    await page.click('button[type="submit"]');
+
+    // Should redirect to account page
+    await expect(page).toHaveURL('/account');
+  });
+
+  test('incorrect password shows error', async ({ page }) => {
+    await page.goto('/auth/signin');
+
+    await page.fill('input[name="identifier"]', testEmail);
+    await page.fill('input[name="password"]', 'WrongPassword123');
+    await page.click('button[type="submit"]');
+
+    // Ory shows generic error
+    await expect(page.locator('text=/invalid.*credentials|incorrect/i')).toBeVisible();
+  });
+
+  test('protected route redirects to signin with return_to', async ({ page }) => {
+    // Try to access protected route
+    await page.goto('/account/orders');
+
+    // Should redirect to signin with return_to parameter
+    await expect(page).toHaveURL(/\/auth\/signin\?.*return_to/);
+
+    // Sign in
+    await page.fill('input[name="identifier"]', testEmail);
+    await page.fill('input[name="password"]', testPassword);
+    await page.click('button[type="submit"]');
+
+    // Should redirect back to originally requested URL
+    await expect(page).toHaveURL('/account/orders');
+  });
+
+  test('signout clears session', async ({ page }) => {
+    // Sign in first
+    await page.goto('/auth/signin');
+    await page.fill('input[name="identifier"]', testEmail);
+    await page.fill('input[name="password"]', testPassword);
+    await page.click('button[type="submit"]');
+    await page.waitForURL('/account');
+
+    // Sign out
+    await page.click('button:has-text("Sign Out")');
+
+    // Should redirect to home
+    await expect(page).toHaveURL('/');
+
+    // Try to access protected route - should redirect to signin
+    await page.goto('/account');
+    await expect(page).toHaveURL(/\/auth\/signin/);
+  });
+});
+```
+
+### Recovery Flow
+
+**File:** `tests/e2e/auth/recovery-flow.spec.ts`
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Ory Recovery Flow (Password Reset)', () => {
+  const testEmail = 'recovery-e2e@example.com';
+
+  test('password recovery request', async ({ page }) => {
+    // Navigate to recovery page (initializes Ory recovery flow)
+    await page.goto('/auth/recovery');
 
     // Fill in email
     await page.fill('input[name="email"]', testEmail);
     await page.click('button[type="submit"]');
 
-    // Should see success message
-    await expect(page.locator('text=/email sent/i')).toBeVisible();
-
-    // Note: In real flow, user would click link in email
-    // For E2E test, we'd need to:
-    // 1. Intercept email (use test email service)
-    // 2. Extract reset link
-    // 3. Navigate to reset link
-    // 4. Fill in new password
-    // 5. Verify can sign in with new password
+    // Should see success message (Ory doesn't reveal if email exists)
+    await expect(page.locator('text=/email.*sent|check.*email/i')).toBeVisible();
   });
 
-  test('shows error for invalid reset link', async ({ page }) => {
-    // Navigate to invalid reset link
-    await page.goto('/auth/reset-password/invalid-token-123?email=test@example.com');
+  test('invalid recovery link shows error', async ({ page }) => {
+    // Navigate to invalid recovery link
+    await page.goto('/auth/recovery?flow=invalid-flow-id-123');
 
-    // Should see error message
-    await expect(page.locator('text=/invalid or expired/i')).toBeVisible();
+    // Should see error from Ory
+    await expect(page.locator('text=/invalid|expired|not.*found/i')).toBeVisible();
+  });
+
+  // Note: Full recovery flow testing requires email interception
+  // Use tools like MailHog or mock email service in test environment
+});
+```
+
+### Settings Flow (MFA)
+
+**File:** `tests/e2e/auth/settings-flow.spec.ts`
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Ory Settings Flow (MFA)', () => {
+  const testEmail = 'settings-e2e@example.com';
+  const testPassword = 'TestPassword123!';
+
+  test.beforeEach(async ({ page }) => {
+    // Sign in first
+    await page.goto('/auth/signin');
+    await page.fill('input[name="identifier"]', testEmail);
+    await page.fill('input[name="password"]', testPassword);
+    await page.click('button[type="submit"]');
+    await page.waitForURL('/account');
+  });
+
+  test('access settings page', async ({ page }) => {
+    await page.goto('/auth/settings');
+
+    // Should see Ory settings form
+    await expect(page.locator('text=/settings|profile/i')).toBeVisible();
+  });
+
+  test('enable TOTP (2FA)', async ({ page }) => {
+    await page.goto('/auth/settings');
+
+    // Click "Enable 2FA" (if available)
+    const enable2FAButton = page.locator('button:has-text("Enable"), button:has-text("2FA")');
+
+    if (await enable2FAButton.isVisible()) {
+      await enable2FAButton.click();
+
+      // Should see QR code or secret key
+      await expect(page.locator('text=/scan.*qr|secret.*key/i')).toBeVisible();
+    }
+  });
+
+  test('admin requires MFA to access /admin', async ({ page }) => {
+    // Assuming test user is admin but no MFA enabled
+    await page.goto('/admin');
+
+    // Should redirect to MFA required page
+    await expect(page).toHaveURL(/\/auth\/mfa-required/);
   });
 });
 ```
@@ -521,67 +778,93 @@ test.describe('Password Reset Flow', () => {
 
 ## Test Helpers
 
-**File:** `tests/helpers/auth-helpers.ts`
+**File:** `tests/helpers/ory-helpers.ts`
 
 ```typescript
+import { kratosAdmin } from '@/lib/auth/kratos';
 import { db } from '@/db';
-import { users, sessions } from '@/db/schema-auth';
-import { hashPassword } from '@/lib/auth/password';
-import { randomBytes } from 'crypto';
+import { users } from '@/db/schema-auth';
 
 /**
- * Create a test user
+ * Create test user in Ory Kratos + local DB
  */
-export async function createTestUser(overrides?: Partial<{
-  email: string;
-  password: string;
-  name: string;
-  role: string;
-  emailVerified: Date | null;
-}>) {
+export async function createTestOryUser(overrides?: {
+  email?: string;
+  password?: string;
+  name?: string;
+  role?: string;
+}) {
   const defaults = {
     email: `test-${Date.now()}@example.com`,
-    password: 'TestPassword123',
+    password: 'TestPassword123!',
     name: 'Test User',
     role: 'customer',
-    emailVerified: new Date(),
   };
 
   const userData = { ...defaults, ...overrides };
-  const passwordHash = await hashPassword(userData.password);
 
-  const [user] = await db.insert(users).values({
-    email: userData.email,
-    passwordHash,
-    name: userData.name,
-    role: userData.role,
-    emailVerified: userData.emailVerified,
-  }).returning();
-
-  return { user, password: userData.password };
-}
-
-/**
- * Delete test user
- */
-export async function deleteTestUser(email: string) {
-  await db.delete(users).where(eq(users.email, email));
-}
-
-/**
- * Create authenticated session for testing
- */
-export async function createTestSession(userId: string) {
-  const sessionToken = randomBytes(32).toString('hex');
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-
-  await db.insert(sessions).values({
-    userId,
-    sessionToken,
-    expires,
+  // Create Ory identity
+  const { data: identity } = await kratosAdmin.createIdentity({
+    createIdentityBody: {
+      schema_id: 'default',
+      traits: {
+        email: userData.email,
+        name: userData.name,
+        role: userData.role,
+      },
+      credentials: {
+        password: {
+          config: {
+            password: userData.password,
+          },
+        },
+      },
+      state: 'active',
+    },
   });
 
-  return sessionToken;
+  // Create local user (simulates webhook)
+  const [localUser] = await db.insert(users).values({
+    kratosId: identity.id,
+    email: userData.email,
+    name: userData.name,
+    role: userData.role,
+  }).returning();
+
+  return { identity, localUser, password: userData.password };
+}
+
+/**
+ * Delete test user from Ory + local DB
+ */
+export async function deleteTestOryUser(kratosId: string) {
+  // Delete from Ory
+  await kratosAdmin.deleteIdentity({ id: kratosId });
+
+  // Delete from local DB
+  await db.delete(users).where(eq(users.kratosId, kratosId));
+}
+
+/**
+ * Get Ory session token for testing
+ */
+export async function getOrySessionToken(email: string, password: string): Promise<string> {
+  // Initialize login flow
+  const { data: flow } = await kratosFrontend.createBrowserLoginFlow();
+
+  // Submit credentials
+  const { data: session } = await kratosFrontend.updateLoginFlow({
+    flow: flow.id,
+    updateLoginFlowBody: {
+      method: 'password',
+      identifier: email,
+      password,
+    },
+  });
+
+  // Extract session token from Set-Cookie header
+  // (Implementation depends on test environment)
+  return session.session_token || '';
 }
 ```
 
@@ -589,7 +872,7 @@ export async function createTestSession(userId: string) {
 
 ## Test Coverage Goals
 
-**Target:** >80% coverage for auth modules
+**Target:** >70% coverage for auth integration modules
 
 ```bash
 # Run tests with coverage
@@ -600,43 +883,51 @@ open coverage/index.html
 ```
 
 **Critical Modules:**
-- `lib/auth/password.ts` - 100% coverage
-- `lib/auth/config.ts` - 90% coverage
-- `lib/auth/guards.ts` - 95% coverage
-- `app/api/auth/signup/route.ts` - 90% coverage
-- `components/auth/*` - 80% coverage
+- `lib/auth/guards.ts` - 90% coverage
+- `lib/auth/session.ts` - 90% coverage
+- `lib/auth/kratos.ts` - 80% coverage
+- `middleware.ts` - 85% coverage
+- `app/api/auth/webhook/route.ts` - 95% coverage
+
+**Ory-Managed (No Coverage Needed):**
+- ❌ Password hashing (Ory handles)
+- ❌ Token generation (Ory handles)
+- ❌ Email sending (Ory Courier handles)
 
 ---
 
 ## Implementation Steps
 
-### Step 1: Unit Tests (60 min)
+### Step 1: Unit Tests (45 min)
 
-- [ ] Create password utility tests
+- [ ] Create session helper tests
+- [ ] Create guard tests
 - [ ] Run tests: `npm run test:unit`
 - [ ] Verify all pass
 
-### Step 2: Integration Tests (90 min)
+### Step 2: Integration Tests (60 min)
 
-- [ ] Create sign in API tests
-- [ ] Create sign up API tests
-- [ ] Create protected route tests
+- [ ] Create webhook tests
+- [ ] Create middleware tests
+- [ ] Create local user sync tests
 - [ ] Run tests: `npm run test:integration`
 - [ ] Verify all pass
 
 ### Step 3: E2E Tests (60 min)
 
-- [ ] Create full auth flow test
-- [ ] Create password reset flow test
+- [ ] Create registration flow test
+- [ ] Create login flow test
+- [ ] Create recovery flow test
+- [ ] Create settings/MFA flow test
 - [ ] Run tests: `npm run test:e2e`
 - [ ] Verify all pass
 
-### Step 4: Coverage Check (30 min)
+### Step 4: Coverage Check (15 min)
 
 - [ ] Run coverage: `npm run test:coverage`
 - [ ] Review coverage report
 - [ ] Add tests for uncovered lines
-- [ ] Achieve >80% coverage
+- [ ] Achieve >70% coverage
 
 ---
 
@@ -645,9 +936,11 @@ open coverage/index.html
 - [ ] All unit tests passing
 - [ ] All integration tests passing
 - [ ] All E2E tests passing
-- [ ] Test coverage >80% for auth modules
+- [ ] Test coverage >70% for auth integration modules
+- [ ] Webhook sync tested and working
+- [ ] Middleware tests cover all protection scenarios
+- [ ] E2E tests cover Ory self-service flows
 - [ ] No flaky tests (run 3 times, all pass)
-- [ ] Tests run in CI/CD (if configured)
 
 ---
 
@@ -671,6 +964,19 @@ npm run test:watch
 
 # Coverage report
 npm run test:coverage
+```
+
+**Environment Setup:**
+
+```bash
+# Ensure Ory Kratos is running for integration/E2E tests
+docker-compose -f docker/docker-compose.auth.yml up -d
+
+# Wait for Kratos to be ready
+curl http://localhost:4433/health/ready
+
+# Run tests
+npm test
 ```
 
 ---
@@ -710,21 +1016,135 @@ npx playwright test --debug
 npx playwright test --slow-mo=1000
 ```
 
+**Ory debugging:**
+
+```bash
+# Check Kratos logs
+docker logs imajin-kratos
+
+# Check Kratos health
+curl http://localhost:4433/health/ready
+curl http://localhost:4434/health/ready
+
+# List all identities
+curl http://localhost:4434/admin/identities | jq
+
+# Get specific identity
+curl http://localhost:4434/admin/identities/{identity_id} | jq
+```
+
+---
+
+## Recommended Additional Tests
+
+These tests enhance robustness and security. Implement after core tests pass:
+
+### Webhook Edge Cases (5-8 tests)
+
+**File:** `tests/integration/auth/webhook-edge-cases.test.ts`
+
+```typescript
+describe('Webhook Edge Cases', () => {
+  it('should handle duplicate identity.created webhook (idempotent)', async () => {
+    // Send same webhook twice, verify only one user created
+  });
+
+  it('should handle webhook when local DB insert fails', async () => {
+    // Mock DB error, verify graceful failure + retry logic
+  });
+
+  it('should handle malformed webhook payload', async () => {
+    // Send invalid JSON, missing fields, verify rejection
+  });
+
+  it('should handle webhook for deleted Kratos identity', async () => {
+    // identity.updated for non-existent user, verify error handling
+  });
+
+  it('should handle concurrent webhooks for same identity', async () => {
+    // Send multiple updates simultaneously, verify data consistency
+  });
+
+  it('should reject webhook without valid signature (if Ory supports)', async () => {
+    // Send unsigned webhook, verify rejection
+  });
+});
+```
+
+### Email Verification E2E (1 test)
+
+**File:** `tests/e2e/auth/email-verification-flow.spec.ts`
+
+```typescript
+test.describe('Email Verification Flow', () => {
+  test('complete email verification after registration', async ({ page }) => {
+    // 1. Register new user
+    // 2. Check email (MailHog/mock SMTP)
+    // 3. Click verification link
+    // 4. Verify account activated
+    // 5. Sign in successfully
+  });
+});
+```
+
+### MFA Recovery Scenarios (2 tests)
+
+**File:** `tests/e2e/auth/mfa-recovery.spec.ts`
+
+```typescript
+test.describe('MFA Recovery', () => {
+  test('admin uses recovery code after losing TOTP device', async ({ page }) => {
+    // 1. Enable MFA, save recovery codes
+    // 2. Sign out
+    // 3. Sign in with recovery code instead of TOTP
+    // 4. Verify access granted
+  });
+
+  test('admin can disable MFA via admin API', async () => {
+    // Use Kratos admin API to disable MFA for locked-out user
+  });
+});
+```
+
+### Session Security (2 tests)
+
+**File:** `tests/integration/auth/session-security.test.ts`
+
+```typescript
+describe('Session Security', () => {
+  it('should expire session after timeout', async () => {
+    // Create session, fast-forward time (mock), verify expired
+  });
+
+  it('should invalidate session on password change', async () => {
+    // Change password via Ory, verify old session invalid
+  });
+});
+```
+
 ---
 
 ## Success Criteria
 
 **Phase 4.4 Complete When:**
 - [ ] All 7 sub-phases complete
-- [ ] All tests passing (>100 new tests)
-- [ ] Coverage >80% for auth modules
-- [ ] Sign in/sign up works
-- [ ] Password reset works
-- [ ] Email verification works
-- [ ] Protected routes work
-- [ ] Order history works
+- [ ] All core tests passing (35 tests minimum)
+- [ ] Coverage >70% for auth integration modules
+- [ ] Sign in/sign up works via Ory
+- [ ] Password reset works via Ory
+- [ ] Email verification works via Ory
+- [ ] Protected routes work with Ory sessions
+- [ ] MFA enforced for admin routes
+- [ ] Order history works with local user sync
+- [ ] Webhook sync creates/updates local users
 - [ ] No critical bugs
 - [ ] Documentation complete
+
+**Optional Enhancement (50+ tests):**
+- [ ] Webhook edge cases implemented
+- [ ] Email verification E2E test added
+- [ ] MFA recovery tests added
+- [ ] Session security tests added
 
 ---
 
@@ -739,5 +1159,7 @@ After Phase 4.4.7 complete:
 
 **See Also:**
 - `docs/tasks/Phase 4.4.6 - SendGrid Email Integration.md` - Previous phase
+- `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Kratos setup
 - `docs/TESTING_STRATEGY.md` - Overall testing strategy
 - `docs/IMPLEMENTATION_PLAN.md` - Project roadmap
+- Ory Testing Guide: https://www.ory.sh/docs/kratos/test-debug

@@ -2,8 +2,8 @@
 
 **Purpose:** Define authentication implementation for imajin-web that works today but evolves to Decentralized Identity (DID) without major rework.
 
-**Status:** Phase 4.4 Planning
-**Last Updated:** 2025-11-11
+**Status:** Phase 4.4 Implementation (Ory Kratos)
+**Last Updated:** 2025-11-17
 
 ---
 
@@ -13,7 +13,7 @@
 
 **The Strategy:** Implement traditional auth today with a schema and architecture that can evolve to DID without major rework.
 
-**Key Decision:** Use **NextAuth.js (Auth.js v5)** with a DID-ready database schema.
+**Key Decision:** Use **Ory Kratos** (self-hosted identity provider) with a DID-ready database schema.
 
 ---
 
@@ -56,15 +56,15 @@ Master Key (derived via BIP32)
 
 **What we need NOW:**
 - Email/password authentication
-- OAuth providers (Google, GitHub)
 - Session management
 - Role-based access (customer, admin)
 - Password reset flow
 - Email verification
+- MFA for admin accounts
 
 **What we're building:**
 - PostgreSQL-backed auth
-- NextAuth.js (Auth.js v5)
+- Ory Kratos (self-hosted identity provider)
 - Self-hosted (no subscriptions)
 - Integrated with existing orders table
 
@@ -78,8 +78,8 @@ Master Key (derived via BIP32)
 - NFT-gated access (Founder Edition holders)
 
 **Migration Path:**
-1. Add DID field to existing users table (nullable)
-2. Add wallet auth provider to NextAuth config
+1. Add DID field to Ory identity schema (already included, nullable)
+2. Add wallet auth custom flow to Ory
 3. Users can link wallet to existing account
 4. Eventually: DID becomes primary, email becomes backup
 5. No data loss, no account recreation
@@ -90,23 +90,21 @@ Master Key (derived via BIP32)
 
 ### Database Schema (DID-Ready)
 
-**users table:**
+**Local users table (shadows Ory identities):**
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  kratos_id UUID UNIQUE NOT NULL, -- Links to Ory Kratos identity
 
-  -- Traditional auth fields (Phase 4.4)
+  -- Denormalized from Ory (for query performance)
   email TEXT UNIQUE NOT NULL,
-  email_verified TIMESTAMP,
   name TEXT,
-  image TEXT,
-  password_hash TEXT, -- bcrypt, nullable (for OAuth-only users)
   role TEXT NOT NULL DEFAULT 'customer', -- 'customer' | 'admin'
 
   -- DID fields (Phase 5+ - nullable for now)
-  did TEXT UNIQUE, -- W3C DID (e.g., 'did:sol:...')
-  public_key TEXT, -- Ed25519 public key for signature verification
-  wallet_address TEXT UNIQUE, -- Solana wallet address
+  did TEXT UNIQUE,                     -- W3C DID (e.g., 'did:sol:...')
+  public_key TEXT,                     -- Ed25519 public key for signature verification
+  wallet_address TEXT UNIQUE,          -- Solana wallet address
 
   -- Verifiable credentials (Phase 5+ - JSONB for flexibility)
   credentials JSONB DEFAULT '[]'::jsonb,
@@ -118,397 +116,142 @@ CREATE TABLE users (
 );
 
 -- Indexes for performance
+CREATE INDEX idx_users_kratos_id ON users(kratos_id);
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_did ON users(did) WHERE did IS NOT NULL;
 CREATE INDEX idx_users_wallet_address ON users(wallet_address) WHERE wallet_address IS NOT NULL;
 ```
 
-**accounts table (NextAuth standard):**
-```sql
-CREATE TABLE accounts (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  type TEXT NOT NULL, -- 'oauth' | 'email' | 'credentials' | 'wallet' (future)
-  provider TEXT NOT NULL, -- 'google' | 'github' | 'credentials' | 'solana' (future)
-  provider_account_id TEXT NOT NULL,
-  refresh_token TEXT,
-  access_token TEXT,
-  expires_at INTEGER,
-  token_type TEXT,
-  scope TEXT,
-  id_token TEXT,
-  session_state TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+**What Ory Manages (NOT in local DB):**
+- ❌ Password hashes (Ory stores securely in its own database)
+- ❌ Sessions (Ory manages session cookies)
+- ❌ Verification tokens (Ory self-service flows)
+- ❌ MFA credentials (TOTP secrets in Ory)
 
-  UNIQUE(provider, provider_account_id)
-);
-
-CREATE INDEX idx_accounts_user_id ON accounts(user_id);
+**Ory Identity Schema (in Kratos config):**
+```json
+{
+  "$id": "https://imajin.ca/schemas/identity.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Identity",
+  "type": "object",
+  "properties": {
+    "traits": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "title": "Email",
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": { "identifier": true }
+            },
+            "verification": { "via": "email" },
+            "recovery": { "via": "email" }
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Full Name"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["customer", "admin"],
+          "default": "customer",
+          "title": "Role"
+        },
+        "wallet_address": {
+          "type": "string",
+          "title": "Solana Wallet Address"
+        },
+        "did": {
+          "type": "string",
+          "title": "Decentralized Identifier"
+        },
+        "public_key": {
+          "type": "string",
+          "title": "Public Key"
+        }
+      },
+      "required": ["email"],
+      "additionalProperties": false
+    }
+  }
+}
 ```
 
-**sessions table (NextAuth standard):**
-```sql
-CREATE TABLE sessions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  session_token TEXT UNIQUE NOT NULL,
-  expires TIMESTAMP NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+### Why This Architecture Works for DID Evolution
 
-CREATE INDEX idx_sessions_user_id ON sessions(user_id);
-CREATE INDEX idx_sessions_session_token ON sessions(session_token);
-```
-
-**verification_tokens table (NextAuth standard):**
-```sql
-CREATE TABLE verification_tokens (
-  identifier TEXT NOT NULL, -- email or wallet address
-  token TEXT NOT NULL,
-  expires TIMESTAMP NOT NULL,
-
-  UNIQUE(identifier, token)
-);
-
-CREATE INDEX idx_verification_tokens_identifier ON verification_tokens(identifier);
-```
-
-### Why This Schema Works for DID Evolution
-
-**1. DID fields are nullable:**
+**1. Ory identity schema includes DID fields (nullable):**
 - Users can be created with traditional auth (email/password)
 - DID fields populated later when user links wallet
 - No schema migration needed when adding DID support
 
-**2. Accounts table supports multiple providers:**
-- Start with 'credentials' (email/password) and 'oauth' (Google, GitHub)
-- Add 'wallet' provider later (Phantom, Solflare, Ledger)
+**2. Local users table shadows Ory + app-specific data:**
+- `kratos_id` links to Ory identity
+- `email`, `name`, `role` denormalized for query performance
+- `did`, `wallet_address`, `public_key` for future wallet auth
+- `credentials` JSONB for Verifiable Credentials
+- `metadata` JSONB for app-specific extensions
+
+**3. Ory Kratos supports custom authentication methods:**
+- Start with password strategy
+- Add custom wallet auth flow later (Phase 5+)
 - Users can have multiple auth methods simultaneously
 
-**3. Credentials JSONB field:**
-- Start empty
-- Later stores Verifiable Credentials (VCs) from mjn ecosystem
-- Example: `[{"type": "VerifiedHuman", "issuer": "did:sol:...", "proof": "..."}]`
-
-**4. Metadata JSONB field:**
-- Extensible for future needs
-- Can store recovery info, preferences, trust scores
-- No schema changes needed for new features
+**4. Webhook sync keeps local DB in sync:**
+- Ory sends webhook on identity.created → Create local user
+- Ory sends webhook on identity.updated → Update local user
+- Fallback: Create on-demand in session helper if webhook missed
 
 ---
 
-## Auth Provider: NextAuth.js (Auth.js v5)
+## Auth Provider: Ory Kratos
 
-### Why NextAuth.js?
+### Why Ory Kratos?
 
 **✅ Pros:**
 - **Self-hosted:** No subscriptions, full control (aligns with philosophy)
-- **PostgreSQL adapter:** Works with existing database
-- **Drizzle support:** Can use existing ORM
-- **Next.js 16 App Router compatible:** Server components, RSC
-- **Extensible:** Can add custom providers (wallet auth later)
-- **Session management built-in:** Cookies, JWT, database sessions
-- **Email verification:** Built-in magic links
-- **OAuth ready:** Google, GitHub, etc.
-- **DID-compatible:** Can add custom auth strategies
+- **PostgreSQL storage:** Ory uses its own database for credentials/sessions
+- **Next.js compatible:** Works with App Router, Server Components
+- **Extensible:** Can add custom auth strategies (wallet auth later)
+- **Session management built-in:** Secure cookies, CSRF protection
+- **Email verification:** Built-in self-service flows
+- **MFA ready:** TOTP (2FA) with QR code setup
+- **DID-compatible:** Custom identity schemas support any fields
+- **Battle-tested:** Used by Grafana, GitLab, and other major projects
+- **Saves 10-15 hours:** No need to build password hashing, session management, MFA
 
 **❌ Cons:**
-- Learning curve for Auth.js v5 (new API)
-- Need to configure email service (SendGrid, Resend, etc.)
+- Learning curve for Ory's self-service flow pattern
+- Docker container required (not just npm package)
 
 **Alternatives Considered:**
+- **NextAuth.js:** ❌ Requires managing accounts/sessions tables, less secure for DIY password auth
 - **Clerk:** ❌ Subscription-based, vendor lock-in
 - **Auth0:** ❌ Expensive, proprietary
 - **Supabase Auth:** ❌ Tied to Supabase ecosystem
 - **Custom auth:** ❌ Too much work, security risks
 - **Lucia Auth:** ⚠️ Good, but less mature, smaller community
 
-**Decision:** NextAuth.js best balance of control, flexibility, and DID evolution path.
+**Decision:** Ory Kratos best balance of control, security, and DID evolution path.
 
 ---
 
 ## Implementation Plan
 
-### Phase 4.4.1: Database Schema (2-3 hours)
+See detailed task documents:
+- **Phase 4.4.1:** Database Schema (users table with kratos_id, 2 hours)
+- **Phase 4.4.2:** Ory Kratos Setup (Docker, identity schema, webhooks, 4 hours)
+- **Phase 4.4.3:** Auth UI Components (Ory self-service flows, 2.5 hours)
+- **Phase 4.4.4:** Protected Routes & Middleware (Ory session checking, 3 hours)
+- **Phase 4.4.5:** Integration with Existing Features (orders, account pages, 1.5 hours)
+- **Phase 4.4.6:** SendGrid Email Integration (Ory SMTP config, 2 hours)
+- **Phase 4.4.7:** Testing (unit, integration, E2E, 3 hours)
 
-**Tasks:**
-- [ ] Create Drizzle schema for auth tables (users, accounts, sessions, verification_tokens)
-- [ ] Generate migration
-- [ ] Run migration on dev and test databases
-- [ ] Update seed data if needed
-
-**Schema File:** `db/schema-auth.ts`
-
-```typescript
-import { pgTable, uuid, text, timestamp, integer, jsonb } from 'drizzle-orm/pg-core';
-
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-
-  // Traditional auth
-  email: text('email').unique().notNull(),
-  emailVerified: timestamp('email_verified'),
-  name: text('name'),
-  image: text('image'),
-  passwordHash: text('password_hash'),
-  role: text('role').notNull().default('customer'), // 'customer' | 'admin'
-
-  // DID fields (nullable for now)
-  did: text('did').unique(),
-  publicKey: text('public_key'),
-  walletAddress: text('wallet_address').unique(),
-
-  // Verifiable credentials (future)
-  credentials: jsonb('credentials').$type<VerifiableCredential[]>().default([]),
-
-  // Metadata
-  metadata: jsonb('metadata').$type<UserMetadata>().default({}),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-
-export const accounts = pgTable('accounts', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  type: text('type').notNull(), // 'oauth' | 'email' | 'credentials' | 'wallet'
-  provider: text('provider').notNull(), // 'google' | 'github' | 'credentials' | 'solana'
-  providerAccountId: text('provider_account_id').notNull(),
-  refreshToken: text('refresh_token'),
-  accessToken: text('access_token'),
-  expiresAt: integer('expires_at'),
-  tokenType: text('token_type'),
-  scope: text('scope'),
-  idToken: text('id_token'),
-  sessionState: text('session_state'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-
-// ... (sessions, verification_tokens tables)
-
-// Types for future DID integration
-export type VerifiableCredential = {
-  id: string;
-  type: string;
-  issuer: string;
-  issuanceDate: string;
-  expirationDate?: string;
-  credentialSubject: Record<string, any>;
-  proof: {
-    type: string;
-    created: string;
-    verificationMethod: string;
-    proofPurpose: string;
-    proofValue: string;
-  };
-};
-
-export type UserMetadata = {
-  recoveryContacts?: string[]; // For social recovery
-  preferences?: Record<string, any>;
-  trustScore?: number;
-};
-```
-
-### Phase 4.4.2: NextAuth Configuration (4-5 hours)
-
-**Tasks:**
-- [ ] Install NextAuth.js v5 and adapters
-- [ ] Configure Drizzle adapter
-- [ ] Set up Credentials provider (email/password)
-- [ ] Set up OAuth providers (Google, GitHub optional)
-- [ ] Configure session strategy (JWT or database)
-- [ ] Set up email provider (for magic links/verification)
-
-**Config File:** `lib/auth/config.ts`
-
-```typescript
-import NextAuth, { NextAuthConfig } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "@/db";
-import { users, accounts, sessions, verificationTokens } from "@/db/schema-auth";
-import { compare } from "bcryptjs";
-import { eq } from "drizzle-orm";
-
-export const authConfig: NextAuthConfig = {
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }),
-
-  providers: [
-    CredentialsProvider({
-      name: "Email and Password",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const user = await db.query.users.findFirst({
-          where: eq(users.email, credentials.email as string),
-        });
-
-        if (!user || !user.passwordHash) {
-          return null;
-        }
-
-        const isValid = await compare(credentials.password as string, user.passwordHash);
-        if (!isValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
-      },
-    }),
-
-    // OAuth providers (optional)
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-
-  session: {
-    strategy: "jwt", // Or "database" for more control
-  },
-
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-      }
-      return token;
-    },
-
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-      }
-      return session;
-    },
-  },
-
-  pages: {
-    signIn: "/auth/signin",
-    signUp: "/auth/signup",
-    error: "/auth/error",
-    verifyRequest: "/auth/verify-request",
-  },
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
-```
-
-### Phase 4.4.3: Auth UI Components (5-6 hours)
-
-**Tasks:**
-- [ ] Sign in page (`app/auth/signin/page.tsx`)
-- [ ] Sign up page (`app/auth/signup/page.tsx`)
-- [ ] Password reset flow
-- [ ] Email verification
-- [ ] Auth error page
-- [ ] User profile page
-
-**Components:**
-- `components/auth/SignInForm.tsx`
-- `components/auth/SignUpForm.tsx`
-- `components/auth/PasswordResetForm.tsx`
-- `components/auth/UserNav.tsx` (header dropdown)
-
-### Phase 4.4.4: Protected Routes & Middleware (2-3 hours)
-
-**Tasks:**
-- [ ] Create auth middleware for protected routes
-- [ ] Wrap admin routes with auth checks
-- [ ] Update navigation to show login/logout
-- [ ] Add role-based access control
-
-**Middleware:** `middleware.ts`
-
-```typescript
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/config';
-
-export default auth((req) => {
-  const { pathname } = req.nextUrl;
-
-  // Protect admin routes
-  if (pathname.startsWith('/admin')) {
-    if (!req.auth || req.auth.user.role !== 'admin') {
-      return NextResponse.redirect(new URL('/auth/signin', req.url));
-    }
-  }
-
-  // Protect user profile/orders
-  if (pathname.startsWith('/account')) {
-    if (!req.auth) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url));
-    }
-  }
-
-  return NextResponse.next();
-});
-
-export const config = {
-  matcher: ['/admin/:path*', '/account/:path*'],
-};
-```
-
-### Phase 4.4.5: Integration with Existing Features (4-5 hours)
-
-**Tasks:**
-- [ ] Link orders to user accounts (add `user_id` to orders table)
-- [ ] Show order history on user profile
-- [ ] Save cart to user account
-- [ ] Pre-fill checkout with user email/name
-- [ ] Display "My Orders" page
-
-**Migration:**
-```sql
--- Add user_id to orders table
-ALTER TABLE orders ADD COLUMN user_id UUID REFERENCES users(id);
-
--- Create index
-CREATE INDEX idx_orders_user_id ON orders(user_id);
-
--- Backfill existing orders (match by email)
-UPDATE orders o
-SET user_id = u.id
-FROM users u
-WHERE o.customer_email = u.email;
-```
-
-### Phase 4.4.6: Testing (3-4 hours)
-
-**Tests:**
-- [ ] Auth API tests (sign in, sign up, sign out)
-- [ ] Protected route tests
-- [ ] Role-based access tests
-- [ ] Email verification tests
-- [ ] Password reset tests
-- [ ] OAuth flow tests (if implemented)
-
-**Test Files:**
-- `tests/integration/auth/signin.test.ts`
-- `tests/integration/auth/signup.test.ts`
-- `tests/integration/auth/protected-routes.test.ts`
-- `tests/integration/auth/password-reset.test.ts`
+**Total: ~13 hours** (vs 20-25 hours for DIY NextAuth)
 
 ---
 
@@ -516,40 +259,150 @@ WHERE o.customer_email = u.email;
 
 ### Phase 5.1: Wallet Auth Provider
 
-**Add Solana wallet authentication:**
+**Add Solana wallet authentication to Ory:**
 
+Approach: Custom Ory Kratos authentication strategy
+
+**Wallet login flow:**
+1. User connects Phantom/Solflare wallet
+2. Frontend requests challenge message from backend
+3. User signs message with wallet
+4. Backend verifies signature
+5. Backend creates/updates Ory identity with wallet_address trait
+6. Backend creates local user with DID
+
+**Implementation:**
 ```typescript
-// lib/auth/providers/wallet.ts
-import { createWalletProvider } from '@solana/wallet-adapter-nextauth';
+// lib/auth/wallet-verification.ts
+import { PublicKey } from '@solana/web3.js';
+import nacl from 'tweetnacl';
+import bs58 from 'bs58';
+import { kratosAdmin } from './kratos';
+import { db } from '@/db';
+import { users } from '@/db/schema-auth';
 
-export const SolanaWalletProvider = createWalletProvider({
-  name: "Solana Wallet",
-  type: "wallet",
+export async function verifyWalletAndCreateIdentity(
+  walletAddress: string,
+  signature: string,
+  message: string
+) {
+  // Verify signature
+  const pubKey = new PublicKey(walletAddress);
+  const messageBytes = new TextEncoder().encode(message);
+  const signatureBytes = bs58.decode(signature);
 
-  async authorize(credentials) {
-    const { address, signature, message } = credentials;
+  const isValid = nacl.sign.detached.verify(
+    messageBytes,
+    signatureBytes,
+    pubKey.toBytes()
+  );
 
-    // Verify signature
-    const isValid = await verifySignature(address, signature, message);
-    if (!isValid) return null;
+  if (!isValid) {
+    throw new Error('Invalid signature');
+  }
 
-    // Find or create user with wallet address
-    let user = await db.query.users.findFirst({
-      where: eq(users.walletAddress, address),
+  // Check message timestamp (prevent replay attacks)
+  const timestamp = parseInt(message.split(':')[1]);
+  const now = Date.now();
+  if (now - timestamp > 60000) { // 1 minute expiry
+    throw new Error('Message expired');
+  }
+
+  // Create or update Ory identity
+  const did = `did:sol:${walletAddress}`;
+
+  // Check if identity exists
+  let identity;
+  try {
+    const { data: identities } = await kratosAdmin.listIdentities({
+      credentialsIdentifier: walletAddress,
     });
+    identity = identities[0];
+  } catch (error) {
+    // Create new identity
+    const { data } = await kratosAdmin.createIdentity({
+      createIdentityBody: {
+        schema_id: 'default',
+        traits: {
+          wallet_address: walletAddress,
+          did,
+          role: 'customer',
+        },
+        state: 'active',
+      },
+    });
+    identity = data;
+  }
 
-    if (!user) {
-      // Create new user with wallet
-      user = await db.insert(users).values({
-        walletAddress: address,
-        did: generateDID(address), // Generate W3C DID
-        role: 'customer',
-      }).returning();
-    }
+  // Create or update local user
+  const user = await db
+    .insert(users)
+    .values({
+      kratosId: identity.id,
+      walletAddress,
+      did,
+      role: 'customer',
+    })
+    .onConflictDoUpdate({
+      target: users.kratosId,
+      set: {
+        walletAddress,
+        did,
+        updatedAt: new Date(),
+      },
+    })
+    .returning();
 
-    return user;
-  },
-});
+  return { identity, user: user[0] };
+}
+```
+
+**Link wallet to existing account:**
+```typescript
+// lib/auth/link-wallet.ts
+export async function linkWalletToUser(
+  kratosId: string,
+  walletAddress: string,
+  signature: string,
+  message: string
+) {
+  // Verify signature (same as above)
+  // ...
+
+  // Check if wallet already linked
+  const existing = await db.query.users.findFirst({
+    where: eq(users.walletAddress, walletAddress),
+  });
+
+  if (existing && existing.kratosId !== kratosId) {
+    throw new Error('Wallet already linked to another account');
+  }
+
+  // Update Ory identity traits
+  const did = `did:sol:${walletAddress}`;
+  const { data: identity } = await kratosAdmin.getIdentity({ id: kratosId });
+
+  await kratosAdmin.updateIdentity({
+    id: kratosId,
+    updateIdentityBody: {
+      traits: {
+        ...identity.traits,
+        wallet_address: walletAddress,
+        did,
+      },
+    },
+  });
+
+  // Update local user
+  await db
+    .update(users)
+    .set({
+      walletAddress,
+      did,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.kratosId, kratosId));
+}
 ```
 
 ### Phase 5.2: DID Resolution
@@ -626,12 +479,14 @@ export async function isFounderEditionHolder(walletAddress: string): Promise<boo
   return nfts.some((nft) => nft.collection === 'imajin-founder-edition');
 }
 
-// In auth callback
-async jwt({ token, user }) {
-  if (user.walletAddress) {
-    token.isFounder = await isFounderEditionHolder(user.walletAddress);
+// In Ory session enrichment
+async function enrichSession(kratosSession: Session) {
+  const walletAddress = kratosSession.identity.traits.wallet_address;
+  if (walletAddress) {
+    const isFounder = await isFounderEditionHolder(walletAddress);
+    return { ...kratosSession, isFounder };
   }
-  return token;
+  return kratosSession;
 }
 ```
 
@@ -642,16 +497,16 @@ async jwt({ token, user }) {
 ### Step-by-Step User Experience
 
 **Today (Phase 4.4):**
-1. User signs up with email/password
+1. User signs up with email/password via Ory
 2. User shops, checks out, views order history
-3. User exists solely in imajin-web database
+3. User exists in Ory Kratos + local shadow table
 
 **Future (Phase 5+):**
 1. User goes to account settings
 2. Clicks "Link Solana Wallet"
 3. Connects Phantom/Solflare wallet
 4. Signs message to prove ownership
-5. Wallet address and DID saved to user record
+5. Wallet address and DID saved to Ory identity traits + local user record
 6. User can now:
    - Sign in with wallet (no password needed)
    - Access DID-gated features
@@ -668,38 +523,22 @@ async jwt({ token, user }) {
 
 ## Security Considerations
 
-### Password Security
+### Password Security (Managed by Ory)
 
-**Hashing:** bcrypt with cost factor 12
-```typescript
-import { hash, compare } from 'bcryptjs';
-
-const SALT_ROUNDS = 12;
-
-export async function hashPassword(password: string): Promise<string> {
-  return await hash(password, SALT_ROUNDS);
-}
-
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return await compare(password, hash);
-}
-```
-
-**Password Requirements:**
-- Minimum 10 characters
-- At least 1 uppercase, 1 lowercase, 1 number
-- No common passwords (check against list)
+- Ory uses Argon2id password hashing (stronger than bcrypt)
+- Configurable password policies
+- Built-in breach detection
+- Rate limiting on login attempts
+- Brute force protection
 
 ### Session Security
 
-**JWT Strategy:**
-- Short-lived tokens (1 hour)
-- Refresh tokens in HTTP-only cookies
-- CSRF protection enabled
-
-**Database Strategy:**
+**Ory session cookies:**
+- HTTP-only cookies (prevent XSS)
+- Secure flag (HTTPS only)
+- SameSite=Lax (CSRF protection)
+- Configurable session lifetime (default: 30 days)
 - Session invalidation on logout
-- Automatic cleanup of expired sessions
 - Can revoke individual sessions
 
 ### DID Security (Future)
@@ -713,47 +552,43 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 **Signature Verification:**
 - Challenge-response authentication
 - Nonce prevents replay attacks
-- Timestamp validation (5-minute window)
+- Timestamp validation (1-minute window)
 
 ---
 
 ## Email Service Setup
 
 **Options:**
+- **SendGrid:** Free tier (100 emails/day), scalable ($19.95/month for 50K emails)
 - **Resend:** $20/month for 10K emails, great DX
-- **SendGrid:** Free tier (100 emails/day), scalable
 - **Postmark:** $15/month for 10K emails, transactional focus
 - **AWS SES:** Cheapest ($0.10 per 1K emails), more setup
 
-**Recommendation:** Start with **Resend** (easy setup, good DX) or **SendGrid free tier** (no cost initially).
+**Recommendation:** Start with **SendGrid** (free tier for dev, easy SMTP relay with Ory).
 
-**Email Templates Needed:**
+**Ory Courier handles:**
 - Email verification
-- Password reset
-- Welcome email
-- Order confirmation (if not using Stripe emails)
+- Password recovery
+- Account settings changes
+- Custom email templates (Go templates)
 
 ---
 
 ## Environment Variables
 
 ```bash
-# NextAuth
-NEXTAUTH_URL=http://localhost:30000
-NEXTAUTH_SECRET=<generate with: openssl rand -base64 32>
+# Ory Kratos
+KRATOS_PUBLIC_URL=http://localhost:4433
+KRATOS_ADMIN_URL=http://localhost:4434
+KRATOS_SECRET=<generate with: openssl rand -base64 32>
 
-# OAuth Providers (optional)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-
-# Email Service
-EMAIL_SERVER_HOST=smtp.resend.com
-EMAIL_SERVER_PORT=587
-EMAIL_SERVER_USER=resend
-EMAIL_SERVER_PASSWORD=<resend api key>
+# SendGrid SMTP
+SMTP_CONNECTION_URI=smtps://apikey:YOUR_SENDGRID_API_KEY@smtp.sendgrid.net:465
 EMAIL_FROM=noreply@imajin.ca
+EMAIL_FROM_NAME=Imajin
+
+# App
+NEXT_PUBLIC_BASE_URL=http://localhost:30000
 
 # Future: Solana (Phase 5+)
 SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
@@ -767,21 +602,24 @@ SOLANA_CLUSTER=mainnet-beta
 ### Unit Tests
 
 **Test coverage:**
-- Password hashing/verification
+- Session helpers (getSession, requireAuth, requireAdmin)
+- Guard functions (requireAuth, requireAdminWithMFA)
 - DID generation/validation (future)
-- JWT encoding/decoding
-- Session management
+- Wallet signature verification (future)
 
 ### Integration Tests
 
 **Test flows:**
-- Sign up with email/password
-- Sign in with email/password
-- Sign out
-- Password reset
-- Email verification
+- Sign up with email/password (Ory flow)
+- Sign in with email/password (Ory flow)
+- Sign out (Ory logout)
+- Password reset (Ory recovery flow)
+- Email verification (Ory verification flow)
+- MFA setup (Ory settings flow)
 - Protected route access
 - Role-based access control
+- Admin MFA enforcement
+- Webhook identity sync
 
 ### E2E Tests (Playwright)
 
@@ -790,80 +628,45 @@ SOLANA_CLUSTER=mainnet-beta
 - Returning user signs in and views orders
 - Admin signs in and accesses admin panel
 - User resets forgotten password
-
----
-
-## Documentation Checklist
-
-- [ ] Update README.md with auth setup instructions
-- [ ] Create AUTH.md user guide (how to sign in, reset password, etc.)
-- [ ] Document API endpoints (`/api/auth/*`)
-- [ ] Add auth examples to developer docs
-- [ ] Update IMPLEMENTATION_PLAN.md with Phase 4.4 completion
-
----
-
-## Open Questions
-
-1. **Email service preference?**
-   - Resend (easy, $20/month)?
-   - SendGrid (free tier)?
-   - AWS SES (cheapest)?
-
-2. **OAuth providers needed?**
-   - Google?
-   - GitHub?
-   - Start with just email/password?
-
-3. **Guest checkout behavior?**
-   - Allow checkout without account?
-   - Prompt to create account after checkout?
-   - Require account before checkout?
-
-4. **Admin user creation?**
-   - Manual SQL insert?
-   - Seed script?
-   - Admin invite system?
-
-5. **Password reset flow?**
-   - Email link (NextAuth default)?
-   - Security questions?
-   - Both?
+- Admin enables MFA and accesses protected routes
 
 ---
 
 ## Success Criteria
 
 **Phase 4.4 Complete When:**
-- [ ] Users can sign up with email/password
-- [ ] Users can sign in and sign out
-- [ ] Users can reset forgotten passwords
-- [ ] Email verification works
+- [ ] Users can sign up with email/password via Ory
+- [ ] Users can sign in and sign out via Ory
+- [ ] Users can reset forgotten passwords via Ory
+- [ ] Email verification works via Ory Courier
+- [ ] Users can enable optional MFA (TOTP)
+- [ ] Admin accounts require MFA
 - [ ] Users can view order history
 - [ ] Cart persists across sessions
-- [ ] Admin routes protected by role check
+- [ ] Admin routes protected by role check + MFA
+- [ ] Local users table synced via webhooks
 - [ ] All auth tests passing
 - [ ] Documentation complete
 
 **Future DID Integration Ready When:**
-- [ ] Schema supports DID fields
-- [ ] Accounts table supports wallet provider
+- [ ] Ory identity schema supports DID fields
+- [ ] Local users table supports wallet_address, did, public_key
 - [ ] No breaking changes required for DID migration
 - [ ] Users can link wallet to existing account
-- [ ] Verifiable credentials can be stored
+- [ ] Verifiable credentials can be stored in JSONB
 
 ---
 
 ## Timeline Estimate
 
-**Phase 4.4 (Traditional Auth):** 20-30 hours
-- Database schema: 2-3 hours
-- NextAuth config: 4-5 hours
-- UI components: 5-6 hours
-- Protected routes: 2-3 hours
-- Integration: 4-5 hours
-- Testing: 3-4 hours
-- Documentation: 2-3 hours
+**Phase 4.4 (Ory Kratos Auth):** 13 hours
+- Database schema: 2 hours
+- Ory Kratos setup: 4 hours
+- UI components: 2.5 hours
+- Protected routes: 3 hours
+- Integration: 1.5 hours
+- SendGrid email: 2 hours
+- Testing: 3 hours
 
 **Phase 5+ (DID Integration):** 40-60 hours (later)
 - Wallet auth provider: 8-10 hours
@@ -881,23 +684,27 @@ SOLANA_CLUSTER=mainnet-beta
 This strategy provides **immediate value** (auth for CRM features) while **preserving the path** to Self-Sovereign Identity via DIDs.
 
 **Key Principles:**
-1. **Schema is DID-ready** (nullable DID fields, JSONB for VCs)
-2. **Provider architecture is extensible** (can add wallet auth later)
-3. **No breaking changes** when migrating to DID
-4. **Self-hosted and open** (aligns with philosophy)
-5. **Progressive enhancement** (email today, wallet tomorrow)
+1. **Ory identity schema is DID-ready** (nullable wallet/DID fields in traits)
+2. **Local shadow table ready** (wallet_address, did, public_key columns)
+3. **Extensible architecture** (can add custom wallet auth flow to Ory)
+4. **No breaking changes** when migrating to DID
+5. **Self-hosted and open** (aligns with philosophy)
+6. **Progressive enhancement** (email today, wallet tomorrow)
 
 **Next Steps:**
-1. Answer open questions (email service, OAuth, guest checkout)
-2. Review and approve this strategy
-3. Begin Phase 4.4 implementation
-4. Test thoroughly
-5. Document for users and developers
+1. Begin Phase 4.4 implementation (Ory Kratos)
+2. Test thoroughly (unit, integration, E2E)
+3. Document for users and developers
+4. Plan Phase 5.1 (wallet auth) when ready
 
 ---
 
 **See Also:**
+- `docs/tasks/Phase 4.4 - Authentication.md` - Main implementation plan
+- `docs/tasks/Phase 4.4.1 - Database Schema.md` - Users table design
+- `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Docker and identity schema
+- `docs/tasks/Phase 5.1 - Wallet Authentication & DID Integration.md` - Future wallet auth
 - `D:\Projects\imajin\imajin-ai\mjn\layer-2-identity\IDENTITY_LAYER.md` - DID/VC architecture
 - `D:\Projects\imajin\imajin-ai\mjn\layer-2-identity\IMAJIN_OS_SPEC.md` - Personal AI agent spec
 - `D:\Projects\imajin\imajin-ai\mjn\architecture\SECURITY.md` - Key management and recovery
-- `D:\Projects\imajin\imajin-ai\mjn\architecture\DATA_STORAGE_AND_TRUST.md` - Trust model
+- Ory Kratos Documentation: https://www.ory.sh/docs/kratos/

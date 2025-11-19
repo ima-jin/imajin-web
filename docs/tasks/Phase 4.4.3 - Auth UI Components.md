@@ -1,23 +1,30 @@
 # Phase 4.4.3: Auth UI Components
 
 **Status:** Ready for Implementation 🟡
-**Estimated Effort:** 5 hours
-**Dependencies:** Phase 4.4.2 complete (NextAuth configured)
+**Estimated Effort:** 6 hours
+**Dependencies:** Phase 4.4.2 complete (Ory Kratos running)
 **Next Phase:** Phase 4.4.4 (Protected Routes & Middleware)
 
 ---
 
 ## Overview
 
-Build authentication UI components for sign in, sign up, password reset, and user navigation. All forms use existing UI library components and follow design system patterns.
+Build authentication UI components that render Ory Kratos self-service flows. Instead of custom forms, we render Ory's flow UI nodes dynamically. This approach provides built-in validation, error handling, and security features.
 
 **Key Features:**
-- Email/password sign in
-- Email/password sign up with validation
-- Password reset flow
-- Email verification page
+- Email/password sign in (Ory login flow)
+- Email/password sign up (Ory registration flow)
+- Email verification (Ory verification flow)
+- Password reset (Ory recovery flow)
+- Account settings & MFA (Ory settings flow)
 - User navigation dropdown
-- Error handling and loading states
+- Reusable flow renderer
+
+**Ory Self-Service Flow Pattern:**
+1. Initialize flow (server-side GET request to Ory)
+2. Render form with flow.ui.nodes (dynamic from Ory)
+3. Submit form (POST to flow.ui.action)
+4. Handle response (success, errors, 2FA challenge)
 
 ---
 
@@ -27,69 +34,86 @@ Build authentication UI components for sign in, sign up, password reset, and use
 app/
 ├── auth/
 │   ├── signin/
-│   │   └── page.tsx (Sign in page)
+│   │   └── page.tsx (Initialize login flow)
 │   ├── signup/
-│   │   └── page.tsx (Sign up page)
+│   │   └── page.tsx (Initialize registration flow)
 │   ├── verify/
-│   │   └── page.tsx (Email verification)
-│   ├── reset-password/
-│   │   ├── page.tsx (Request reset)
-│   │   └── [token]/
-│   │       └── page.tsx (Reset form)
+│   │   └── page.tsx (Verification flow)
+│   ├── recovery/
+│   │   └── page.tsx (Password reset flow)
+│   ├── settings/
+│   │   └── page.tsx (Account settings & MFA)
+│   ├── mfa-required/
+│   │   └── page.tsx (Admin MFA enforcement)
 │   └── error/
 │       └── page.tsx (Auth error page)
 
 components/
 ├── auth/
-│   ├── SignInForm.tsx (Sign in form component)
-│   ├── SignUpForm.tsx (Sign up form component)
-│   ├── PasswordResetForm.tsx (Password reset form)
-│   ├── UserNav.tsx (User dropdown in header)
-│   └── AuthError.tsx (Error display component)
+│   ├── OryFlowForm.tsx (Reusable flow renderer)
+│   └── UserNav.tsx (User dropdown in header)
 ```
 
 ---
 
-## Sign In Form
+## Reusable Flow Renderer
 
-**File:** `components/auth/SignInForm.tsx`
+**File:** `components/auth/OryFlowForm.tsx`
+
+**This component renders ANY Ory flow (login, registration, recovery, settings)**
 
 ```typescript
 'use client';
 
-import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { LoginFlow, RegistrationFlow, RecoveryFlow, SettingsFlow, VerificationFlow } from '@ory/client';
 import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/form/Input';
 import { Label } from '@/components/ui/form/Label';
 
-export function SignInForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/account';
+type Flow = LoginFlow | RegistrationFlow | RecoveryFlow | SettingsFlow | VerificationFlow;
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+interface OryFlowFormProps {
+  flow: Flow;
+  onSuccess?: (returnTo?: string) => void;
+}
+
+export function OryFlowForm({ flow, onSuccess }: OryFlowFormProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    const formData = new FormData(e.currentTarget);
+
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const response = await fetch(flow.ui.action, {
+        method: flow.ui.method,
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
-      if (result?.error) {
-        setError('Invalid email or password');
-      } else if (result?.ok) {
-        router.push(callbackUrl);
+      const data = await response.json();
+
+      if (response.ok) {
+        // Success - redirect or callback
+        if (onSuccess) {
+          onSuccess(data.return_to);
+        } else {
+          router.push(data.return_to || '/account');
+          router.refresh();
+        }
+      } else if (data.error) {
+        setError(data.error.message || 'An error occurred');
+      } else if (data.ui) {
+        // Flow updated (e.g., validation errors) - reload page
         router.refresh();
       }
     } catch (err) {
@@ -101,74 +125,148 @@ export function SignInForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Global flow messages */}
+      {flow.ui.messages?.map((message, idx) => (
+        <div
+          key={idx}
+          className={`px-4 py-3 rounded text-sm ${
+            message.type === 'error'
+              ? 'bg-red-50 border border-red-200 text-red-600'
+              : 'bg-blue-50 border border-blue-200 text-blue-700'
+          }`}
+        >
+          {message.text}
+        </div>
+      ))}
+
+      {/* Component error state */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded text-sm">
           {error}
         </div>
       )}
 
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          disabled={loading}
-        />
-      </div>
+      {/* Render form fields from Ory flow */}
+      {flow.ui.nodes.map((node) => {
+        const attrs = node.attributes;
+        const isInput = node.type === 'input';
+        const isSubmit = isInput && attrs.type === 'submit';
+        const isHidden = isInput && attrs.type === 'hidden';
+        const isButton = node.type === 'button';
 
-      <div>
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-          disabled={loading}
-        />
-      </div>
+        // Hidden inputs (CSRF token, flow ID)
+        if (isHidden) {
+          return <input key={attrs.name} {...attrs} />;
+        }
 
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading ? 'Signing in...' : 'Sign In'}
-      </Button>
+        // Submit button
+        if (isSubmit || isButton) {
+          return (
+            <Button
+              key={attrs.name}
+              type="submit"
+              disabled={loading || attrs.disabled}
+              className="w-full"
+            >
+              {loading ? 'Loading...' : (node.meta.label?.text || 'Submit')}
+            </Button>
+          );
+        }
 
-      <div className="text-sm text-center space-y-2">
-        <div>
-          <a href="/auth/reset-password" className="text-blue-600 hover:underline">
-            Forgot password?
-          </a>
-        </div>
-        <div>
-          Don't have an account?{' '}
-          <a href="/auth/signup" className="text-blue-600 hover:underline">
-            Sign up
-          </a>
-        </div>
-      </div>
+        // Input fields (text, email, password, etc.)
+        if (isInput && !isHidden && !isSubmit) {
+          return (
+            <div key={attrs.name}>
+              <Label htmlFor={attrs.name}>
+                {node.meta.label?.text || attrs.name}
+              </Label>
+              <Input
+                {...attrs}
+                disabled={loading || attrs.disabled}
+                className="w-full"
+              />
+              {/* Field-specific error messages */}
+              {node.messages?.map((msg, msgIdx) => (
+                <p key={msgIdx} className="text-sm text-red-600 mt-1">
+                  {msg.text}
+                </p>
+              ))}
+            </div>
+          );
+        }
+
+        // Script nodes (for WebAuthn, etc.)
+        if (node.type === 'script') {
+          return (
+            <script
+              key={node.attributes.id}
+              src={node.attributes.src}
+              async={node.attributes.async}
+              crossOrigin={node.attributes.crossorigin}
+            />
+          );
+        }
+
+        return null;
+      })}
     </form>
   );
 }
 ```
 
+**Why This Component is Powerful:**
+- ✅ Works with ALL Ory flows (login, signup, recovery, settings)
+- ✅ Handles validation automatically (Ory provides errors)
+- ✅ Handles 2FA challenges (TOTP codes)
+- ✅ Handles WebAuthn (future)
+- ✅ Secure by default (CSRF tokens included)
+- ✅ Mobile-friendly (responsive inputs)
+
+---
+
+## Sign In Page
+
 **File:** `app/auth/signin/page.tsx`
 
 ```typescript
-import { SignInForm } from '@/components/auth/SignInForm';
+import { kratosFrontend } from '@/lib/auth/kratos';
+import { OryFlowForm } from '@/components/auth/OryFlowForm';
 import { Container } from '@/components/ui/Container';
 import { Heading } from '@/components/ui/Heading';
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Sign In - Imajin',
   description: 'Sign in to your account',
 };
 
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: { flow?: string; return_to?: string };
+}) {
+  let flow;
+
+  try {
+    if (searchParams.flow) {
+      // Fetch existing flow
+      const { data } = await kratosFrontend.getLoginFlow({
+        id: searchParams.flow,
+      });
+      flow = data;
+    } else {
+      // Create new login flow
+      const { data } = await kratosFrontend.createBrowserLoginFlow({
+        returnTo: searchParams.return_to || '/account',
+      });
+      // Redirect to same page with flow ID
+      redirect(`/auth/signin?flow=${data.id}`);
+    }
+  } catch (error) {
+    // Flow expired or invalid - redirect to error page
+    redirect('/auth/error?error=FlowExpired');
+  }
+
   return (
     <Container className="py-12">
       <div className="max-w-md mx-auto">
@@ -177,9 +275,21 @@ export default function SignInPage() {
         </Heading>
 
         <div className="bg-white border rounded-lg p-6">
-          <Suspense fallback={<div>Loading...</div>}>
-            <SignInForm />
-          </Suspense>
+          <OryFlowForm flow={flow} />
+
+          <div className="mt-4 text-sm text-center space-y-2">
+            <div>
+              <a href="/auth/recovery" className="text-blue-600 hover:underline">
+                Forgot password?
+              </a>
+            </div>
+            <div>
+              Don't have an account?{' '}
+              <a href="/auth/signup" className="text-blue-600 hover:underline">
+                Sign up
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </Container>
@@ -189,259 +299,43 @@ export default function SignInPage() {
 
 ---
 
-## Sign Up Form
-
-**File:** `components/auth/SignUpForm.tsx`
-
-```typescript
-'use client';
-
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/form/Input';
-import { Label } from '@/components/ui/form/Label';
-import { validatePasswordStrength } from '@/lib/auth/password';
-
-export function SignUpForm() {
-  const router = useRouter();
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [errors, setErrors] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErrors([]);
-    setLoading(true);
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
-      setErrors(['Passwords do not match']);
-      setLoading(false);
-      return;
-    }
-
-    // Validate password strength
-    const validation = validatePasswordStrength(password);
-    if (!validation.valid) {
-      setErrors(validation.errors);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setErrors([data.error || 'Something went wrong']);
-      } else {
-        setSuccess(true);
-        // Redirect to verify page or sign in
-        setTimeout(() => {
-          router.push('/auth/verify?email=' + encodeURIComponent(email));
-        }, 1000);
-      }
-    } catch (err) {
-      setErrors(['Something went wrong. Please try again.']);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (success) {
-    return (
-      <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-        <p className="font-medium">Account created successfully!</p>
-        <p className="text-sm mt-1">Please check your email to verify your account.</p>
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-          <ul className="text-sm space-y-1">
-            {errors.map((error, i) => (
-              <li key={i}>{error}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div>
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          autoComplete="name"
-          disabled={loading}
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          disabled={loading}
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="new-password"
-          disabled={loading}
-        />
-        <p className="text-xs text-gray-600 mt-1">
-          Must be at least 10 characters with uppercase, lowercase, and a number
-        </p>
-      </div>
-
-      <div>
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          autoComplete="new-password"
-          disabled={loading}
-        />
-      </div>
-
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading ? 'Creating account...' : 'Sign Up'}
-      </Button>
-
-      <div className="text-sm text-center">
-        Already have an account?{' '}
-        <a href="/auth/signin" className="text-blue-600 hover:underline">
-          Sign in
-        </a>
-      </div>
-    </form>
-  );
-}
-```
-
-**File:** `app/api/auth/signup/route.ts`
-
-```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { users } from '@/db/schema-auth';
-import { hashPassword, validatePasswordStrength } from '@/lib/auth/password';
-import { eq } from 'drizzle-orm';
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { email, password, name } = body;
-
-    // Validate required fields
-    if (!email || !password || !name) {
-      return NextResponse.json(
-        { error: 'Email, password, and name are required' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate password strength
-    const validation = validatePasswordStrength(password);
-    if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.errors.join(', ') },
-        { status: 400 }
-      );
-    }
-
-    // Check if user exists
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.email, email),
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 400 }
-      );
-    }
-
-    // Hash password
-    const passwordHash = await hashPassword(password);
-
-    // Create user
-    await db.insert(users).values({
-      email,
-      passwordHash,
-      name,
-      role: 'customer',
-      emailVerified: null, // Will be set after verification
-    });
-
-    // TODO Phase 4.4.6: Send verification email
-
-    return NextResponse.json(
-      { message: 'User created successfully' },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Signup error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-```
+## Sign Up Page
 
 **File:** `app/auth/signup/page.tsx`
 
 ```typescript
-import { SignUpForm } from '@/components/auth/SignUpForm';
+import { kratosFrontend } from '@/lib/auth/kratos';
+import { OryFlowForm } from '@/components/auth/OryFlowForm';
 import { Container } from '@/components/ui/Container';
 import { Heading } from '@/components/ui/Heading';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Sign Up - Imajin',
   description: 'Create your account',
 };
 
-export default function SignUpPage() {
+export default async function SignUpPage({
+  searchParams,
+}: {
+  searchParams: { flow?: string };
+}) {
+  let flow;
+
+  try {
+    if (searchParams.flow) {
+      const { data } = await kratosFrontend.getRegistrationFlow({
+        id: searchParams.flow,
+      });
+      flow = data;
+    } else {
+      const { data } = await kratosFrontend.createBrowserRegistrationFlow();
+      redirect(`/auth/signup?flow=${data.id}`);
+    }
+  } catch (error) {
+    redirect('/auth/error?error=FlowExpired');
+  }
+
   return (
     <Container className="py-12">
       <div className="max-w-md mx-auto">
@@ -450,7 +344,83 @@ export default function SignUpPage() {
         </Heading>
 
         <div className="bg-white border rounded-lg p-6">
-          <SignUpForm />
+          <OryFlowForm flow={flow} />
+
+          <div className="mt-4 text-sm text-center">
+            Already have an account?{' '}
+            <a href="/auth/signin" className="text-blue-600 hover:underline">
+              Sign in
+            </a>
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-600 mt-4 text-center">
+          Password must be at least 10 characters.
+        </p>
+      </div>
+    </Container>
+  );
+}
+```
+
+---
+
+## Password Recovery Page
+
+**File:** `app/auth/recovery/page.tsx`
+
+```typescript
+import { kratosFrontend } from '@/lib/auth/kratos';
+import { OryFlowForm } from '@/components/auth/OryFlowForm';
+import { Container } from '@/components/ui/Container';
+import { Heading } from '@/components/ui/Heading';
+import { redirect } from 'next/navigation';
+
+export const metadata = {
+  title: 'Reset Password - Imajin',
+  description: 'Reset your password',
+};
+
+export default async function RecoveryPage({
+  searchParams,
+}: {
+  searchParams: { flow?: string };
+}) {
+  let flow;
+
+  try {
+    if (searchParams.flow) {
+      const { data } = await kratosFrontend.getRecoveryFlow({
+        id: searchParams.flow,
+      });
+      flow = data;
+    } else {
+      const { data } = await kratosFrontend.createBrowserRecoveryFlow();
+      redirect(`/auth/recovery?flow=${data.id}`);
+    }
+  } catch (error) {
+    redirect('/auth/error?error=FlowExpired');
+  }
+
+  return (
+    <Container className="py-12">
+      <div className="max-w-md mx-auto">
+        <Heading level={1} className="text-center mb-8">
+          Reset Password
+        </Heading>
+
+        <div className="bg-white border rounded-lg p-6">
+          <p className="text-sm text-gray-600 mb-4">
+            Enter your email address and we'll send you a recovery code.
+          </p>
+
+          <OryFlowForm flow={flow} />
+
+          <div className="mt-4 text-sm text-center">
+            <a href="/auth/signin" className="text-blue-600 hover:underline">
+              Back to sign in
+            </a>
+          </div>
         </div>
       </div>
     </Container>
@@ -460,121 +430,248 @@ export default function SignUpPage() {
 
 ---
 
-## Password Reset Form
+## Email Verification Page
 
-**File:** `components/auth/PasswordResetForm.tsx`
+**File:** `app/auth/verify/page.tsx`
 
 ```typescript
-'use client';
+import { kratosFrontend } from '@/lib/auth/kratos';
+import { OryFlowForm } from '@/components/auth/OryFlowForm';
+import { Container } from '@/components/ui/Container';
+import { Heading } from '@/components/ui/Heading';
+import { redirect } from 'next/navigation';
 
-import { useState, FormEvent } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/form/Input';
-import { Label } from '@/components/ui/form/Label';
+export const metadata = {
+  title: 'Verify Email - Imajin',
+  description: 'Verify your email address',
+};
 
-export function PasswordResetForm() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+export default async function VerifyPage({
+  searchParams,
+}: {
+  searchParams: { flow?: string };
+}) {
+  let flow;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+  try {
+    if (searchParams.flow) {
+      const { data } = await kratosFrontend.getVerificationFlow({
+        id: searchParams.flow,
       });
-
-      if (response.ok) {
-        setSuccess(true);
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Something went wrong');
-      }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+      flow = data;
+    } else {
+      const { data } = await kratosFrontend.createBrowserVerificationFlow();
+      redirect(`/auth/verify?flow=${data.id}`);
     }
-  }
-
-  if (success) {
-    return (
-      <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-        <p className="font-medium">Password reset email sent!</p>
-        <p className="text-sm mt-1">
-          Check your email for instructions to reset your password.
-        </p>
-      </div>
-    );
+  } catch (error) {
+    redirect('/auth/error?error=FlowExpired');
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded text-sm">
-          {error}
+    <Container className="py-12">
+      <div className="max-w-md mx-auto text-center">
+        <Heading level={1} className="mb-6">
+          Verify Your Email
+        </Heading>
+
+        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-6 py-4 rounded mb-6 text-left">
+          <p className="font-medium mb-2">Verification email sent</p>
+          <p className="text-sm">
+            Check your email for a verification code and enter it below.
+          </p>
         </div>
-      )}
 
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          disabled={loading}
-        />
-        <p className="text-xs text-gray-600 mt-1">
-          We'll send you a link to reset your password.
-        </p>
+        <div className="bg-white border rounded-lg p-6">
+          <OryFlowForm flow={flow} />
+        </div>
       </div>
-
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading ? 'Sending...' : 'Send Reset Link'}
-      </Button>
-
-      <div className="text-sm text-center">
-        <a href="/auth/signin" className="text-blue-600 hover:underline">
-          Back to sign in
-        </a>
-      </div>
-    </form>
+    </Container>
   );
 }
 ```
 
-**File:** `app/auth/reset-password/page.tsx`
+---
+
+## Account Settings Page (MFA Setup)
+
+**File:** `app/auth/settings/page.tsx`
 
 ```typescript
-import { PasswordResetForm } from '@/components/auth/PasswordResetForm';
+import { requireAuth } from '@/lib/auth/session';
+import { kratosFrontend } from '@/lib/auth/kratos';
+import { OryFlowForm } from '@/components/auth/OryFlowForm';
 import { Container } from '@/components/ui/Container';
 import { Heading } from '@/components/ui/Heading';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
-  title: 'Reset Password - Imajin',
-  description: 'Reset your password',
+  title: 'Account Settings - Imajin',
+  description: 'Manage your account settings',
 };
 
-export default function ResetPasswordPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: { flow?: string };
+}) {
+  await requireAuth();
+
+  let flow;
+
+  try {
+    if (searchParams.flow) {
+      const { data } = await kratosFrontend.getSettingsFlow({
+        id: searchParams.flow,
+      });
+      flow = data;
+    } else {
+      const { data } = await kratosFrontend.createBrowserSettingsFlow();
+      redirect(`/auth/settings?flow=${data.id}`);
+    }
+  } catch (error) {
+    redirect('/auth/error?error=FlowExpired');
+  }
+
   return (
     <Container className="py-12">
-      <div className="max-w-md mx-auto">
-        <Heading level={1} className="text-center mb-8">
-          Reset Password
+      <div className="max-w-2xl mx-auto">
+        <Heading level={1} className="mb-8">
+          Account Settings
         </Heading>
 
-        <div className="bg-white border rounded-lg p-6">
-          <PasswordResetForm />
+        <div className="space-y-8">
+          <section className="bg-white border rounded-lg p-6">
+            <Heading level={2} className="mb-4">
+              Profile
+            </Heading>
+            <OryFlowForm flow={flow} />
+          </section>
+
+          <section className="bg-white border rounded-lg p-6">
+            <Heading level={2} className="mb-4">
+              Two-Factor Authentication
+            </Heading>
+            <p className="text-sm text-gray-600 mb-4">
+              Secure your account with time-based one-time passwords (TOTP).
+            </p>
+            <OryFlowForm flow={flow} />
+          </section>
         </div>
+      </div>
+    </Container>
+  );
+}
+```
+
+---
+
+## MFA Required Page (Admin Enforcement)
+
+**File:** `app/auth/mfa-required/page.tsx`
+
+```typescript
+import { requireAuth } from '@/lib/auth/session';
+import { Container } from '@/components/ui/Container';
+import { Heading } from '@/components/ui/Heading';
+import { Button } from '@/components/ui/Button';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'MFA Required - Imajin',
+  description: 'Multi-factor authentication required',
+};
+
+export default async function MFARequiredPage() {
+  const session = await requireAuth();
+
+  // If already has MFA, redirect to admin
+  if (session.kratosSession.authenticator_assurance_level === 'aal2') {
+    redirect('/admin');
+  }
+
+  return (
+    <Container className="py-12">
+      <div className="max-w-md mx-auto text-center">
+        <Heading level={1} className="mb-6 text-red-600">
+          MFA Required
+        </Heading>
+
+        <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded mb-6 text-left">
+          <p className="font-medium mb-2">Admin accounts require two-factor authentication</p>
+          <p className="text-sm">
+            For security, admin accounts must have multi-factor authentication enabled
+            before accessing the admin panel.
+          </p>
+        </div>
+
+        <Link href="/auth/settings">
+          <Button className="w-full">
+            Set Up Two-Factor Authentication
+          </Button>
+        </Link>
+      </div>
+    </Container>
+  );
+}
+```
+
+---
+
+## Error Page
+
+**File:** `app/auth/error/page.tsx`
+
+```typescript
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { Container } from '@/components/ui/Container';
+import { Heading } from '@/components/ui/Heading';
+import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
+import { Suspense } from 'react';
+
+const errorMessages: Record<string, string> = {
+  Configuration: 'There is a problem with the server configuration.',
+  FlowExpired: 'The authentication flow has expired. Please try again.',
+  AccessDenied: 'You do not have permission to sign in.',
+  Verification: 'The verification link is invalid or has expired.',
+  SessionRefreshRequired: 'Your session needs to be refreshed.',
+  Default: 'An error occurred during authentication.',
+};
+
+function ErrorContent() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error') || 'Default';
+  const message = errorMessages[error] || errorMessages.Default;
+
+  return (
+    <>
+      <Heading level={1} className="mb-4">
+        Authentication Error
+      </Heading>
+
+      <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded mb-6">
+        <p>{message}</p>
+      </div>
+
+      <Link href="/auth/signin">
+        <Button className="w-full">
+          Back to Sign In
+        </Button>
+      </Link>
+    </>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Container className="py-12">
+      <div className="max-w-md mx-auto text-center">
+        <Suspense fallback={<div>Loading...</div>}>
+          <ErrorContent />
+        </Suspense>
       </div>
     </Container>
   );
@@ -590,12 +687,23 @@ export default function ResetPasswordPage() {
 ```typescript
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 
-export function UserNav() {
-  const { data: session, status } = useSession();
+interface UserNavProps {
+  session: {
+    user: {
+      id: string;
+      email: string;
+      name: string | null;
+      role: string;
+    };
+  } | null;
+}
+
+export function UserNav({ session }: UserNavProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -611,8 +719,16 @@ export function UserNav() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (status === 'loading') {
-    return <div className="text-sm">Loading...</div>;
+  async function handleSignOut() {
+    setIsOpen(false);
+
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   }
 
   if (!session) {
@@ -636,6 +752,8 @@ export function UserNav() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 hover:opacity-75 transition"
+        aria-label="User menu"
+        aria-expanded={isOpen}
       >
         <span className="text-sm">{session.user.name || session.user.email}</span>
         <svg
@@ -649,7 +767,7 @@ export function UserNav() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg py-1">
+        <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg py-1 z-50">
           <Link
             href="/account"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
@@ -664,6 +782,13 @@ export function UserNav() {
           >
             Order History
           </Link>
+          <Link
+            href="/auth/settings"
+            className="block px-4 py-2 text-sm hover:bg-gray-100"
+            onClick={() => setIsOpen(false)}
+          >
+            Settings
+          </Link>
           {session.user.role === 'admin' && (
             <Link
               href="/admin"
@@ -674,10 +799,7 @@ export function UserNav() {
             </Link>
           )}
           <button
-            onClick={() => {
-              setIsOpen(false);
-              signOut({ callbackUrl: '/' });
-            }}
+            onClick={handleSignOut}
             className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 border-t"
           >
             Sign Out
@@ -693,111 +815,29 @@ export function UserNav() {
 
 ```typescript
 // components/layout/Header.tsx
+import { getSession } from '@/lib/auth/session';
 import { UserNav } from '@/components/auth/UserNav';
 
-export function Header() {
+export async function Header() {
+  const session = await getSession();
+
   return (
-    <header>
-      {/* ... existing header content */}
-      <UserNav />
+    <header className="border-b">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" className="text-xl font-bold">
+          Imajin
+        </a>
+
+        <nav className="flex items-center gap-6">
+          <a href="/products">Products</a>
+          <a href="/portfolio">Portfolio</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+        </nav>
+
+        <UserNav session={session} />
+      </div>
     </header>
-  );
-}
-```
-
----
-
-## Error Page
-
-**File:** `app/auth/error/page.tsx`
-
-```typescript
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-import { Container } from '@/components/ui/Container';
-import { Heading } from '@/components/ui/Heading';
-import Link from 'next/link';
-
-const errorMessages: Record<string, string> = {
-  Configuration: 'There is a problem with the server configuration.',
-  AccessDenied: 'You do not have permission to sign in.',
-  Verification: 'The verification link is invalid or has expired.',
-  Default: 'An error occurred during authentication.',
-};
-
-export default function AuthErrorPage() {
-  const searchParams = useSearchParams();
-  const error = searchParams.get('error') || 'Default';
-  const message = errorMessages[error] || errorMessages.Default;
-
-  return (
-    <Container className="py-12">
-      <div className="max-w-md mx-auto text-center">
-        <Heading level={1} className="mb-4">
-          Authentication Error
-        </Heading>
-
-        <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded mb-6">
-          <p>{message}</p>
-        </div>
-
-        <Link
-          href="/auth/signin"
-          className="inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
-        >
-          Back to Sign In
-        </Link>
-      </div>
-    </Container>
-  );
-}
-```
-
----
-
-## Email Verification Page
-
-**File:** `app/auth/verify/page.tsx`
-
-```typescript
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-import { Container } from '@/components/ui/Container';
-import { Heading } from '@/components/ui/Heading';
-
-export default function VerifyPage() {
-  const searchParams = useSearchParams();
-  const email = searchParams.get('email');
-
-  return (
-    <Container className="py-12">
-      <div className="max-w-md mx-auto text-center">
-        <Heading level={1} className="mb-6">
-          Check Your Email
-        </Heading>
-
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-6 py-4 rounded mb-6">
-          <p className="font-medium mb-2">Verification email sent</p>
-          {email && (
-            <p className="text-sm">
-              We sent a verification link to <strong>{email}</strong>
-            </p>
-          )}
-          <p className="text-sm mt-2">
-            Click the link in the email to verify your account.
-          </p>
-        </div>
-
-        <p className="text-sm text-gray-600">
-          Didn't receive the email? Check your spam folder or{' '}
-          <button className="text-blue-600 hover:underline">
-            resend verification email
-          </button>
-        </p>
-      </div>
-    </Container>
   );
 }
 ```
@@ -806,64 +846,101 @@ export default function VerifyPage() {
 
 ## Implementation Steps
 
-### Step 1: Create Sign In Components (60 min)
+### Step 1: Create OryFlowForm Component (90 min)
 
-- [ ] Create SignInForm.tsx
-- [ ] Create app/auth/signin/page.tsx
-- [ ] Test sign in manually
-- [ ] Verify error handling
-- [ ] Test "forgot password" link
+- [ ] Create `components/auth/OryFlowForm.tsx`
+- [ ] Handle all node types (input, button, script)
+- [ ] Add error display (flow messages, field messages)
+- [ ] Add loading states
+- [ ] Test with login flow manually
 
-### Step 2: Create Sign Up Components (90 min)
+### Step 2: Create Sign In Page (30 min)
 
-- [ ] Create SignUpForm.tsx
-- [ ] Create app/api/auth/signup/route.ts
-- [ ] Create app/auth/signup/page.tsx
-- [ ] Test password validation
-- [ ] Test duplicate email handling
-- [ ] Test success flow
+- [ ] Create `app/auth/signin/page.tsx`
+- [ ] Initialize Ory login flow (server-side)
+- [ ] Render OryFlowForm
+- [ ] Add forgot password link
+- [ ] Add sign up link
+- [ ] Test signin works
 
-### Step 3: Create Password Reset (60 min)
+### Step 3: Create Sign Up Page (30 min)
 
-- [ ] Create PasswordResetForm.tsx
-- [ ] Create app/auth/reset-password/page.tsx
-- [ ] Create reset token form page
-- [ ] Test email submission
-- [ ] Placeholder for email sending (Phase 4.4.6)
+- [ ] Create `app/auth/signup/page.tsx`
+- [ ] Initialize Ory registration flow
+- [ ] Render OryFlowForm
+- [ ] Add password requirements hint
+- [ ] Add sign in link
+- [ ] Test signup works
 
-### Step 4: Create User Navigation (45 min)
+### Step 4: Create Recovery Page (30 min)
 
-- [ ] Create UserNav.tsx
+- [ ] Create `app/auth/recovery/page.tsx`
+- [ ] Initialize Ory recovery flow
+- [ ] Render OryFlowForm
+- [ ] Add back to sign in link
+- [ ] Test recovery flow
+
+### Step 5: Create Verification Page (30 min)
+
+- [ ] Create `app/auth/verify/page.tsx`
+- [ ] Initialize Ory verification flow
+- [ ] Render OryFlowForm
+- [ ] Add instructions
+- [ ] Test verification flow
+
+### Step 6: Create Settings Page (45 min)
+
+- [ ] Create `app/auth/settings/page.tsx`
+- [ ] Initialize Ory settings flow
+- [ ] Render OryFlowForm (profile + MFA sections)
+- [ ] Add section headings
+- [ ] Test profile update
+- [ ] Test MFA setup
+
+### Step 7: Create MFA Required Page (15 min)
+
+- [ ] Create `app/auth/mfa-required/page.tsx`
+- [ ] Check AAL level (redirect if already MFA)
+- [ ] Display warning message
+- [ ] Link to settings page
+
+### Step 8: Create Error Page (15 min)
+
+- [ ] Create `app/auth/error/page.tsx`
+- [ ] Handle common error types
+- [ ] Display error message
+- [ ] Add back to sign in link
+
+### Step 9: Create UserNav Component (45 min)
+
+- [ ] Create `components/auth/UserNav.tsx`
+- [ ] Server-side session prop
+- [ ] Dropdown open/close logic
+- [ ] Sign out handler
 - [ ] Add to Header component
-- [ ] Test dropdown open/close
-- [ ] Test sign out
-- [ ] Test admin link (if admin user)
+- [ ] Test navigation
 
-### Step 5: Create Support Pages (30 min)
+### Step 10: Styling & Accessibility (60 min)
 
-- [ ] Create error page
-- [ ] Create verification page
-- [ ] Test error display
-- [ ] Test verification message
-
-### Step 6: Styling & Accessibility (45 min)
-
-- [ ] Ensure consistent design system usage
-- [ ] Add keyboard navigation
-- [ ] Add ARIA labels
-- [ ] Test with screen reader
-- [ ] Test mobile responsiveness
+- [ ] Consistent design system usage
+- [ ] Keyboard navigation (dropdown)
+- [ ] ARIA labels (all forms)
+- [ ] Focus management
+- [ ] Mobile responsiveness
+- [ ] Screen reader testing
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] Sign in form works
-- [ ] Sign up form works with validation
-- [ ] Password reset request works
-- [ ] User dropdown works (sign out, navigation)
-- [ ] Error page displays correctly
-- [ ] Verification page displays correctly
+- [ ] Sign in page works (Ory login flow)
+- [ ] Sign up page works (Ory registration flow)
+- [ ] Password recovery works (Ory recovery flow)
+- [ ] Email verification works (Ory verification flow)
+- [ ] Settings page works (profile + MFA)
+- [ ] MFA required page displays correctly
+- [ ] Error page handles all error types
+- [ ] User dropdown works (navigation, sign out)
 - [ ] All forms accessible (keyboard, screen reader)
 - [ ] Loading states display correctly
 - [ ] Error messages clear and helpful
@@ -881,40 +958,63 @@ export default function VerifyPage() {
 - [ ] Sign in with non-existent email
 - [ ] Test "forgot password" link
 - [ ] Test "sign up" link
+- [ ] Test callback URL redirect
 
 **Sign Up:**
 - [ ] Create account with valid data
-- [ ] Test password too short
-- [ ] Test password missing requirements
-- [ ] Test duplicate email
-- [ ] Test passwords don't match
+- [ ] Test password too short (Ory validation)
+- [ ] Test duplicate email (Ory validation)
+- [ ] Test passwords don't match (if confirm field exists)
 - [ ] Verify redirect to verification page
+- [ ] Check email for verification code
 
-**Password Reset:**
+**Password Recovery:**
 - [ ] Request reset for existing email
 - [ ] Request reset for non-existent email
 - [ ] Test "back to sign in" link
+- [ ] Check email for recovery code
+- [ ] Submit recovery code
+- [ ] Test invalid/expired code
+
+**Email Verification:**
+- [ ] Check email for verification code
+- [ ] Submit verification code
+- [ ] Test invalid code
+- [ ] Test expired code
+
+**Settings:**
+- [ ] Update profile name
+- [ ] Update email (requires verification)
+- [ ] Set up TOTP MFA (scan QR code)
+- [ ] Enter TOTP code to confirm
+- [ ] Verify MFA enabled (check AAL level)
+
+**MFA Required:**
+- [ ] Access as admin without MFA (redirects)
+- [ ] Link to settings works
+- [ ] After MFA setup, can access admin
 
 **User Nav:**
-- [ ] Verify shows when signed in
-- [ ] Verify shows "Sign In" when signed out
-- [ ] Test dropdown open/close
-- [ ] Test sign out
-- [ ] Test admin link (admin user only)
-- [ ] Test navigation links
+- [ ] Shows when signed in
+- [ ] Shows "Sign In" when signed out
+- [ ] Dropdown open/close
+- [ ] Sign out works
+- [ ] Admin link (admin user only)
+- [ ] Navigation links work
 
 ---
 
 ## Next Steps
 
 After Phase 4.4.3 complete:
-1. **Phase 4.4.4:** Add middleware for protected routes
-2. **Phase 4.4.5:** Integrate with orders and checkout
-3. **Phase 4.4.6:** SendGrid email integration
+1. **Phase 4.4.4:** Integrate Ory SDK (session helpers, webhook handler, middleware)
+2. **Phase 4.4.5:** Protected routes (middleware)
+3. **Phase 4.4.6:** Integration with existing features (orders, account pages)
 
 ---
 
 **See Also:**
-- `docs/tasks/Phase 4.4.2 - NextAuth Configuration.md` - Previous phase
-- `docs/tasks/Phase 4.4.4 - Protected Routes & Middleware.md` - Next phase
-- `docs/DESIGN_SYSTEM.md` - UI component library
+- `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Previous phase
+- `docs/tasks/Phase 4.4.4 - Ory SDK Integration.md` - Next phase
+- `docs/tasks/Phase 4.4 - Authentication.md` - Parent task
+- Ory Kratos Self-Service Flows: https://www.ory.sh/docs/kratos/self-service

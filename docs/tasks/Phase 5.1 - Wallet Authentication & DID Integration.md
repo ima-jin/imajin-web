@@ -9,9 +9,16 @@
 
 > **NOTE:** This document was originally Phase 4.4.1 and has been moved to Phase 5.1.
 >
-> **Current Strategy:** Phase 4.4 implements email/password authentication using NextAuth.js with a DID-ready database schema (nullable wallet fields). This enables a smooth migration path to wallet authentication without breaking changes.
+> **Current Strategy:** Phase 4.4 implements email/password authentication using **Ory Kratos** (self-hosted identity provider) with a DID-ready database schema (nullable wallet fields in Ory identity traits + local shadow table). This enables a smooth migration path to wallet authentication without breaking changes.
 >
-> **See:** `docs/AUTH_STRATEGY.md` and Phase 4.4.1-4.4.7 task documents for the current implementation approach.
+> **Ory Integration for Wallet Auth:** When implementing wallet authentication, we will:
+> 1. Create API endpoints for wallet signature verification (this document's implementation remains valid)
+> 2. Use Ory Kratos Admin API to create/update identities with wallet_address traits
+> 3. Keep local users table synced via existing webhook infrastructure
+> 4. Leverage Ory session cookies for authenticated wallet users
+> 5. No breaking changes to Ory identity schema (wallet fields already nullable)
+>
+> **See:** `docs/AUTH_STRATEGY.md` and Phase 4.4.1-4.4.7 task documents for the current Ory Kratos implementation.
 
 ---
 

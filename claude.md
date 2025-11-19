@@ -30,12 +30,14 @@ For detailed phase completion status and task breakdowns, see:
 
 **Next Up:**
 - **Phase 4.4: Authentication & User Management** (ACTIVE)
-  - 4.4.1: Database Schema (auth tables, DID-ready)
-  - 4.4.2: NextAuth Configuration (email/password, no OAuth)
-  - 4.4.3: Auth UI Components (signin/signup, password reset)
-  - 4.4.4: Protected Routes & Middleware
-  - 4.4.5: Integration (order history, account pages)
-  - 4.4.6: SendGrid Email (verification, password reset)
+  - Using **Ory Kratos** (self-hosted, open-source identity provider)
+  - Trust hub federation architecture (every device can be a hub)
+  - 4.4.1: Database Schema (users shadow, trust_hubs, user_collectives, memberships)
+  - 4.4.2: Ory Kratos Setup (Docker, SMTP, webhooks)
+  - 4.4.3: Auth UI Components (Ory self-service flows)
+  - 4.4.4: Protected Routes & Middleware (Ory session validation, MFA enforcement)
+  - 4.4.5: Integration (order history, account pages, collective backfill)
+  - 4.4.6: SendGrid Email (via Ory Courier)
   - 4.4.7: Testing (unit, integration, E2E)
 - Phase 2.5.4: Stripe Link Integration Testing (manual testing)
 - Phase 2.6: E2E & Smoke Tests
@@ -70,6 +72,38 @@ For detailed phase completion status and task breakdowns, see:
 - **Self-hosted** - Full control, no vendor lock-in
 - **Lean approach** - Build only what's needed, extend as required
 - **Code-based content** - No GUI CMS tools, JSON configs in repo
+- **True ownership** - Users own hardware, data, identity, creations
+- **Decentralization-ready** - Architecture supports federated/P2P future without breaking changes
+
+### Trust Hub Federation Architecture
+
+**Vision:** Every Imajin unit can run as a hub, enabling a decentralized marketplace.
+
+**Today (Phase 4.4):**
+- Centralized: Single hub (imajin.ca)
+- Ory Kratos for authentication
+- Users table shadows Ory identities
+- Products attributed to "Imajin" collective
+
+**Phase 5+:**
+- Every device is a hub (personal, family, or community)
+- Trust hub federation (hubs explicitly trust each other)
+- Collectives for creator attribution
+- Users can migrate between hubs
+
+**Future:**
+- DID-based identity (W3C DIDs)
+- Wallet authentication (Solana)
+- Federated commerce (buy/sell across hubs)
+- Peer-to-peer (units federate directly)
+
+**Database Architecture:**
+- `trust_hubs` - Hosting nodes (imajin.ca, user devices, community servers)
+- `user_collectives` - Organizational entities (Imajin, artist groups, etc.)
+- `user_collective_memberships` - Many-to-many (users belong to multiple collectives)
+- `users` - Shadow of Ory identities + DID/wallet fields
+
+**Key Principle:** Every user CAN operate a hub. Some choose to join existing hubs for convenience. Architecture supports all scales without breaking changes.
 
 ---
 
@@ -87,15 +121,20 @@ For detailed phase completion status and task breakdowns, see:
 ### Services
 
 - **Payments:** Stripe (embedded checkout, webhooks) - **Products already configured**
+- **Authentication:** Ory Kratos (self-hosted identity provider, open-source)
+- **Email:** SendGrid (via Ory Courier for auth emails)
 - **Images:** Cloudinary (existing account)
 - **CDN:** Cloudflare (to be configured during setup)
 - **Hosting:** Self-hosted Linux server (hardware in progress)
 
 ### Future Integrations
 
-- Solana Pay (MJN token checkout)
-- NFT minting for Founder Edition units
-- Visual configurator (Fusion 360 Python-style scripting)
+- **Wallet auth** - Solana wallet sign-in with DID generation
+- **Trust hub federation** - Peer-to-peer hub network
+- **Solana Pay** - MJN token checkout
+- **NFT minting** - Founder Edition units with NFT certificates
+- **Visual configurator** - Script-driven fixture builder (Fusion 360 Python-style)
+- **Federated marketplace** - Community-created products across hubs
 
 ---
 
@@ -654,4 +693,4 @@ Inspired by Fusion 360 Python scripting:
 
 **This file should be updated as context evolves. Keep it current!**
 
-Last Updated: 2025-10-28
+Last Updated: 2025-11-17

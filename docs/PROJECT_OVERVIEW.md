@@ -24,10 +24,13 @@
 - Stripe Product IDs already configured
 
 ## Database Design
-**What we store**: Product metadata, variants, dependencies, orders, NFT tracking, portfolio
+**What we store**: Product metadata, variants, dependencies, orders, NFT tracking, portfolio, users, collectives, trust hubs
 **What Stripe handles**: Pricing, payment processing, checkout, receipts
+**What Ory Kratos handles**: Passwords, sessions, MFA credentials, email verification
 
-**Core tables**: products, variants, product_dependencies, product_specs, orders, order_items, nft_tokens, portfolio_items
+**Core tables**:
+- **E-commerce**: products, variants, product_dependencies, product_specs, orders, order_items, nft_tokens, portfolio_items
+- **Auth & Federation**: users (shadow of Ory), trust_hubs, user_collectives, user_collective_memberships
 
 ## Repository Structure
 ```
@@ -57,6 +60,36 @@ imajin-ai/                  # Root (NOT a git repo)
 - **AI-first development** (optimize for AI tooling)
 - **Lean approach** (build only what's needed)
 - **Code-based content** (JSON configs, no GUI CMS)
+- **True ownership** (users own hardware, data, identity, creations)
+
+## Decentralized Architecture Vision
+
+### Today (Phase 4.4): Centralized Bootstrap
+- Single hub (imajin.ca)
+- Ory Kratos for authentication
+- Users table shadows Ory identities
+- Products attributed to "Imajin" collective
+
+### Phase 5+: Federated Marketplace
+- **Every device is a hub** - Imajin units can run hub software
+- **Trust hub federation** - Hubs explicitly trust each other
+- **Collectives** - Organizational entities for creator attribution
+- **Hub scales**: Personal (1 user) → Family (household) → Community (artist collective) → Organization (company)
+
+### Future: Full Decentralization
+- **DID-based identity** (W3C DIDs, portable across hubs)
+- **Wallet authentication** (Solana wallet sign-in)
+- **Federated commerce** (buy/sell across hubs)
+- **Data portability** (collectives can migrate between hubs)
+- **Peer-to-peer** (units federate directly)
+
+**Key Principle**: Every user CAN operate a hub. Some choose to join existing hubs for convenience. Architecture supports all scales without breaking changes.
+
+**Business Model Alignment**:
+- Founder Edition NFT = Hub license
+- Hardware sales (not SaaS subscriptions)
+- User owns hardware, data, identity
+- No vendor lock-in
 
 ## Future Enhancements
 - **Solana**: MJN token, NFT minting for Founder Edition units
