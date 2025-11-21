@@ -67,7 +67,7 @@ export interface ProductConfig {
   long_description?: string; // Full product description (markdown)
   category: "material" | "connector" | "control" | "diffuser" | "kit" | "interface";
   dev_status: 0 | 1 | 2 | 3 | 4 | 5;
-  base_price: number; // Price in cents
+  base_price_cents: number; // Price in cents
   stripe_product_id?: string; // Stripe Product ID (set after sync)
   has_variants: boolean;
   requires_assembly?: boolean;
@@ -135,7 +135,7 @@ export interface VariantConfig {
       "long_description": "Our original prototype panel featuring a 5×5 grid of addressable LEDs. Perfect for smaller installations or prototyping. Each panel contains 25 individually controllable RGB LEDs with opaque PCB backing for focused light output.\n\n**Use Cases:**\n- Small-scale installations\n- Prototyping and testing\n- Accent lighting\n- Legacy system compatibility",
       "category": "material",
       "dev_status": 5,
-      "base_price": 1600,
+      "base_price_cents": 1600,
       "stripe_product_id": "prod_stripe_material_5x5_o",
       "has_variants": false,
       "images": ["cloudinary-url-1.jpg", "cloudinary-url-2.jpg"],
@@ -189,7 +189,7 @@ export interface VariantConfig {
       "long_description": "Our current-generation panel featuring a refined 8×8 grid with negative space design for enhanced visual depth. The void-style PCB creates floating LED effects perfect for modern installations.\n\n**Key Features:**\n- 64 individually addressable RGB LEDs\n- Precision-cut negative space design\n- Optimized 31.6mm spacing for ideal coverage\n- Compatible with our spine connector system\n- Designed for scalability (tested up to 80 panels)\n\n**Use Cases:**\n- Large-scale installations\n- Commercial projects\n- Expandable fixtures\n- Founder Edition cubes",
       "category": "material",
       "dev_status": 5,
-      "base_price": 3500,
+      "base_price_cents": 3500,
       "stripe_product_id": "prod_TFqJ6019ONDct2",
       "has_variants": false,
       "images": [
@@ -257,7 +257,7 @@ export interface VariantConfig {
       "long_description": "Build your own LED cube with our comprehensive DIY kit. Includes everything you need to assemble an 8×8×8 fixture (512 addressable LEDs) perfect for makers, hackers, and lighting enthusiasts.\n\n**What's Included:**\n- 8× Material-8x8-V panels (BLACK PCB)\n- 7× Connect-5x31.6-5v spine connectors\n- 1× Control-2-5v control unit\n- 512× Diffuse-12-C round diffusion caps\n- Assembly instructions and wiring guide\n- Access to online configurator tool\n\n**Requirements:**\n- Basic soldering skills\n- 5V 10A power supply (not included)\n- 2-3 hours assembly time\n\n**Note:** DIY kits do not include warranty or assembly service guarantees.",
       "category": "kit",
       "dev_status": 5,
-      "base_price": 49500,
+      "base_price_cents": 49500,
       "stripe_product_id": "prod_stripe_diy_cube",
       "has_variants": false,
       "requires_assembly": true,
@@ -321,7 +321,7 @@ export interface VariantConfig {
       "long_description": "The ultimate LED cube experience. Each Founder Edition unit is meticulously hand-assembled, tested, and certified. Limited to 1,000 units worldwide across three exclusive colorways.\n\n**Premium Features:**\n- Hand-assembled by Imajin craftspeople\n- 24v professional-grade system\n- Control-8-24v unit (8 outputs, 2 initially configured)\n- Expandable to 32+ layers\n- 10-year comprehensive warranty\n- ESA certified for safety and reliability\n- MJN RWA NFT token (minted on Solana)\n- Unique serial number engraved on unit\n- Certificate of authenticity\n- Premium packaging\n\n**Limited Edition:**\n- BLACK: 500 units\n- WHITE: 300 units\n- RED: 200 units\n\n**What's Included:**\n- 8× Material-8x8-V panels (selected color)\n- 7× Connect-5x31.6-24v spine connectors\n- 1× Control-8-24v control unit\n- 512× Diffuse-12-C round diffusion caps\n- Professional cabling and cable management\n- Solana NFT token (delivered post-shipment)\n- Warranty documentation\n\n**Optional Upgrades:**\n- Control-16-24v upgrade (+$70) - doubles expansion capacity",
       "category": "kit",
       "dev_status": 5,
-      "base_price": 99500,
+      "base_price_cents": 99500,
       "stripe_product_id": "prod_stripe_founder_base",
       "has_variants": true,
       "requires_assembly": false,
@@ -672,7 +672,7 @@ async function syncProducts() {
         description: product.description,
         category: product.category,
         dev_status: product.dev_status,
-        base_price: product.base_price,
+        base_price_cents: product.base_price_cents,
         has_variants: product.has_variants,
         // ... other fields
       })
@@ -746,7 +746,7 @@ const ProductConfigSchema = z.object({
   description: z.string(),
   category: z.enum(["material", "connector", "control", "diffuser", "kit", "interface"]),
   dev_status: z.number().min(0).max(5),
-  base_price: z.number().positive(),
+  base_price_cents: z.number().positive(),
   stripe_product_id: z.string(),
   has_variants: z.boolean(),
   images: z.array(z.string().url()),

@@ -520,7 +520,7 @@ export async function POST(
     // 3. Generate emails
     const emails = targetDepositOrders.map((order) => {
       const depositAmount = order.total_amount;
-      const wholesalePrice = product.wholesale_price || product.base_price;
+      const wholesalePrice = product.wholesale_price_cents || product.base_price_cents;
       const remainingBalance = wholesalePrice - depositAmount;
 
       const refundToken = generateRefundToken(order.id);

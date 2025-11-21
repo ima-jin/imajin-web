@@ -125,7 +125,7 @@ export function ProductCard({ product }: ProductCardProps) {
           className="transition group-hover:scale-105"
         />
         <h3>{product.name}</h3>
-        <p>{formatCurrency(product.base_price)}</p>
+        <p>{formatCurrency(product.base_price_cents)}</p>
       </div>
     </Link>
   );

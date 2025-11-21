@@ -168,7 +168,7 @@ CREATE TABLE products (
   description TEXT,
   category TEXT NOT NULL,                 -- "material", "connector", "control", "diffuser", "kit", "interface"
   dev_status INTEGER NOT NULL DEFAULT 0,  -- 0-5 (only show if status = 5)
-  base_price INTEGER NOT NULL,            -- Price in cents (retail/base price)
+  base_price_cents INTEGER NOT NULL,            -- Price in cents (retail/base price)
   is_active BOOLEAN DEFAULT true,
   requires_assembly BOOLEAN DEFAULT false,
   has_variants BOOLEAN DEFAULT false,
@@ -190,8 +190,8 @@ CREATE TABLE products (
   is_live BOOLEAN NOT NULL DEFAULT false, -- Show on site? (manual control)
   cost_cents INTEGER,                     -- Manufacturing cost (optional)
   wholesale_price_cents INTEGER,          -- Wholesale/vendor pricing (optional)
-  cogs_price INTEGER,                     -- Cost of goods sold (internal tracking)
-  presale_deposit_price INTEGER,          -- Refundable deposit amount for pre-sale
+  cogs_price_cents INTEGER,                     -- Cost of goods sold (internal tracking)
+  presale_deposit_price_cents INTEGER,          -- Refundable deposit amount for pre-sale
   sell_status TEXT NOT NULL DEFAULT 'internal',  -- "for-sale" | "pre-order" | "pre-sale" | "sold-out" | "internal"
   sell_status_note TEXT,                  -- Optional customer-facing message (e.g., "Shipping Dec 1")
   last_synced_at TIMESTAMP,               -- Last sync with Stripe/Cloudinary
@@ -229,11 +229,11 @@ CREATE INDEX idx_products_collective ON products(created_by_collective_id);
 
 ```sql
 -- Unlimited inventory product (standard stock item)
-INSERT INTO products (id, name, category, dev_status, base_price, has_variants, max_quantity) VALUES
+INSERT INTO products (id, name, category, dev_status, base_price_cents, has_variants, max_quantity) VALUES
 ('Material-8x8-V', '8x8 Void Panel', 'material', 5, 3500, false, NULL);  -- NULL = unlimited
 
 -- Limited inventory product with variants (Founder Edition)
-INSERT INTO products (id, name, category, dev_status, base_price, has_variants, max_quantity) VALUES
+INSERT INTO products (id, name, category, dev_status, base_price_cents, has_variants, max_quantity) VALUES
 ('Unit-8x8x8-Founder', 'Founder Edition Cube', 'kit', 5, 99500, true, 1000);  -- Total across all variants
 ```
 
@@ -260,9 +260,9 @@ CREATE TABLE variants (
   stripe_price_id TEXT,                   -- Stripe Price ID (for variant-specific pricing)
   variant_type TEXT NOT NULL,             -- "color", "voltage", "size"
   variant_value TEXT NOT NULL,            -- "BLACK", "WHITE", "RED"
-  price_modifier INTEGER DEFAULT 0,       -- Adjusts base_price
+  price_modifier INTEGER DEFAULT 0,       -- Adjusts base_price_cents
   wholesale_price_modifier INTEGER DEFAULT 0,  -- Adjusts wholesale_price_cents
-  presale_deposit_modifier INTEGER DEFAULT 0,  -- Adjusts presale_deposit_price
+  presale_deposit_modifier INTEGER DEFAULT 0,  -- Adjusts presale_deposit_price_cents
   is_limited_edition BOOLEAN DEFAULT false,
 
   -- Per-variant inventory (for limited editions with color options)
@@ -442,8 +442,8 @@ CREATE TABLE order_items (
   variant_id TEXT,
   stripe_product_id TEXT NOT NULL,
   quantity INTEGER NOT NULL,
-  unit_price INTEGER NOT NULL,
-  total_price INTEGER NOT NULL,
+  unit_price_cents INTEGER NOT NULL,
+  total_price_cents INTEGER NOT NULL,
 
   -- Snapshot product info (in case product changes)
   product_name TEXT NOT NULL,
@@ -613,7 +613,7 @@ export const products = [
     name: "8x8 Void Panel",
     category: "material",
     dev_status: 5,
-    base_price: 3500,
+    base_price_cents: 3500,
     has_variants: false,
   },
 ];

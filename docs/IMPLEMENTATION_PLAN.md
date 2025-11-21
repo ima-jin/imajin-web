@@ -153,7 +153,7 @@
 **See:** `/docs/tasks/Phase 2.5.1 - Stripe Product Price Architecture.md`
 
 ### 2.5.2 Pre-Sale vs Pre-Order Pricing Infrastructure ✅
-- [x] Schema: presale_deposit_price, wholesale_price, cogs_price fields
+- [x] Schema: presale_deposit_price_cents, wholesale_price_cents, cogs_price_cents fields
 - [x] Database migration
 - [x] Pre-sale deposit checkout flow (Phase 2.5.2.1)
 - [x] Deposit holder tracking (Phase 2.5.2.1)

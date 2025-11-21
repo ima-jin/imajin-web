@@ -163,7 +163,7 @@ Look up by email and order ID
 {
   "order": {
     "id": "cs_test_...", "status": "paid", "total": 103500,
-    "items": [{"product_name": "...", "quantity": 1, "unit_price": 99500}],
+    "items": [{"product_name": "...", "quantity": 1, "unit_price_cents": 99500}],
     "shipping": {...}, "tracking_number": null
   }
 }

@@ -514,7 +514,7 @@ export function createProduct(overrides = {}) {
     name: faker.commerce.productName(),
     category: "material",
     dev_status: 5,
-    base_price: faker.number.int({ min: 1000, max: 10000 }),
+    base_price_cents: faker.number.int({ min: 1000, max: 10000 }),
     is_active: true,
     has_variants: false,
     ...overrides,

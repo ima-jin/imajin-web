@@ -72,13 +72,13 @@ Database (Drizzle)
 export const products = pgTable('products', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  base_price: integer('base_price').notNull(),
+  base_price_cents: integer('base_price_cents').notNull(),
   specs: jsonb('specs'), // Raw JSONB
   metadata: jsonb('metadata'),
 });
 
 export type DbProduct = typeof products.$inferSelect;
-// { id: string; name: string; base_price: number; specs: unknown; metadata: unknown }
+// { id: string; name: string; base_price_cents: number; specs: unknown; metadata: unknown }
 ```
 
 **Application Types** (validated):
@@ -145,7 +145,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
   return {
     id: dbProduct.id,
     name: dbProduct.name,
-    basePrice: dbProduct.base_price, // Snake to camel case
+    basePrice: dbProduct.base_price_cents, // Snake to camel case
     specs: specs.map((s) => ({
       key: s.key,
       value: s.value,
@@ -262,7 +262,7 @@ describe("mapDbProductToProduct", () => {
     const dbProduct = {
       id: "Material-8x8-V",
       name: "8x8 Void Panel",
-      base_price: 3500,
+      base_price_cents: 3500,
       specs: [
         { key: "voltage", value: "5", unit: "v", display_order: 1 },
       ],
@@ -281,7 +281,7 @@ describe("mapDbProductToProduct", () => {
     const dbProduct = {
       id: "test",
       name: "Test",
-      base_price: 100,
+      base_price_cents: 100,
       specs: "invalid string", // Should be array
       metadata: {},
     };
@@ -293,7 +293,7 @@ describe("mapDbProductToProduct", () => {
     const dbProduct = {
       id: "test",
       name: "Test",
-      base_price: 100,
+      base_price_cents: 100,
       specs: null,
       metadata: null,
     };
