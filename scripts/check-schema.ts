@@ -22,7 +22,7 @@ async function checkSchema() {
       await db.execute(sql`
         INSERT INTO products (
           id, name, description, category, dev_status,
-          base_price, is_active, requires_assembly, has_variants,
+          base_price_cents, is_active, requires_assembly, has_variants,
           is_live, media
         ) VALUES (
           'test-product', 'Test', 'Test product', 'test', 5,

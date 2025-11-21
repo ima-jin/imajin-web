@@ -29,14 +29,14 @@ describe('GET /api/portfolio', () => {
         createMockDbProduct({
           id: 'portfolio-product',
           name: 'Portfolio Product',
-          basePrice: 10000,
+          basePriceCents: 10000,
           showOnPortfolioPage: true,
           portfolioCopy: 'Featured installation',
         }),
         createMockDbProduct({
           id: 'regular-product',
           name: 'Regular Product',
-          basePrice: 15000,
+          basePriceCents: 15000,
           showOnPortfolioPage: false,
         }),
       ]);
@@ -54,7 +54,7 @@ describe('GET /api/portfolio', () => {
         createMockDbProduct({
           id: 'test-portfolio',
           name: 'Test Portfolio',
-          basePrice: 10000,
+          basePriceCents: 10000,
           showOnPortfolioPage: true,
           portfolioCopy: '## Featured Installation\n\nThis was featured in downtown core.',
         }),
@@ -73,7 +73,7 @@ describe('GET /api/portfolio', () => {
         createMockDbProduct({
           id: 'regular-1',
           name: 'Regular Product',
-          basePrice: 10000,
+          basePriceCents: 10000,
           showOnPortfolioPage: false,
         }),
       ]);
@@ -89,14 +89,14 @@ describe('GET /api/portfolio', () => {
         createMockDbProduct({
           id: 'live-portfolio',
           name: 'Live Portfolio',
-          basePrice: 10000,
+          basePriceCents: 10000,
           showOnPortfolioPage: true,
           isLive: true,
         }),
         createMockDbProduct({
           id: 'draft-portfolio',
           name: 'Draft Portfolio',
-          basePrice: 15000,
+          basePriceCents: 15000,
           showOnPortfolioPage: true,
           isLive: false,
         }),
@@ -116,7 +116,7 @@ describe('GET /api/portfolio', () => {
         createMockDbProduct({
           id: 'portfolio-with-media',
           name: 'Portfolio with Media',
-          basePrice: 10000,
+          basePriceCents: 10000,
           showOnPortfolioPage: true,
           media: [
             {
@@ -145,7 +145,7 @@ describe('GET /api/portfolio', () => {
         createMockDbProduct({
           id: 'portfolio-1',
           name: 'Portfolio 1',
-          basePrice: 10000,
+          basePriceCents: 10000,
           showOnPortfolioPage: true,
         }),
       ]);

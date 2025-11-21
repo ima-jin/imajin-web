@@ -202,6 +202,42 @@ The `web/` folder is a **monorepo** containing:
 - **Current:** `.env` files in plaintext on servers (outside web root, 600 permissions)
 - **Future TODO:** Migrate to secrets vault (HashiCorp Vault, Doppler, etc.)
 
+### Environment Variables & Test Database
+
+**Environment Files:**
+- `.env.local` - Local development (imajin_local database)
+- `.env.test` - Test environment (imajin_test database)
+- `.env.live` - Production (imajin_prod database)
+
+**Test Database Reset/Seed Workflow:**
+
+On Windows, environment variables set with `set` don't propagate through `npm run` commands. Use `dotenv-cli` (already in package.json) to load environment variables from `.env.test`:
+
+```bash
+# 1. Reset test database (drops all tables, recreates schema)
+npx dotenv -e .env.test -- npm run test:db:reset
+
+# 2. Push schema from Drizzle (recreates all tables)
+npx dotenv -e .env.test -- npm run db:push
+
+# 3. Seed mailing lists
+npx dotenv -e .env.test -- npx tsx scripts/seed-contacts.ts
+
+# 4. Seed auth data (requires Ory Kratos running)
+npx dotenv -e .env.test -- npm run seed:auth
+```
+
+**How It Works:**
+- `.env.test` contains: `NODE_ENV=test` and `DATABASE_URL=postgresql://imajin:imajin_dev@localhost:5435/imajin_test`
+- `lib/config/env.ts` automatically selects `imajin_test` database when `NODE_ENV=test`
+- `scripts/reset-test-db.ts` has safety checks to prevent accidental production database resets
+- Full reset drops ALL tables (products, variants, auth, contacts), so reseed everything after reset
+
+**When to Use:**
+- Before running integration tests after schema changes
+- When test database gets into inconsistent state
+- When you need a clean slate for testing
+
 ---
 
 ## Database Design Philosophy

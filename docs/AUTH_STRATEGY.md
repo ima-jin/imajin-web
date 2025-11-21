@@ -704,7 +704,7 @@ This strategy provides **immediate value** (auth for CRM features) while **prese
 - `docs/tasks/Phase 4.4.1 - Database Schema.md` - Users table design
 - `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Docker and identity schema
 - `docs/tasks/Phase 5.1 - Wallet Authentication & DID Integration.md` - Future wallet auth
-- `D:\Projects\imajin\imajin-ai\mjn\layer-2-identity\IDENTITY_LAYER.md` - DID/VC architecture
-- `D:\Projects\imajin\imajin-ai\mjn\layer-2-identity\IMAJIN_OS_SPEC.md` - Personal AI agent spec
-- `D:\Projects\imajin\imajin-ai\mjn\architecture\SECURITY.md` - Key management and recovery
+- `https://github.com/ima-jin/imajin-token/blob/main/layer-2-identity/IDENTITY_LAYER.md` - DID/VC architecture
+- `https://github.com/ima-jin/imajin-token/blob/main/layer-2-identity/IMAJIN_OS_SPEC.md` - Personal AI agent spec
+- `https://github.com/ima-jin/imajin-token/blob/main/architecture/SECURITY.md` - Key management and recovery
 - Ory Kratos Documentation: https://www.ory.sh/docs/kratos/

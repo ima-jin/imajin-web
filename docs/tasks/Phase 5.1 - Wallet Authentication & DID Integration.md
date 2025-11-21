@@ -1034,7 +1034,7 @@ See also:
 
 **Estimated:** 4-6 weeks when prioritized
 
-**Reference:** See `D:\Projects\imajin\imajin-ai\mjn\layer-2-identity\IDENTITY_LAYER.md` for full vision
+**Reference:** See `https://github.com/ima-jin/imajin-token/blob/main/layer-2-identity/IDENTITY_LAYER.md` for full vision
 
 ---
 

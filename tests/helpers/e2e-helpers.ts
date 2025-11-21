@@ -102,7 +102,7 @@ async function seedE2ETestData(
     sellStatus: 'for-sale',
     isLive: true,
     isActive: true,
-    basePrice: 15000,
+    basePriceCents: 15000,
     description: 'Test product for E2E testing',
     stripeProductId: stripeProductId,
   });

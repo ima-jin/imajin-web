@@ -1,0 +1,63 @@
+{
+  "$id": "https://imajin.ca/schemas/identity.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Imajin Identity",
+  "type": "object",
+  "properties": {
+    "traits": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "title": "Email",
+          "minLength": 3,
+          "ory.sh/kratos": {
+            "credentials": {
+              "password": {
+                "identifier": true
+              }
+            },
+            "verification": {
+              "via": "email"
+            },
+            "recovery": {
+              "via": "email"
+            }
+          }
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "role": {
+          "type": "string",
+          "title": "Role",
+          "enum": ["customer", "admin"],
+          "default": "customer"
+        },
+        "did": {
+          "type": "string",
+          "title": "Decentralized Identifier (DID)",
+          "description": "W3C DID for wallet-based authentication (Phase 5+)",
+          "pattern": "^did:[a-z]+:[a-zA-Z0-9._-]+$"
+        },
+        "wallet_address": {
+          "type": "string",
+          "title": "Wallet Address",
+          "description": "Solana wallet address for wallet authentication (Phase 5+)",
+          "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+        },
+        "public_key": {
+          "type": "string",
+          "title": "Public Key",
+          "description": "Ed25519 public key for signature verification (Phase 5+)"
+        }
+      },
+      "required": ["email"],
+      "additionalProperties": false
+    }
+  }
+}

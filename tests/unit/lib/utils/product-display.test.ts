@@ -20,7 +20,7 @@ function createTestProduct(overrides: Partial<Product> = {}): Product {
     description: 'Test Description',
     category: 'material',
     devStatus: 5,
-    basePrice: 5000,
+    basePriceCents: 5000,
     isActive: true,
     requiresAssembly: false,
     hasVariants: false,
@@ -435,7 +435,7 @@ describe('product-display utilities', () => {
     it('returns null for pre-sale products (hide pricing)', () => {
       const product = createTestProduct({
         sellStatus: 'pre-sale',
-        basePrice: 100000,
+        basePriceCents: 100000,
         wholesalePriceCents: 80000,
         presaleDepositPriceCents: 25000,
       });
@@ -448,7 +448,7 @@ describe('product-display utilities', () => {
     it('returns wholesale price for pre-order with deposit paid', () => {
       const product = createTestProduct({
         sellStatus: 'pre-order',
-        basePrice: 129500,
+        basePriceCents: 129500,
         wholesalePriceCents: 97500,
       });
 
@@ -463,7 +463,7 @@ describe('product-display utilities', () => {
     it('returns base price for pre-order without deposit', () => {
       const product = createTestProduct({
         sellStatus: 'pre-order',
-        basePrice: 129500,
+        basePriceCents: 129500,
         wholesalePriceCents: 97500,
       });
 
@@ -478,7 +478,7 @@ describe('product-display utilities', () => {
     it('returns base price for for-sale products', () => {
       const product = createTestProduct({
         sellStatus: 'for-sale',
-        basePrice: 5000,
+        basePriceCents: 5000,
       });
 
       const result = getDisplayPrice(product, undefined, false);
@@ -492,7 +492,7 @@ describe('product-display utilities', () => {
     it('applies variant price modifier for base price', () => {
       const product = createTestProduct({
         sellStatus: 'for-sale',
-        basePrice: 5000,
+        basePriceCents: 5000,
       });
       const variant = createTestVariant({
         priceModifier: 1500,
@@ -509,7 +509,7 @@ describe('product-display utilities', () => {
     it('applies variant wholesale price modifier for deposit holders', () => {
       const product = createTestProduct({
         sellStatus: 'pre-order',
-        basePrice: 129500,
+        basePriceCents: 129500,
         wholesalePriceCents: 97500,
       });
       const variant = createTestVariant({
@@ -527,7 +527,7 @@ describe('product-display utilities', () => {
     it('falls back to base price if wholesale price not set', () => {
       const product = createTestProduct({
         sellStatus: 'pre-order',
-        basePrice: 10000,
+        basePriceCents: 10000,
         wholesalePriceCents: undefined,
       });
 
@@ -542,7 +542,7 @@ describe('product-display utilities', () => {
     it('handles null variant gracefully', () => {
       const product = createTestProduct({
         sellStatus: 'for-sale',
-        basePrice: 5000,
+        basePriceCents: 5000,
       });
 
       const result = getDisplayPrice(product, undefined, false);

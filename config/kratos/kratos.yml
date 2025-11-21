@@ -1,0 +1,166 @@
+version: v0.13.0
+
+# Database connection
+dsn: postgres://kratos:kratos_password@kratos-db:5432/kratos?sslmode=disable
+
+# Server configuration
+serve:
+  public:
+    base_url: http://localhost:4433
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:30000
+      allowed_methods:
+        - POST
+        - GET
+        - PUT
+        - PATCH
+        - DELETE
+      allowed_headers:
+        - Authorization
+        - Content-Type
+        - Cookie
+      exposed_headers:
+        - Content-Type
+        - Set-Cookie
+      allow_credentials: true
+  admin:
+    base_url: http://localhost:4434
+
+# Self-service flows
+selfservice:
+  default_browser_return_url: http://localhost:30000/
+  allowed_return_urls:
+    - http://localhost:30000
+
+  methods:
+    password:
+      enabled: true
+      config:
+        min_password_length: 10
+        identifier_similarity_check_enabled: true
+        haveibeenpwned_enabled: false
+    totp:
+      enabled: true
+      config:
+        issuer: Imajin
+
+  flows:
+    # Registration flow
+    registration:
+      ui_url: http://localhost:30000/auth/signup
+      lifespan: 10m
+      after:
+        password:
+          hooks:
+            - hook: session
+            - hook: web_hook
+              config:
+                url: http://host.docker.internal:30000/api/auth/webhook
+                method: POST
+                body: file:///etc/config/kratos/webhook.body.jsonnet
+                auth:
+                  type: api_key
+                  config:
+                    name: X-Webhook-Secret
+                    value: change_me_webhook_secret_32_char
+                    in: header
+
+    # Login flow
+    login:
+      ui_url: http://localhost:30000/auth/signin
+      lifespan: 10m
+      after:
+        password:
+          hooks:
+            - hook: require_verified_address
+
+    # Verification flow
+    verification:
+      ui_url: http://localhost:30000/auth/verify
+      use: code
+      lifespan: 24h
+      after:
+        default_browser_return_url: http://localhost:30000/account
+
+    # Recovery flow (password reset)
+    recovery:
+      ui_url: http://localhost:30000/auth/recovery
+      use: code
+      lifespan: 1h
+      after:
+        default_browser_return_url: http://localhost:30000/auth/signin
+
+    # Settings flow (profile, MFA)
+    settings:
+      ui_url: http://localhost:30000/auth/settings
+      privileged_session_max_age: 15m
+      required_aal: highest_available
+
+    # Logout flow
+    logout:
+      after:
+        default_browser_return_url: http://localhost:30000/
+
+    # Error UI
+    error:
+      ui_url: http://localhost:30000/auth/error
+
+# Session configuration
+session:
+  cookie:
+    domain: localhost
+    path: /
+    same_site: Lax
+    persistent: true
+  lifespan: 720h # 30 days
+  whoami:
+    required_aal: aal1
+
+# Identity schema
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+# Courier (email delivery)
+courier:
+  smtp:
+    connection_uri: ${SMTP_CONNECTION_URI}
+    from_address: ${EMAIL_FROM}
+    from_name: ${EMAIL_FROM_NAME}
+  templates:
+    verification_code:
+      valid:
+        email:
+          subject:
+            path: /etc/config/kratos/email_templates/verification_subject.txt.gotmpl
+          body:
+            html:
+              path: /etc/config/kratos/email_templates/verification.html.gotmpl
+            plaintext:
+              path: /etc/config/kratos/email_templates/verification.txt.gotmpl
+    recovery_code:
+      valid:
+        email:
+          subject:
+            path: /etc/config/kratos/email_templates/recovery_subject.txt.gotmpl
+          body:
+            html:
+              path: /etc/config/kratos/email_templates/recovery.html.gotmpl
+            plaintext:
+              path: /etc/config/kratos/email_templates/recovery.txt.gotmpl
+
+# Secrets (CHANGE IN PRODUCTION!)
+secrets:
+  cookie:
+    - change_me_cookie_secret_12345678
+  cipher:
+    - change_me_cipher_secret_12345678
+
+# Logging
+log:
+  level: info
+  format: json

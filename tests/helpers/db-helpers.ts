@@ -62,7 +62,7 @@ export async function seedTestData(db: ReturnType<typeof drizzle>) {
   const testProduct = createMockDbProduct({
     id: "test-product-1",
     name: "Test Product",
-    basePrice: 1000,
+    basePriceCents: 1000,
   });
 
   await db.insert(schema.products).values(testProduct);

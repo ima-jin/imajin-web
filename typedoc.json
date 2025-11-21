@@ -1,0 +1,29 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "lib/services",
+    "lib/utils",
+    "lib/mappers",
+    "lib/auth",
+    "lib/contacts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api/typedoc-output",
+  "json": "docs/api/typedoc-data.json",
+  "plugin": [],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "readme": "none",
+  "cleanOutputDir": true,
+  "includeVersion": false,
+  "searchInComments": true,
+  "sort": ["source-order"],
+  "kindSortOrder": [
+    "Function",
+    "Class",
+    "Interface",
+    "Type alias",
+    "Variable"
+  ]
+}

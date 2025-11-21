@@ -25,8 +25,8 @@ config({ path: resolve(process.cwd(), '.env.local') });
 config({ path: resolve(process.cwd(), '.env') });
 
 import { db } from '@/db';
-import { products, variants, productSpecs, productDependencies } from '@/db/schema';
-import { notInArray } from 'drizzle-orm';
+import { products, variants, productSpecs, productDependencies, userCollectives } from '@/db/schema';
+import { notInArray, eq } from 'drizzle-orm';
 import { ProductsJsonSchema } from '@/config/schema';
 import type { ProductsJson } from '@/config/schema';
 import { uploadMedia, deleteMedia } from '@/lib/services/cloudinary-service';
@@ -142,7 +142,7 @@ export async function syncProductsEnhanced(
               id: product.id,
               name: product.name,
               description: product.description,
-              basePrice: product.base_price,
+              basePrice: product.base_price_cents,
               isLive: product.is_live,
               sellStatus: product.sell_status || 'internal',
               hasVariants: true,
@@ -194,7 +194,7 @@ export async function syncProductsEnhanced(
             id: product.id,
             name: product.name,
             description: product.description,
-            basePrice: product.base_price,
+            basePrice: product.base_price_cents,
             isLive: product.is_live,
             sellStatus: product.sell_status || 'internal',
             hasVariants: false,
@@ -568,11 +568,45 @@ async function cleanupDeletedMediaVariant(
 }
 
 /**
+ * Cache for collective lookups (to avoid repeated queries)
+ */
+const collectiveCache = new Map<string, string>();
+
+/**
+ * Look up collective ID by slug
+ */
+async function getCollectiveIdBySlug(slug: string): Promise<string | null> {
+  if (collectiveCache.has(slug)) {
+    return collectiveCache.get(slug) || null;
+  }
+
+  const collective = await db.query.userCollectives.findFirst({
+    where: eq(userCollectives.slug, slug),
+  });
+
+  if (collective) {
+    collectiveCache.set(slug, collective.id);
+    return collective.id;
+  }
+
+  return null;
+}
+
+/**
  * Sync product to database
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function syncProductToDb(product: any, report: SyncReport): Promise<void> {
   try {
+    // Look up collective ID if collective_slug is provided
+    let collectiveId: string | null = null;
+    if (product.collective_slug) {
+      collectiveId = await getCollectiveIdBySlug(product.collective_slug);
+      if (!collectiveId) {
+        logger.warn('Collective not found', { slug: product.collective_slug, productId: product.id });
+      }
+    }
+
     await db
       .insert(products)
       .values({
@@ -581,7 +615,7 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
         description: product.description,
         category: product.category,
         devStatus: product.dev_status,
-        basePrice: product.base_price,
+        basePrice: product.base_price_cents,
         isActive: true,
         requiresAssembly: product.requires_assembly || false,
         hasVariants: product.has_variants,
@@ -601,6 +635,7 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
         showOnPortfolioPage: product.show_on_portfolio_page ?? false,
         portfolioCopy: product.portfolio_copy ?? null,
         isFeatured: product.is_featured ?? false,
+        createdByCollectiveId: collectiveId,
       })
       .onConflictDoUpdate({
         target: products.id,
@@ -609,7 +644,7 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
           description: product.description,
           category: product.category,
           devStatus: product.dev_status,
-          basePrice: product.base_price,
+          basePrice: product.base_price_cents,
           requiresAssembly: product.requires_assembly || false,
           hasVariants: product.has_variants,
           maxQuantity: product.max_quantity ?? null,
@@ -628,6 +663,7 @@ async function syncProductToDb(product: any, report: SyncReport): Promise<void> 
           showOnPortfolioPage: product.show_on_portfolio_page ?? false,
           portfolioCopy: product.portfolio_copy ?? null,
           isFeatured: product.is_featured ?? false,
+          createdByCollectiveId: collectiveId,
         },
       });
 

@@ -24,7 +24,7 @@ describe('API Error Handling', () => {
         json: async () => ({
           success: true,
           data: [
-            { id: 'test-1', name: 'Test Product', basePrice: 1000 }
+            { id: 'test-1', name: 'Test Product', basePriceCents: 1000 }
           ],
           meta: { timestamp: new Date().toISOString() }
         })

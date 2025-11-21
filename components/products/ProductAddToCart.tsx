@@ -18,7 +18,7 @@ interface ProductAddToCartProps {
   product: {
     id: string;
     name: string;
-    basePrice: number;
+    basePriceCents: number;
     image?: string;
     voltage?: '5v' | '24v';
     variants?: Variant[];
@@ -38,7 +38,7 @@ export function ProductAddToCart({ product }: ProductAddToCartProps) {
   const selectedVariant = product.variants?.find(v => v.id === selectedVariantId);
 
   // Calculate final price
-  const finalPrice = product.basePrice + (selectedVariant?.priceModifier || 0);
+  const finalPrice = product.basePriceCents + (selectedVariant?.priceModifier || 0);
 
   // Build cart item
   const cartItem: Omit<CartItem, 'quantity'> = {

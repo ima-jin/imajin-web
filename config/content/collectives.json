@@ -1,0 +1,16 @@
+{
+  "collectives": [
+    {
+      "slug": "imajin",
+      "name": "Imajin",
+      "description": "Official Imajin LED fixtures and components. Modular lighting systems designed for creativity and true ownership.",
+      "metadata": {
+        "bio": "Imajin creates modular LED lighting systems that put you in control. No subscriptions, no vendor lock-in, just hardware you truly own.",
+        "website": "https://imajin.ca",
+        "socialLinks": {
+          "github": "https://github.com/ima-jin"
+        }
+      }
+    }
+  ]
+}

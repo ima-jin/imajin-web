@@ -20,7 +20,7 @@ export const products = pgTable(
     description: text("description"),
     category: text("category").notNull(), // "material", "connector", "control", "diffuser", "kit", "interface", "unit", "accessory"
     devStatus: integer("dev_status").notNull().default(0), // 0-5 (only show if status = 5)
-    basePrice: integer("base_price").notNull(), // Price in cents
+    basePriceCents: integer("base_price_cents").notNull(), // Price in cents
     isActive: boolean("is_active").default(true),
     requiresAssembly: boolean("requires_assembly").default(false),
     hasVariants: boolean("has_variants").default(false),
@@ -56,6 +56,8 @@ export const products = pgTable(
     isFeatured: boolean("is_featured").default(false).notNull(),
     // Note: Hero image uses media JSONB with category="hero"
 
+    createdByCollectiveId: text("created_by_collective_id"), // Links to user_collectives.id (will be NOT NULL after backfill)
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -68,6 +70,7 @@ export const products = pgTable(
     sellStatusIdx: index("idx_products_sell_status").on(table.sellStatus),
     portfolioIdx: index("idx_products_portfolio").on(table.showOnPortfolioPage),
     featuredIdx: index("idx_products_featured").on(table.isFeatured),
+    collectiveIdx: index("idx_products_collective").on(table.createdByCollectiveId),
   })
 );
 
@@ -183,6 +186,9 @@ export const orders = pgTable(
     notes: text("notes"),
     metadata: jsonb("metadata"),
 
+    // Auth integration (Phase 4.4.1)
+    userId: text("user_id"), // Links to users.id (nullable for guest checkout)
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -191,6 +197,7 @@ export const orders = pgTable(
     statusIdx: index("idx_orders_status").on(table.status),
     createdIdx: index("idx_orders_created").on(table.createdAt),
     paymentIntentIdx: uniqueIndex("idx_orders_payment_intent").on(table.stripePaymentIntentId),
+    userIdIdx: index("idx_orders_user_id").on(table.userId),
   })
 );
 
@@ -206,8 +213,8 @@ export const orderItems = pgTable(
     variantId: text("variant_id").references(() => variants.id, { onDelete: "set null" }),
     stripePriceId: text("stripe_price_id").notNull(),
     quantity: integer("quantity").notNull(),
-    unitPrice: integer("unit_price").notNull(), // Price per unit in cents
-    totalPrice: integer("total_price").notNull(), // quantity * unitPrice
+    unitPrice: integer("unit_price_cents").notNull(), // Price per unit in cents
+    totalPrice: integer("total_price_cents").notNull(), // quantity * unitPrice
 
     // Snapshot product info (in case product changes later)
     productName: text("product_name").notNull(),
@@ -250,6 +257,8 @@ export const nftTokens = pgTable(
     serialNumber: text("serial_number").unique(),
     warrantyExpiresAt: timestamp("warranty_expires_at"),
 
+    userId: text("user_id"), // Links to users.id (nullable, populated via order)
+
     metadata: jsonb("metadata"),
     createdAt: timestamp("created_at").defaultNow(),
   },
@@ -258,6 +267,7 @@ export const nftTokens = pgTable(
     variantIdx: index("idx_nft_variant").on(table.variantId),
     serialIdx: uniqueIndex("idx_nft_serial").on(table.serialNumber),
     mintedIdx: index("idx_nft_minted").on(table.mintedAt),
+    userIdIdx: index("idx_nft_tokens_user").on(table.userId),
   })
 );
 
@@ -278,6 +288,9 @@ export const portfolioItems = pgTable(
     isFeatured: boolean("is_featured").default(false),
     displayOrder: integer("display_order").default(0),
     metadata: jsonb("metadata"),
+
+    createdByCollectiveId: text("created_by_collective_id"), // Links to user_collectives.id (will be NOT NULL after backfill)
+
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -286,6 +299,7 @@ export const portfolioItems = pgTable(
     publishedIdx: index("idx_portfolio_published").on(table.isPublished),
     featuredIdx: index("idx_portfolio_featured").on(table.isFeatured),
     categoryIdx: index("idx_portfolio_category").on(table.category),
+    collectiveIdx: index("idx_portfolio_items_collective").on(table.createdByCollectiveId),
   })
 );
 
@@ -309,3 +323,6 @@ export const portfolioImages = pgTable(
     itemIdx: index("idx_portfolio_images_item").on(table.portfolioItemId),
   })
 );
+
+// Re-export all auth tables and types
+export * from './schema-auth';

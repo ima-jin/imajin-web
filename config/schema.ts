@@ -39,7 +39,7 @@ export const ProductConfigSchema = z.object({
   long_description: z.string().optional(),
   category: z.enum(["material", "connector", "control", "diffuser", "kit", "unit", "interface", "accessory"]),
   dev_status: z.number().int().min(0).max(5),
-  base_price: z.number().int().positive(),
+  base_price_cents: z.number().int().positive(),
 
   // Stripe integration
   stripe_product_id: z.string().min(1).optional(), // For products WITH variants (parent product)

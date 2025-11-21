@@ -130,6 +130,9 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         }
       : undefined;
 
+    // Extract user ID from metadata (if authenticated checkout)
+    const userId = session.metadata?.userId || undefined;
+
     // Create order in database
     await createOrder({
       sessionId: session.id,
@@ -151,6 +154,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         variantName: item.variantName,
       })),
       shippingAddress,
+      userId, // Link to authenticated user (nullable)
     });
 
     logger.info('Order created successfully from webhook', { sessionId: session.id });

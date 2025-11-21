@@ -211,7 +211,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
                   product={{
                     id: product.id,
                     name: product.name,
-                    basePrice: product.basePrice,
+                    basePriceCents: product.basePriceCents,
                     image: product.media && product.media.length > 0
                       ? getProductImageUrl(
                           product.media.find(m => m.category === 'main' || m.category === 'hero')?.cloudinaryPublicId ||

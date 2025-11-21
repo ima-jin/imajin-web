@@ -74,3 +74,8 @@ Thumbs.db
 
 # Media files
 config/content/media/*
+
+# Documentation generation (intermediate files)
+docs/api/typedoc-output/
+docs/api/typedoc-data.json
+# Keep: docs/api/generated/*.md (committed to git for documentation)

@@ -7,6 +7,7 @@ import {
   handleUnknownError,
 } from '@/lib/utils/api-response';
 import { ERROR_CODES, HTTP_STATUS } from '@/lib/config/api';
+import { getServerSession, getLocalUserId } from '@/lib/auth/session';
 
 /**
  * POST /api/checkout/session
@@ -40,15 +41,29 @@ export async function POST(request: NextRequest) {
 
     const { items, customerEmail, metadata } = validation.data;
 
+    // Get authenticated user if logged in
+    const authSession = await getServerSession();
+    let userId: string | undefined;
+
+    if (authSession) {
+      try {
+        userId = await getLocalUserId();
+      } catch (error) {
+        // User not found in local DB (webhook race condition), continue as guest
+        console.warn('User session found but not in local database:', authSession.identity.id);
+      }
+    }
+
     // Map items to Stripe format
     const stripeItems = items.map((item) => ({
       stripePriceId: item.stripePriceId,
       quantity: item.quantity,
     }));
 
-    // Store cart data in metadata for webhook processing
+    // Store cart data and user ID in metadata for webhook processing
     const sessionMetadata = {
       ...metadata,
+      userId: userId || '', // Store user ID if authenticated
       cartItems: JSON.stringify(
         items.map((item) => ({
           productId: item.productId,

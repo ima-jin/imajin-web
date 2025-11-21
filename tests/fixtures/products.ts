@@ -69,13 +69,13 @@ const baseDbProductDefaults = {
  * const product = createMockProduct({
  *   id: 'prod_123',
  *   name: 'Test Product',
- *   basePrice: 10000,
+ *   basePriceCents: 10000,
  * });
  */
 export function createMockProduct(overrides: Partial<Product> & {
   id: string;
   name: string;
-  basePrice: number;
+  basePriceCents: number;
 }): Product {
   return {
     description: 'Test description',
@@ -92,14 +92,14 @@ export function createMockProduct(overrides: Partial<Product> & {
  * const featured = createFeaturedProduct({
  *   id: 'prod_featured',
  *   name: 'Featured Product',
- *   basePrice: 15000,
+ *   basePriceCents: 15000,
  *   media: [{ category: 'hero', url: '...' }]
  * });
  */
 export function createFeaturedProduct(overrides: Partial<Product> & {
   id: string;
   name: string;
-  basePrice: number;
+  basePriceCents: number;
 }): Product {
   return {
     description: 'Featured product description',
@@ -117,14 +117,14 @@ export function createFeaturedProduct(overrides: Partial<Product> & {
  * const portfolio = createPortfolioProduct({
  *   id: 'prod_portfolio',
  *   name: 'Portfolio Installation',
- *   basePrice: 20000,
+ *   basePriceCents: 20000,
  *   portfolioCopy: '## Featured Installation\n\nThis was showcased at...',
  * });
  */
 export function createPortfolioProduct(overrides: Partial<Product> & {
   id: string;
   name: string;
-  basePrice: number;
+  basePriceCents: number;
   portfolioCopy: string;
 }): Product {
   return {
@@ -148,7 +148,7 @@ export interface DbProduct {
   description: string | null;
   category: string;
   devStatus: number;
-  basePrice: number;
+  basePriceCents: number;
   isActive: boolean;
   requiresAssembly: boolean;
   hasVariants: boolean;
@@ -181,17 +181,17 @@ export interface DbProduct {
  * const dbProduct = createMockDbProduct({
  *   id: 'prod_123',
  *   name: 'Test Product',
- *   basePrice: 10000,
+ *   basePriceCents: 10000,
  * });
  */
 export function createMockDbProduct(overrides: Partial<DbProduct> & {
   id: string;
   name: string;
-  basePrice?: number;
+  basePriceCents?: number;
 }): DbProduct {
   return {
     description: 'Test description',
-    basePrice: 10000, // Default price if not specified
+    basePriceCents: 10000, // Default price if not specified
     ...baseDbProductDefaults,
     ...overrides,
   } as DbProduct;
@@ -272,7 +272,7 @@ export function createMockDbVariant(overrides: Partial<DbVariant> & {
  * const productConfig = createTestProductConfig({
  *   id: 'test-product',
  *   name: 'Test Product',
- *   base_price: 5000,
+ *   base_price_cents: 5000,
  * });
  */
 export function createTestProductConfig(overrides: Partial<{
@@ -281,7 +281,7 @@ export function createTestProductConfig(overrides: Partial<{
   description: string;
   category: string;
   dev_status: number;
-  base_price: number;
+  base_price_cents: number;
   has_variants: boolean;
   requires_assembly: boolean;
   is_live: boolean;
@@ -310,7 +310,7 @@ export function createTestProductConfig(overrides: Partial<{
     description: overrides.description ?? 'Test description',
     category: overrides.category ?? 'material',
     dev_status: overrides.dev_status ?? 5,
-    base_price: overrides.base_price ?? 5000,
+    base_price_cents: overrides.base_price_cents ?? 5000,
     has_variants: overrides.has_variants ?? false,
     requires_assembly: overrides.requires_assembly ?? false,
     is_live: overrides.is_live ?? true,

@@ -29,6 +29,7 @@ export interface CreateOrderParams {
     postalCode?: string;
     country?: string;
   };
+  userId?: string; // Local database user ID (nullable for guest checkout)
 }
 
 /**
@@ -54,6 +55,7 @@ export async function createOrder(params: CreateOrderParams) {
     total,
     items,
     shippingAddress,
+    userId,
   } = params;
 
   return db.transaction(async (tx) => {
@@ -78,6 +80,7 @@ export async function createOrder(params: CreateOrderParams) {
         shippingState: shippingAddress?.state,
         shippingPostalCode: shippingAddress?.postalCode,
         shippingCountry: shippingAddress?.country,
+        userId, // Link to authenticated user (nullable)
       })
       .returning();
 

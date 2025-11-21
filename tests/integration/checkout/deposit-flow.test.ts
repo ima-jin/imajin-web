@@ -26,7 +26,7 @@ describe('Deposit Flow Integration Tests', () => {
     description: 'Test product',
     category: 'kit',
     devStatus: 5,
-    basePrice: 100000, // $1,000
+    basePriceCents: 100000, // $1,000
     wholesalePriceCents: 75000, // $750
     presaleDepositPriceCents: 25000, // $250
     hasVariants: true,
@@ -82,7 +82,7 @@ describe('Deposit Flow Integration Tests', () => {
       description: testProduct.description,
       category: testProduct.category,
       devStatus: testProduct.devStatus,
-      basePrice: testProduct.basePrice,
+      basePriceCents: testProduct.basePrice,
       wholesalePriceCents: testProduct.wholesalePriceCents,
       presaleDepositPriceCents: testProduct.presaleDepositPriceCents,
       hasVariants: testProduct.hasVariants,
@@ -431,7 +431,7 @@ describe('Deposit Flow Integration Tests', () => {
         description: secondProduct.description,
         category: secondProduct.category,
         devStatus: secondProduct.devStatus,
-        basePrice: secondProduct.basePrice,
+        basePriceCents: secondProduct.basePrice,
         wholesalePriceCents: secondProduct.wholesalePriceCents,
         presaleDepositPriceCents: secondProduct.presaleDepositPriceCents,
         hasVariants: false,

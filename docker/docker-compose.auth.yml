@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  kratos:
+    image: oryd/kratos:v1.1
+    container_name: imajin-kratos
+    ports:
+      - "4433:4433" # Public API (self-service flows)
+      - "4434:4434" # Admin API (identity management)
+    environment:
+      - DSN=postgres://kratos:kratos_password@kratos-db:5432/kratos?sslmode=disable
+      - LOG_LEVEL=info
+    volumes:
+      - ../config/kratos:/etc/config/kratos:ro
+    command: serve -c /etc/config/kratos/kratos.yml --watch-courier
+    depends_on:
+      kratos-db:
+        condition: service_healthy
+    networks:
+      - imajin-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4433/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kratos-db:
+    image: postgres:16
+    container_name: imajin-kratos-db
+    environment:
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=kratos_password
+      - POSTGRES_DB=kratos
+    volumes:
+      - kratos-db-data:/var/lib/postgresql/data
+    networks:
+      - imajin-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kratos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  kratos-db-data:
+    driver: local
+
+networks:
+  imajin-net:
+    driver: bridge

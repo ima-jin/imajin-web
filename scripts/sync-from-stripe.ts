@@ -139,8 +139,8 @@ async function syncFromStripe() {
             continue;
           }
 
-          // Calculate expected price (base_price + price_modifier)
-          const expectedPrice = localProduct.base_price + (variant.price_modifier || 0);
+          // Calculate expected price (base_price_cents + price_modifier)
+          const expectedPrice = localProduct.base_price_cents + (variant.price_modifier || 0);
           const stripeAmount = stripePrice.unit_amount || 0;
 
           if (expectedPrice !== stripeAmount) {
@@ -192,7 +192,7 @@ async function syncFromStripe() {
               console.log('   ❌ Price not found in Stripe');
             }
           } else {
-            const expectedPrice = localProduct.base_price;
+            const expectedPrice = localProduct.base_price_cents;
             const stripeAmount = stripePrice.unit_amount || 0;
 
             if (expectedPrice !== stripeAmount) {

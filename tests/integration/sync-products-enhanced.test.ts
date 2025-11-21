@@ -105,14 +105,14 @@ describe('Sync Products Enhanced - Integration Tests', () => {
             id: 'product-2',
             name: 'Product 2',
             description: 'Test product 2',
-            base_price: 7500,
+            base_price_cents: 7500,
           }),
           createTestProductConfig({
             id: 'product-3',
             name: 'Product 3',
             description: 'Test product 3',
             category: 'kit',
-            base_price: 10000,
+            base_price_cents: 10000,
             requires_assembly: true,
             sell_status: 'pre-order',
             sell_status_note: 'Ships Q1 2026',
@@ -201,7 +201,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
         id: 'stripe-product',
         name: 'Stripe Product',
         description: 'To be synced to Stripe',
-        basePrice: 5000,
+        basePriceCents: 5000,
         hasVariants: false,
         isLive: true,
         sellStatus: 'for-sale',
@@ -234,7 +234,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       expect(dbProduct[0]).toMatchObject({
         id: 'db-product',
         name: 'Database Product',
-        basePrice: 5000,
+        basePriceCents: 5000,
         sellStatus: 'for-sale',
         costCents: 3000,
         wholesalePriceCents: 4000,
@@ -380,7 +380,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
         id: 'update-product',
         name: 'Updated Name',
         description: 'Updated description',
-        basePrice: 5000,
+        basePriceCents: 5000,
         hasVariants: false,
         isLive: true,
         sellStatus: 'for-sale',
@@ -499,7 +499,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
           id: 'new-product',
           name: 'New Product',
           description: 'Test',
-          base_price: 7500,
+          base_price_cents: 7500,
           media: [
             {
               local_path: 'new-product/main.jpg',
@@ -601,7 +601,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
       await syncProductsEnhanced(TEST_PRODUCTS_JSON_PATH, TEST_MEDIA_DIR);
 
       // Change price
-      testData.products[0].base_price = 7500;
+      testData.products[0].base_price_cents = 7500;
       writeFileSync(TEST_PRODUCTS_JSON_PATH, JSON.stringify(testData, null, 2));
 
       mockSyncProductToStripe.mockResolvedValue({
@@ -616,7 +616,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
 
       expect(mockSyncProductToStripe).toHaveBeenCalledWith(
         expect.objectContaining({
-          basePrice: 7500,
+          basePriceCents: 7500,
         })
       );
     });
@@ -843,7 +843,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
             name: 'Founder Edition',
             description: 'Test',
             category: 'kit',
-            base_price: 10000,
+            base_price_cents: 10000,
             has_variants: true,
             requires_assembly: true,
           }),
@@ -895,7 +895,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
             name: 'Parent Product',
             description: 'Test',
             category: 'kit',
-            base_price: 10000,
+            base_price_cents: 10000,
             has_variants: true,
           }),
         ],
@@ -946,7 +946,7 @@ describe('Sync Products Enhanced - Integration Tests', () => {
             name: 'Parent',
             description: 'Test',
             category: 'kit',
-            base_price: 10000,
+            base_price_cents: 10000,
             has_variants: true,
             media: [
               {

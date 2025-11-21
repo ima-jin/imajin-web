@@ -8,7 +8,7 @@ const baseProduct = {
   description: 'Test product description',
   category: 'material' as const,
   dev_status: 5,
-  base_price: 1000,
+  base_price_cents: 1000,
   has_variants: false,
   is_live: true,
   sell_status: 'for-sale' as const,

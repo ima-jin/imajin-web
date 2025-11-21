@@ -35,7 +35,7 @@ interface ProductSyncInput {
   id: string;
   name: string;
   description: string;
-  basePrice: number;
+  basePriceCents: number;
   isLive: boolean;
   sellStatus: string;
   hasVariants?: boolean;
@@ -114,7 +114,7 @@ export async function syncProductToStripe(
       // Create or update prices for each variant
       const variantPrices = [];
       for (const variant of variants) {
-        const variantPrice = product.basePrice + variant.priceModifier;
+        const variantPrice = product.basePriceCents + variant.priceModifier;
         let priceId = variant.stripePriceId;
 
         // Check if we need to create a new price
@@ -188,7 +188,7 @@ export async function syncProductToStripe(
       });
 
       const currentPrice = existingPrices.data[0];
-      if (!currentPrice || currentPrice.unit_amount !== product.basePrice) {
+      if (!currentPrice || currentPrice.unit_amount !== product.basePriceCents) {
         // Archive old prices
         for (const price of existingPrices.data) {
           await stripe.prices.update(price.id, { active: false });
@@ -197,7 +197,7 @@ export async function syncProductToStripe(
         // Create new price
         const newPrice = await stripe.prices.create({
           product: product.stripeProductId,
-          unit_amount: product.basePrice,
+          unit_amount: product.basePriceCents,
           currency: 'usd',
         });
 
@@ -227,7 +227,7 @@ export async function syncProductToStripe(
       // Create price
       const stripePrice = await stripe.prices.create({
         product: stripeProduct.id,
-        unit_amount: product.basePrice,
+        unit_amount: product.basePriceCents,
         currency: 'usd',
       });
 
