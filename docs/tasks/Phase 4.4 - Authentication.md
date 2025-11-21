@@ -308,13 +308,16 @@ npm run seed:users  # Creates admin@imajin.ca + test customer
 
 | Phase | Task | Time |
 |-------|------|------|
-| 4.4.1 | Database Schema | 2h |
+| 4.4.1 | Database Schema (core auth tables) | 2h |
+| 4.4.1.1 | Contacts & Mailing Lists (optional) | 3h |
 | 4.4.2 | Ory Kratos Setup | 4h |
 | 4.4.3 | Auth UI Components | 2.5h |
 | 4.4.4 | Protected Routes & Middleware | 3h |
 | 4.4.5 | Integration | 1.5h |
 | 4.4.6 | SendGrid Email | 2h |
 | 4.4.7 | Testing | 3h |
+
+**Note:** Phase 4.4.1.1 (Contacts & Mailing Lists) is optional and can be done later if needed for email marketing features.
 
 **Time Savings vs DIY:**
 - DIY NextAuth: ~20-25 hours
@@ -398,6 +401,7 @@ npm install @ory/client
 ## See Also
 
 - [Phase 4.4.1 - Database Schema.md](./Phase%204.4.1%20-%20Database%20Schema.md)
+- [Phase 4.4.1.1 - Contacts & Mailing Lists.md](./Phase%204.4.1.1%20-%20Contacts%20%26%20Mailing%20Lists.md) (optional sub-task)
 - [Phase 4.4.2 - Ory Kratos Setup.md](./Phase%204.4.2%20-%20Ory%20Kratos%20Setup.md)
 - [Phase 4.4.3 - Auth UI Components.md](./Phase%204.4.3%20-%20Auth%20UI%20Components.md)
 - [Phase 4.4.4 - Protected Routes & Middleware.md](./Phase%204.4.4%20-%20Protected%20Routes%20%26%20Middleware.md)

@@ -441,7 +441,121 @@ WHERE nt.order_id = o.id
 - Supports future wallet transfers → Update user_id when NFT changes hands
 - Query performance → Easy lookup of "all NFTs owned by user X"
 
+--- 
+
+### contacts Table
+
+**Reusable contact methods (email/phone) that can exist with or without an account**
+
+```sql
+CREATE TABLE contacts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id), -- nullable for non-account subscribers
+  kind TEXT NOT NULL CHECK (kind IN ('email', 'phone')),
+  value TEXT NOT NULL, -- email lowercased; phone E.164
+  is_primary BOOLEAN NOT NULL DEFAULT false, -- one per user+kind
+  is_verified BOOLEAN NOT NULL DEFAULT false,
+  verified_at TIMESTAMP,
+  source TEXT NOT NULL, -- 'auth', 'signup_form', 'order', 'manual'
+  metadata JSONB DEFAULT '{}'::jsonb, -- bounce codes, locale, carrier, etc.
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE (value, kind)
+);
+
+-- Single primary per user+kind
+CREATE UNIQUE INDEX uniq_contacts_primary_per_kind
+  ON contacts(user_id, kind)
+  WHERE is_primary = true;
+
+-- Trigger for updated_at
+CREATE TRIGGER contacts_updated_at
+BEFORE UPDATE ON contacts
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+```
+
+**Why This Design:**
+- Supports multiple emails/phones per person without overloading `users.email`.
+- Allows marketing signups before account creation (`user_id` nullable).
+- Keeps one primary per channel while preserving alternates.
+- Explicit source + verification tracking for consent hygiene.
+
 ---
+
+### mailing_lists Table
+
+**Managed lists (e.g., product alerts, newsletter, SMS alerts)**
+
+```sql
+CREATE TABLE mailing_lists (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL, -- 'product-alerts', 'newsletter', 'sms-alerts'
+  name TEXT NOT NULL,
+  description TEXT,
+  is_default BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER mailing_lists_updated_at
+BEFORE UPDATE ON mailing_lists
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+```
+
+---
+
+### contact_subscriptions Table
+
+**Consent/opt-in state per contact per mailing list**
+
+```sql
+CREATE TABLE contact_subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  contact_id UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+  mailing_list_id UUID NOT NULL REFERENCES mailing_lists(id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('pending', 'subscribed', 'unsubscribed', 'bounced')),
+  opt_in_at TIMESTAMP,
+  opt_out_at TIMESTAMP,
+  opt_in_ip TEXT,
+  opt_in_user_agent TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb, -- bounce/complaint details
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE (contact_id, mailing_list_id)
+);
+
+CREATE TRIGGER contact_subscriptions_updated_at
+BEFORE UPDATE ON contact_subscriptions
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+```
+
+**Why This Design:**
+- Stores consent separately from auth user record.
+- Handles double opt-in (`pending -> subscribed`), unsubscribe, and bounce states.
+- Works for both account-linked and guest contacts.
+
+---
+
+## Contacts & Mailing Lists (Optional Sub-Task)
+
+⚠️ **Note:** The contacts and mailing lists tables (`contacts`, `mailing_lists`, `contact_subscriptions`, `contact_verification_tokens`) are **optional** and can be implemented as a separate sub-task.
+
+**Core Phase 4.4.1 Requirements:**
+- `users` table (shadows Ory identities)
+- `user_collectives` table (marketplace attribution)
+- `user_collective_memberships` table (many-to-many)
+- Foreign key updates to `orders`, `products`, `portfolio_items`, `nft_tokens`
+
+**Optional Sub-Task (Phase 4.4.1.1):**
+- Email/phone contact management
+- Mailing list subscriptions with GDPR compliance
+- Double opt-in verification flow
+- SendGrid integration for bounce/complaint handling
+
+**See:** [Phase 4.4.1.1 - Contacts & Mailing Lists.md](./Phase%204.4.1.1%20-%20Contacts%20%26%20Mailing%20Lists.md) for full implementation details.
 
 ## Drizzle Schema
 
@@ -472,6 +586,50 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
+
+// Contacts (email/phone), can be linked to user or standalone
+export const contacts = pgTable('contacts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id),
+  kind: text('kind').notNull(), // 'email' | 'phone'
+  value: text('value').notNull(),
+  isPrimary: boolean('is_primary').notNull().default(false),
+  isVerified: boolean('is_verified').notNull().default(false),
+  verifiedAt: timestamp('verified_at'),
+  source: text('source').notNull(), // 'auth' | 'signup_form' | 'order' | 'manual'
+  metadata: jsonb('metadata').$type<ContactMetadata>().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  uniqueValuePerKind: unique().on(table.value, table.kind),
+  uniquePrimaryPerKind: unique().on(table.userId, table.kind).where(sql`${table.isPrimary} = true`),
+}));
+
+export const mailingLists = pgTable('mailing_lists', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  slug: text('slug').notNull().unique(),
+  name: text('name').notNull(),
+  description: text('description'),
+  isDefault: boolean('is_default').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const contactSubscriptions = pgTable('contact_subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  contactId: uuid('contact_id').notNull().references(() => contacts.id, { onDelete: 'cascade' }),
+  mailingListId: uuid('mailing_list_id').notNull().references(() => mailingLists.id, { onDelete: 'cascade' }),
+  status: text('status').notNull(), // 'pending' | 'subscribed' | 'unsubscribed' | 'bounced'
+  optInAt: timestamp('opt_in_at'),
+  optOutAt: timestamp('opt_out_at'),
+  optInIp: text('opt_in_ip'),
+  optInUserAgent: text('opt_in_user_agent'),
+  metadata: jsonb('metadata').$type<SubscriptionMetadata>().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  uniqueSubscription: unique().on(table.contactId, table.mailingListId),
+}));
 
 // User collectives table
 export const userCollectives = pgTable('user_collectives', {
@@ -966,6 +1124,7 @@ async function main() {
 ### Step 1: Create Drizzle Schema (20 min)
 
 - [ ] Create `db/schema-auth.ts` with users table
+- [ ] Add contacts stack: contacts, mailing_lists, contact_subscriptions (with indexes/constraints)
 - [ ] Define TypeScript types (UserMetadata)
 - [ ] Add relations to existing orders schema
 - [ ] Export all tables and types
@@ -1020,6 +1179,7 @@ async function main() {
 
 ## Acceptance Criteria
 
+**Core Requirements (Phase 4.4.1):**
 - [ ] Users table created with kratos_id field
 - [ ] user_collectives table created with creator attribution
 - [ ] user_collective_memberships junction table created
@@ -1036,6 +1196,15 @@ async function main() {
 - [ ] Migration runs cleanly on dev and test databases
 - [ ] Foreign key constraints work (users → orders, collectives → products, etc.)
 - [ ] Existing products/portfolio items backfilled to Imajin collective
+
+**Optional (Phase 4.4.1.1 - Contacts & Mailing Lists):**
+- [ ] Contacts stack created (`contacts`, `mailing_lists`, `contact_subscriptions`, `contact_verification_tokens`)
+- [ ] Contact primaries enforced (single primary per user+kind via partial unique index)
+- [ ] Consent states modeled (pending/subscribed/unsubscribed/bounced with opt-in/out timestamps)
+- [ ] Double opt-in verification flow implemented
+- [ ] GDPR compliance (opt-in tracking, right to be forgotten)
+- [ ] SendGrid webhook handler for bounces/complaints
+- [ ] See [Phase 4.4.1.1](./Phase%204.4.1.1%20-%20Contacts%20%26%20Mailing%20Lists.md) for detailed acceptance criteria
 
 ---
 
@@ -1321,5 +1490,6 @@ After Phase 4.4.1 complete:
 **See Also:**
 - `docs/AUTH_STRATEGY.md` - Overall auth strategy
 - `docs/tasks/Phase 4.4 - Authentication.md` - Parent task
+- `docs/tasks/Phase 4.4.1.1 - Contacts & Mailing Lists.md` - Optional sub-task
 - `docs/tasks/Phase 4.4.2 - Ory Kratos Setup.md` - Next phase
 - Ory Kratos Docs: https://www.ory.sh/docs/kratos/
