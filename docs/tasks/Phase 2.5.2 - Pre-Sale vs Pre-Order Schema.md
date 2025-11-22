@@ -110,7 +110,7 @@ ADD COLUMN wholesale_price_modifier INTEGER DEFAULT 0;
 **Pricing Model:**
 ```typescript
 interface Product {
-  basePrice: number;                // Retail price (shown for all sell_status types)
+  basePriceCents: number;                // Retail price (shown for all sell_status types)
   presaleDepositPrice?: number;     // Deposit amount (what customer pays upfront during pre-sale)
   wholesalePrice?: number;          // Wholesale (vendors only - future)
   cogsPrice?: number;               // Cost of goods (internal)

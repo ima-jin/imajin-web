@@ -37,7 +37,7 @@ describe('ProductAddToCart', () => {
   const baseProduct = {
     id: 'test-product',
     name: 'Test Product',
-    basePrice: 100000, // $1000 in cents
+    basePriceCents: 100000, // $1000 in cents
     image: '/test.jpg',
   };
 

@@ -837,7 +837,7 @@ it('should show deposit badge and amount for pre-sale', () => {
     id: 'prod_1',
     sellStatus: 'pre-sale',
     presaleDepositPrice: 10000, // $100.00
-    basePrice: 50000
+    basePriceCents: 50000
   };
 
   // Act
@@ -858,7 +858,7 @@ it('should show deposit with expanded layout in detail variant', () => {
     id: 'prod_1',
     sellStatus: 'pre-sale',
     presaleDepositPrice: 10000,
-    basePrice: 50000
+    basePriceCents: 50000
   };
 
   // Act
@@ -884,7 +884,7 @@ it('should show wholesale price badge when user paid deposit', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'pre-order',
-    basePrice: 50000, // $500.00
+    basePriceCents: 50000, // $500.00
     wholesalePriceCents: 40000 // $400.00
   };
 
@@ -904,7 +904,7 @@ it('should show regular price when user has not paid deposit', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'pre-order',
-    basePrice: 50000,
+    basePriceCents: 50000,
     wholesalePriceCents: 40000
   };
 
@@ -928,7 +928,7 @@ it('should show regular price for products in for-sale status', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'for-sale',
-    basePrice: 29900 // $299.00
+    basePriceCents: 29900 // $299.00
   };
 
   // Act
@@ -948,7 +948,7 @@ it('should show regular price for pre-order products', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'pre-order',
-    basePrice: 49900
+    basePriceCents: 49900
   };
 
   // Act
@@ -970,7 +970,7 @@ it('should show fallback message when displayPrice is null', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'internal', // Internal products don't show prices
-    basePrice: 0
+    basePriceCents: 0
   };
 
   // Act
@@ -989,7 +989,7 @@ it('should show expanded fallback message in detail variant', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'internal',
-    basePrice: 0
+    basePriceCents: 0
   };
 
   // Act
@@ -1011,7 +1011,7 @@ it('should show display status message below price', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'pre-order',
-    basePrice: 50000
+    basePriceCents: 50000
   };
 
   // Act
@@ -1034,7 +1034,7 @@ it('should not crash when displayStatus is undefined', () => {
   const product = {
     id: 'prod_1',
     sellStatus: 'for-sale',
-    basePrice: 29900
+    basePriceCents: 29900
   };
 
   // Act & Assert - Should not throw
@@ -1160,7 +1160,7 @@ interface PriceDisplayProps {
   product: {
     id: string;
     sellStatus: string;
-    basePrice: number;
+    basePriceCents: number;
     wholesalePriceCents?: number;
     presaleDepositPrice?: number;
   };

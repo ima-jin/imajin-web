@@ -954,14 +954,14 @@ describe('Cart Validator', () => {
         id: 'test-product-1',
         name: 'Test Product 1',
         category: 'material',
-        basePrice: 1000,
+        basePriceCents: 1000,
         // ... other fields
       },
       {
         id: 'test-product-2',
         name: 'Test Product 2',
         category: 'control',
-        basePrice: 2000,
+        basePriceCents: 2000,
         // ... other fields
       },
     ]);

@@ -277,7 +277,7 @@ export async function setupE2ETestWithTransaction() {
       sellStatus: 'for-sale',
       isLive: true,
       isActive: true,
-      basePrice: 15000,
+      basePriceCents: 15000,
       description: 'Test product for E2E testing',
       stripeProductId: 'prod_test_e2e_1',
     });

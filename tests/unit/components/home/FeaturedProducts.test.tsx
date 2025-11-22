@@ -24,17 +24,17 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: 'prod_1',
           name: 'Featured Product 1',
-          basePrice: 10000,
+          basePriceCents: 10000,
         }),
         createFeaturedProduct({
           id: 'prod_2',
           name: 'Featured Product 2',
-          basePrice: 15000,
+          basePriceCents: 15000,
         }),
         createFeaturedProduct({
           id: 'prod_3',
           name: 'Featured Product 3',
-          basePrice: 20000,
+          basePriceCents: 20000,
         }),
       ];
 
@@ -55,7 +55,7 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: `prod_${i}`,
           name: `Product ${i}`,
-          basePrice: 10000,
+          basePriceCents: 10000,
         })
       );
 
@@ -77,13 +77,13 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: 'featured',
           name: 'Featured',
-          basePrice: 10000,
+          basePriceCents: 10000,
         }),
         {
           ...createFeaturedProduct({
             id: 'not-featured',
             name: 'Not Featured',
-            basePrice: 10000,
+            basePriceCents: 10000,
           }),
           isFeatured: false,
         },
@@ -107,7 +107,7 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: 'prod_1',
           name: 'Product 1',
-          basePrice: 10000,
+          basePriceCents: 10000,
         }),
       ];
 
@@ -129,7 +129,7 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: 'prod_1',
           name: 'Product 1',
-          basePrice: 10000,
+          basePriceCents: 10000,
         }),
       ];
 
@@ -192,7 +192,7 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: 'prod_1',
           name: 'Product 1',
-          basePrice: 10000,
+          basePriceCents: 10000,
         }),
       ];
 
@@ -214,7 +214,7 @@ describe('FeaturedProducts', () => {
         createFeaturedProduct({
           id: 'prod_123',
           name: 'Test Product',
-          basePrice: 10000,
+          basePriceCents: 10000,
         }),
       ];
 

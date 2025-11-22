@@ -152,7 +152,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     description: dbProduct.description,
     category: dbProduct.category,
     devStatus: dbProduct.dev_status, // Snake to camel
-    basePrice: dbProduct.base_price, // Snake to camel
+    basePriceCents: dbProduct.base_price_cents, // Snake to camel
     stripeProductId: dbProduct.stripe_product_id, // Snake to camel
     hasVariants: dbProduct.has_variants,
     images: dbProduct.images,

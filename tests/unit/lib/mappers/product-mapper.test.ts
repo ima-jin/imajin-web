@@ -138,9 +138,9 @@ describe("mapDbProductsToProducts", () => {
 
     expect(result).toHaveLength(2);
     expect(result[0].id).toBe("product-1");
-    expect(result[0].basePrice).toBe(1000);
+    expect(result[0].basePriceCents).toBe(1000);
     expect(result[1].id).toBe("product-2");
-    expect(result[1].basePrice).toBe(2000);
+    expect(result[1].basePriceCents).toBe(2000);
   });
 
   it("returns empty array for empty input", () => {

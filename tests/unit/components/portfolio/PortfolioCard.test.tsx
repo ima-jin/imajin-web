@@ -14,7 +14,7 @@ describe('PortfolioCard', () => {
   const mockProduct = createPortfolioProduct({
     id: 'portfolio-1',
     name: 'Downtown Installation',
-    basePrice: 25000,
+    basePriceCents: 25000,
     portfolioCopy: '**Featured** installation in downtown core. Spanning 20 panels.',
     media: [
       {
@@ -92,7 +92,7 @@ describe('PortfolioCard', () => {
       const productNoImage = createPortfolioProduct({
         id: 'no-image',
         name: 'No Image Product',
-        basePrice: 10000,
+        basePriceCents: 10000,
         portfolioCopy: 'Test copy',
         media: [],
       });

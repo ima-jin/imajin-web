@@ -29,7 +29,7 @@ async function testStripe() {
       id: 'test-product-123',
       name: 'Test Product - Stripe Sync',
       description: 'This is a test product for validating Stripe sync',
-      basePrice: 5000, // $50.00
+      basePriceCents: 5000, // $50.00
       isLive: true,
       sellStatus: 'for-sale',
     });
@@ -49,7 +49,7 @@ async function testStripe() {
       id: 'test-product-123',
       name: 'Test Product - UPDATED',
       description: 'This is an updated test product',
-      basePrice: 5000, // Same price
+      basePriceCents: 5000, // Same price
       isLive: true,
       sellStatus: 'for-sale',
       stripeProductId: productId,
@@ -67,7 +67,7 @@ async function testStripe() {
       id: 'test-product-123',
       name: 'Test Product - UPDATED',
       description: 'This is an updated test product',
-      basePrice: 6000, // New price: $60.00
+      basePriceCents: 6000, // New price: $60.00
       isLive: true,
       sellStatus: 'for-sale',
       stripeProductId: productId,
@@ -86,7 +86,7 @@ async function testStripe() {
       id: 'test-product-123',
       name: 'Test Product - UPDATED',
       description: 'This is an updated test product',
-      basePrice: 6000,
+      basePriceCents: 6000,
       isLive: false,
       sellStatus: 'internal',
       stripeProductId: productId,

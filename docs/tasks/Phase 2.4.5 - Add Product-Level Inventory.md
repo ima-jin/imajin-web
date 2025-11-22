@@ -171,7 +171,7 @@ await db
     description: product.description,
     category: product.category,
     devStatus: product.dev_status,
-    basePrice: product.base_price,
+    basePriceCents: product.base_price_cents,
     isActive: true,
     requiresAssembly: product.requires_assembly || false,
     hasVariants: product.has_variants,
@@ -187,7 +187,7 @@ await db
       description: product.description,
       category: product.category,
       devStatus: product.dev_status,
-      basePrice: product.base_price,
+      basePriceCents: product.base_price_cents,
       requiresAssembly: product.requires_assembly || false,
       hasVariants: product.has_variants,
 
@@ -217,7 +217,7 @@ export interface DbProduct {
   description: string | null;
   category: string;
   devStatus: number;
-  basePrice: number;
+  basePriceCents: number;
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
@@ -238,7 +238,7 @@ export interface Product {
   description: string | null;
   category: string;
   devStatus: number;
-  basePrice: number;
+  basePriceCents: number;
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
@@ -269,7 +269,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     description: dbProduct.description,
     category: dbProduct.category,
     devStatus: dbProduct.devStatus,
-    basePrice: dbProduct.basePrice,
+    basePriceCents: dbProduct.basePriceCents,
     isActive: dbProduct.isActive,
     requiresAssembly: dbProduct.requiresAssembly,
     hasVariants: dbProduct.hasVariants,
@@ -397,7 +397,7 @@ Update all test files that create product fixtures to include inventory fields:
 const mockProduct = {
   id: 'Material-8x8-V',
   name: '8x8 Void Panel',
-  basePrice: 3500,
+  basePriceCents: 3500,
   // ... other fields
 };
 
@@ -405,7 +405,7 @@ const mockProduct = {
 const mockProduct = {
   id: 'Material-8x8-V',
   name: '8x8 Void Panel',
-  basePrice: 3500,
+  basePriceCents: 3500,
   maxQuantity: null,           // NEW: unlimited inventory
   soldQuantity: 0,             // NEW: no sales yet
   availableQuantity: null,     // NEW: auto-calculated
@@ -417,7 +417,7 @@ const mockProduct = {
 const mockFounderProduct = {
   id: 'Unit-8x8x8-Founder',
   name: 'Founder Edition Cube',
-  basePrice: 99500,
+  basePriceCents: 99500,
   hasVariants: true,
   maxQuantity: 1000,           // NEW: total inventory cap
   soldQuantity: 0,             // NEW: total sold

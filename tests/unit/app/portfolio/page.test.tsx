@@ -50,7 +50,7 @@ describe('PortfolioPage', () => {
           ...createPortfolioProduct({
             id: 'portfolio-1',
             name: 'Portfolio Product',
-            basePrice: 10000,
+            basePriceCents: 10000,
             portfolioCopy: 'Featured installation',
           }),
           showOnPortfolioPage: true,
@@ -81,7 +81,7 @@ describe('PortfolioPage', () => {
           ...createPortfolioProduct({
             id: 'portfolio-1',
             name: 'Product 1',
-            basePrice: 10000,
+            basePriceCents: 10000,
             portfolioCopy: 'Copy 1',
           }),
           showOnPortfolioPage: true,
@@ -90,7 +90,7 @@ describe('PortfolioPage', () => {
           ...createPortfolioProduct({
             id: 'portfolio-2',
             name: 'Product 2',
-            basePrice: 15000,
+            basePriceCents: 15000,
             portfolioCopy: 'Copy 2',
           }),
           showOnPortfolioPage: true,
@@ -153,7 +153,7 @@ describe('PortfolioPage', () => {
           ...createPortfolioProduct({
             id: 'portfolio-1',
             name: 'Live Product',
-            basePrice: 10000,
+            basePriceCents: 10000,
             portfolioCopy: 'Featured',
           }),
           showOnPortfolioPage: true,

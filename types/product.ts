@@ -230,7 +230,7 @@ export const ProductSchema = z.object({
   description: z.string().nullable(),
   category: z.string(),
   devStatus: z.number(),
-  basePrice: z.number(),
+  basePriceCents: z.number(),
   isActive: z.boolean().nullable(),
   requiresAssembly: z.boolean().nullable(),
   hasVariants: z.boolean().nullable(),

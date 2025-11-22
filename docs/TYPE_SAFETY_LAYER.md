@@ -87,7 +87,7 @@ export type DbProduct = typeof products.$inferSelect;
 export interface Product {
   id: string;
   name: string;
-  basePrice: number; // Camel case
+  basePriceCents: number; // Camel case
   specs: ProductSpec[]; // Parsed and typed
   metadata: ProductMetadata; // Structured
 }
@@ -145,7 +145,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
   return {
     id: dbProduct.id,
     name: dbProduct.name,
-    basePrice: dbProduct.base_price_cents, // Snake to camel case
+    basePriceCents: dbProduct.base_price_cents, // Snake to camel case
     specs: specs.map((s) => ({
       key: s.key,
       value: s.value,

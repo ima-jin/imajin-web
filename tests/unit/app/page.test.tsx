@@ -76,13 +76,13 @@ describe('HomePage', () => {
       createMockProduct({
         id: 'product-1',
         name: 'Product 1',
-        basePrice: 5000,
+        basePriceCents: 5000,
         hasVariants: false,
       }),
       createMockProduct({
         id: 'founder-edition',
         name: 'Founder Edition',
-        basePrice: 10000,
+        basePriceCents: 10000,
         hasVariants: true,
       }),
     ]);
@@ -91,7 +91,7 @@ describe('HomePage', () => {
       ...createMockProduct({
         id: 'founder-edition',
         name: 'Founder Edition',
-        basePrice: 10000,
+        basePriceCents: 10000,
         hasVariants: true,
       }),
       specs: [],
@@ -234,7 +234,7 @@ describe('HomePage', () => {
         createMockProduct({
           id: 'product-1',
           name: 'Product 1',
-          basePrice: 5000,
+          basePriceCents: 5000,
           hasVariants: false,
         }),
       ]);

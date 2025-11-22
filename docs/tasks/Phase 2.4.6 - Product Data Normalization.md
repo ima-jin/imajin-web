@@ -411,7 +411,7 @@ export async function syncProductToStripe(
     id: string;
     name: string;
     description: string;
-    basePrice: number;
+    basePriceCents: number;
     isLive: boolean;
     sellStatus: string;
     stripeProductId?: string;
@@ -607,7 +607,7 @@ async function syncProducts() {
       id: product.id,
       name: product.name,
       description: product.description,
-      basePrice: product.base_price,
+      basePriceCents: product.base_price_cents,
       isLive: product.is_live,
       sellStatus: product.sell_status,
       stripeProductId: product.stripe_product_id,
@@ -841,7 +841,7 @@ async function syncProductToDb(product: any, report: SyncReport) {
         description: product.description,
         category: product.category,
         devStatus: product.dev_status,
-        basePrice: product.base_price,
+        basePriceCents: product.base_price_cents,
         isActive: true,
         requiresAssembly: product.requires_assembly || false,
         hasVariants: product.has_variants,
@@ -863,7 +863,7 @@ async function syncProductToDb(product: any, report: SyncReport) {
           description: product.description,
           category: product.category,
           devStatus: product.dev_status,
-          basePrice: product.base_price,
+          basePriceCents: product.base_price_cents,
           hasVariants: product.has_variants,
           maxQuantity: product.max_quantity ?? null,
           isLive: product.is_live,

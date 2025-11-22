@@ -78,7 +78,7 @@ describe('Product Page - Deposit Price Display', () => {
   const mockProduct = {
     id: 'test-product',
     name: 'Test Product',
-    basePrice: 129500, // $1,295
+    basePriceCents: 129500, // $1,295
     wholesalePriceCents: 97500, // $975
     sellStatus: 'pre-order',
   };

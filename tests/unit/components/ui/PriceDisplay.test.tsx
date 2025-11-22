@@ -10,7 +10,7 @@ describe('PriceDisplay Component', () => {
         id: 'prod_1',
         sellStatus: 'pre-sale',
         presaleDepositPriceCents: 10000, // $100.00
-        basePrice: 50000
+        basePriceCents: 50000
       };
 
       // Act
@@ -28,7 +28,7 @@ describe('PriceDisplay Component', () => {
         id: 'prod_1',
         sellStatus: 'pre-sale',
         presaleDepositPriceCents: 10000,
-        basePrice: 50000
+        basePriceCents: 50000
       };
 
       // Act
@@ -49,7 +49,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'pre-order',
-        basePrice: 50000, // $500.00
+        basePriceCents: 50000, // $500.00
         wholesalePriceCents: 40000 // $400.00
       };
 
@@ -66,7 +66,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'pre-order',
-        basePrice: 50000,
+        basePriceCents: 50000,
         wholesalePriceCents: 40000
       };
 
@@ -85,7 +85,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'for-sale',
-        basePrice: 29900 // $299.00
+        basePriceCents: 29900 // $299.00
       };
 
       // Act
@@ -102,7 +102,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'pre-order',
-        basePrice: 49900
+        basePriceCents: 49900
       };
 
       // Act
@@ -119,7 +119,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'internal', // Internal products don't show prices
-        basePrice: 0
+        basePriceCents: 0
       };
 
       // Act
@@ -135,7 +135,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'internal',
-        basePrice: 0
+        basePriceCents: 0
       };
 
       // Act
@@ -152,7 +152,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'pre-order',
-        basePrice: 50000
+        basePriceCents: 50000
       };
 
       // Act
@@ -172,7 +172,7 @@ describe('PriceDisplay Component', () => {
       const product = {
         id: 'prod_1',
         sellStatus: 'for-sale',
-        basePrice: 29900
+        basePriceCents: 29900
       };
 
       // Act & Assert - Should not throw

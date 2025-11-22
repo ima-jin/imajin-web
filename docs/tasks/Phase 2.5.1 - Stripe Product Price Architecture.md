@@ -210,7 +210,7 @@ if (product.has_variants && productVariants.length > 0) {
       id: product.id,
       name: product.name,
       description: product.description,
-      basePrice: product.base_price,
+      basePriceCents: product.base_price_cents,
       isLive: product.is_live,
       sellStatus: product.sell_status,
       stripeProductId: product.stripe_product_id,
