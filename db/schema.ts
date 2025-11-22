@@ -20,7 +20,7 @@ export const products = pgTable(
     description: text("description"),
     category: text("category").notNull(), // "material", "connector", "control", "diffuser", "kit", "interface", "unit", "accessory"
     devStatus: integer("dev_status").notNull().default(0), // 0-5 (only show if status = 5)
-    basePriceCents: integer("base_price_cents").notNull(), // Price in cents
+    basePriceCents: integer("base_price_cents"), // Price in cents (null = no price set)
     isActive: boolean("is_active").default(true),
     requiresAssembly: boolean("requires_assembly").default(false),
     hasVariants: boolean("has_variants").default(false),
