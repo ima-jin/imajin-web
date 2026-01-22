@@ -75,10 +75,11 @@ const baseDbProductDefaults = {
 export function createMockProduct(overrides: Partial<Product> & {
   id: string;
   name: string;
-  basePriceCents: number;
+  basePriceCents?: number | null;
 }): Product {
   return {
     description: 'Test description',
+    basePriceCents: 10000, // Default price if not specified
     ...baseProductDefaults,
     ...overrides,
   } as Product;
@@ -99,10 +100,11 @@ export function createMockProduct(overrides: Partial<Product> & {
 export function createFeaturedProduct(overrides: Partial<Product> & {
   id: string;
   name: string;
-  basePriceCents: number;
+  basePriceCents?: number | null;
 }): Product {
   return {
     description: 'Featured product description',
+    basePriceCents: 15000, // Default price if not specified
     ...baseProductDefaults,
     isFeatured: true,
     ...overrides,
@@ -124,11 +126,12 @@ export function createFeaturedProduct(overrides: Partial<Product> & {
 export function createPortfolioProduct(overrides: Partial<Product> & {
   id: string;
   name: string;
-  basePriceCents: number;
+  basePriceCents?: number | null;
   portfolioCopy: string;
 }): Product {
   return {
     description: 'Portfolio product description',
+    basePriceCents: 20000, // Default price if not specified
     ...baseProductDefaults,
     showOnPortfolioPage: true,
     ...overrides,

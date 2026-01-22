@@ -177,7 +177,7 @@ describe.sequential("GET /api/products", () => {
       expect(typeof testProduct.name).toBe("string");
       expect(typeof testProduct.category).toBe("string");
       expect(typeof testProduct.devStatus).toBe("number");
-      expect(typeof testProduct.basePrice).toBe("number");
+      expect(typeof testProduct.basePriceCents).toBe("number");
       expect(typeof testProduct.isActive).toBe("boolean");
     }
   });

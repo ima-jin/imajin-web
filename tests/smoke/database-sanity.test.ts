@@ -107,8 +107,8 @@ describe("Database Sanity Checks (Working Database)", () => {
 
       // Check that no products have invalid prices
       allProducts.forEach((product) => {
-        expect(product.basePrice).toBeGreaterThan(0);
-        expect(product.basePrice).toBeLessThan(1000000); // Less than $10,000
+        expect(product.basePriceCents).toBeGreaterThan(0);
+        expect(product.basePriceCents).toBeLessThan(1000000); // Less than $10,000
       });
     });
   });

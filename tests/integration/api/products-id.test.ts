@@ -218,7 +218,7 @@ describe.sequential("GET /api/products/[id]", () => {
     expect(typeof data.description).toBe("string");
     expect(typeof data.category).toBe("string");
     expect(typeof data.devStatus).toBe("number");
-    expect(typeof data.basePrice).toBe("number");
+    expect(typeof data.basePriceCents).toBe("number");
     expect(typeof data.isActive).toBe("boolean");
     expect(typeof data.requiresAssembly).toBe("boolean");
     expect(typeof data.hasVariants).toBe("boolean");
