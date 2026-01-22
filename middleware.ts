@@ -68,7 +68,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // Allow request to proceed
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // Add pathname to headers so layout can access it
+  response.headers.set("x-pathname", pathname);
+
+  return response;
 }
 
 // Configure which routes to run middleware on
@@ -81,5 +86,9 @@ export const config = {
     // Protected routes
     '/account/:path*',
     '/admin/:path*',
+
+    // Campaign pages (for header/footer detection)
+    '/unit',
+    '/updates',
   ],
 };

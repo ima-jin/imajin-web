@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { getSiteMetadata } from "@/hooks/useSiteMetadata";
 import { getNavigation } from "@/hooks/useNavigation";
 import { getUIStrings } from "@/hooks/useUIStrings";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -60,6 +61,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Check if this is a campaign page (no header/footer)
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const isCampaignPage = pathname === "/unit" || pathname === "/updates";
+
   const [navigation, uiStrings] = await Promise.all([
     getNavigation(),
     getUIStrings(),
@@ -71,9 +77,9 @@ export default async function RootLayout({
         <ErrorBoundary>
           <ToastProvider>
             <CartProvider>
-              <Header navigation={navigation} uiStrings={uiStrings} />
+              {!isCampaignPage && <Header navigation={navigation} uiStrings={uiStrings} />}
               {children}
-              <Footer navigation={navigation} />
+              {!isCampaignPage && <Footer navigation={navigation} />}
             </CartProvider>
           </ToastProvider>
         </ErrorBoundary>
