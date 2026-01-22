@@ -61,7 +61,7 @@
     "@ory/client": "^1.22.11",
     "cloudinary": "^2.8.0",
     "drizzle-orm": "^0.44.7",
-    "next": "16.0.0",
+    "next": "^16.1.4",
     "postgres": "^3.4.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
