@@ -275,7 +275,7 @@ export function getDisplayPrice(
   if (product.sellStatus === 'pre-order') {
     if (userHasPaidDeposit) {
       // Show wholesale price to deposit holders
-      const baseWholesale = product.wholesalePriceCents || product.basePriceCents;
+      const baseWholesale = product.wholesalePriceCents || product.basePriceCents || 0;
       const modifier = variant?.wholesalePriceModifier || 0;
       return {
         price: baseWholesale + modifier,
@@ -283,7 +283,7 @@ export function getDisplayPrice(
       };
     } else {
       // Show base price to public
-      const basePriceCents = product.basePriceCents;
+      const basePriceCents = product.basePriceCents || 0;
       const modifier = variant?.priceModifier || 0;
       return {
         price: basePriceCents + modifier,
@@ -293,7 +293,7 @@ export function getDisplayPrice(
   }
 
   // For-sale: Always show base price
-  const basePriceCents = product.basePriceCents;
+  const basePriceCents = product.basePriceCents || 0;
   const modifier = variant?.priceModifier || 0;
   return {
     price: basePriceCents + modifier,

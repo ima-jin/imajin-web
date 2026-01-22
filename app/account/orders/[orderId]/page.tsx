@@ -1,6 +1,6 @@
 import { requireAuth, getLocalUser } from '@/lib/auth/guards';
 import { db } from '@/db';
-import { orders } from '@/db/schema';
+import { orders, orderItems } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/ui/Container';
@@ -15,16 +15,21 @@ export default async function OrderDetailPage({
   const localUser = await getLocalUser();
 
   // Fetch order (must belong to user)
-  const order = await db.query.orders.findFirst({
-    where: and(eq(orders.id, params.orderId), eq(orders.userId, localUser.id)),
-    with: {
-      orderItems: true,
-    },
-  });
+  const [order] = await db
+    .select()
+    .from(orders)
+    .where(and(eq(orders.id, params.orderId), eq(orders.userId, localUser.id)))
+    .limit(1);
 
   if (!order) {
     notFound();
   }
+
+  // Fetch order items separately
+  const items = await db
+    .select()
+    .from(orderItems)
+    .where(eq(orderItems.orderId, order.id));
 
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -44,7 +49,7 @@ export default async function OrderDetailPage({
   return (
     <Container className="py-12">
       <Heading level={1} className="mb-8">
-        Order #{order.orderNumber || order.id.slice(0, 8)}
+        Order #{order.id.slice(0, 8)}
       </Heading>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -52,7 +57,7 @@ export default async function OrderDetailPage({
         <div>
           <h2 className="text-lg font-medium mb-4">Items</h2>
           <div className="bg-white border rounded-lg divide-y">
-            {order.orderItems.map((item, index) => (
+            {items.map((item, index) => (
               <div key={index} className="p-4 flex justify-between">
                 <div>
                   <p className="font-medium">{item.productName}</p>
@@ -80,11 +85,11 @@ export default async function OrderDetailPage({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Tax</span>
-                  <span>{formatCurrency(order.tax)}</span>
+                  <span>{formatCurrency(order.tax ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
-                  <span>{formatCurrency(order.shipping)}</span>
+                  <span>{formatCurrency(order.shipping ?? 0)}</span>
                 </div>
                 <div className="flex justify-between font-medium pt-2 border-t">
                   <span>Total</span>
@@ -106,7 +111,7 @@ export default async function OrderDetailPage({
               </div>
               <div>
                 <p className="text-sm text-gray-600">Order Date</p>
-                <p className="font-medium">{formatDate(order.createdAt)}</p>
+                <p className="font-medium">{order.createdAt ? formatDate(order.createdAt) : 'N/A'}</p>
               </div>
               {order.trackingNumber && (
                 <div>

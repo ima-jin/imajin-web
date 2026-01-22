@@ -2,8 +2,7 @@ import Link from 'next/link';
 
 type OrderWithItems = {
   id: string;
-  orderNumber: string | null;
-  createdAt: Date;
+  createdAt: Date | null;
   total: number;
   status: string;
   orderItems: Array<{
@@ -44,9 +43,9 @@ export function OrderCard({ order }: { order: OrderWithItems }) {
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-medium">
-            Order #{order.orderNumber || order.id.slice(0, 8)}
+            Order #{order.id.slice(0, 8)}
           </h3>
-          <p className="text-sm text-gray-600">Placed on {formatDate(order.createdAt)}</p>
+          <p className="text-sm text-gray-600">Placed on {order.createdAt ? formatDate(order.createdAt) : 'N/A'}</p>
         </div>
         <span
           className={`px-3 py-1 rounded text-sm font-medium ${

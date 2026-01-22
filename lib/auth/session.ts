@@ -46,7 +46,7 @@ export async function isAuthenticatedRequest(): Promise<boolean> {
  */
 export async function getAuthenticatedUserId(): Promise<string> {
   const session = await getServerSession();
-  if (!session) {
+  if (!session || !session.identity) {
     throw new Error('Unauthorized');
   }
   return session.identity.id;
@@ -59,7 +59,7 @@ export async function getAuthenticatedUserId(): Promise<string> {
  */
 export async function getLocalUserId(): Promise<string> {
   const session = await getServerSession();
-  if (!session) {
+  if (!session || !session.identity) {
     throw new Error('Unauthorized');
   }
 
@@ -86,7 +86,7 @@ export async function getLocalUserId(): Promise<string> {
  */
 export async function getLocalUser() {
   const session = await getServerSession();
-  if (!session) {
+  if (!session || !session.identity) {
     throw new Error('Unauthorized');
   }
 
@@ -111,7 +111,7 @@ export async function getLocalUser() {
  */
 export async function isAdminRequest(): Promise<boolean> {
   const session = await getServerSession();
-  return session?.identity.traits.role === 'admin';
+  return session?.identity?.traits?.role === 'admin';
 }
 
 /**
@@ -121,7 +121,7 @@ export async function isAdminRequest(): Promise<boolean> {
 export async function isAdminWithMFA(): Promise<boolean> {
   const session = await getServerSession();
   return (
-    session?.identity.traits.role === 'admin' &&
+    session?.identity?.traits?.role === 'admin' &&
     session?.authenticator_assurance_level === 'aal2'
   );
 }

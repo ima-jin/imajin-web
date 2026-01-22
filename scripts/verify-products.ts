@@ -23,7 +23,8 @@ async function verifyProducts() {
   console.log("\nProducts ready to sell (dev_status = 5):");
   const readyProducts = allProducts.filter((p) => p.devStatus === 5);
   readyProducts.forEach((p) => {
-    console.log(`  - ${p.id}: ${p.name} ($${(p.basePriceCents / 100).toFixed(2)})`);
+    const price = p.basePriceCents ? (p.basePriceCents / 100).toFixed(2) : 'N/A';
+    console.log(`  - ${p.id}: ${p.name} ($${price})`);
   });
 
   if (allVariants.length > 0) {

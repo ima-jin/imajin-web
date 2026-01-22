@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
           .set({
             status: "subscribed",
             optInAt: new Date(),
-            optInIp: request.ip || request.headers.get("x-forwarded-for") || null,
+            optInIp: request.headers.get("x-forwarded-for") || null,
             optInUserAgent: request.headers.get("user-agent") || null,
             updatedAt: new Date(),
           })
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       mailingListId: updatesList.id,
       status: "subscribed", // Direct subscribe, skip verification
       optInAt: new Date(),
-      optInIp: request.ip || request.headers.get("x-forwarded-for") || null,
+      optInIp: request.headers.get("x-forwarded-for") || null,
       optInUserAgent: request.headers.get("user-agent") || null,
     });
 

@@ -15,7 +15,7 @@ interface SendGridEvent {
 interface Contact {
   id: string;
   value: string;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown> | null;
   [key: string]: unknown;
 }
 
@@ -119,8 +119,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
-    logger.error('Error processing SendGrid webhook', { error });
+  } catch (err) {
+    logger.error('Error processing SendGrid webhook', err as Error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

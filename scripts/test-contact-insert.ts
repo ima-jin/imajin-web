@@ -1,5 +1,6 @@
 import { db } from '@/db';
 import { contacts } from '@/db/schema-auth';
+import { eq } from 'drizzle-orm';
 
 async function main() {
   console.log('🔍 Testing direct contact insert...\n');
@@ -23,7 +24,7 @@ async function main() {
     console.log(JSON.stringify(contact, null, 2));
 
     // Clean up
-    await db.delete(contacts).where((t, { eq }) => eq(t.id, contact.id));
+    await db.delete(contacts).where(eq(contacts.id, contact.id));
     console.log('\n✅ Test contact cleaned up');
   } catch (error) {
     console.error('\n❌ FAILED! Error details:');

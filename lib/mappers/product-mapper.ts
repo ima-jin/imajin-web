@@ -22,7 +22,7 @@ export interface DbProduct {
   description: string | null;
   category: string;
   devStatus: number;
-  basePriceCents: number;
+  basePriceCents: number | null;
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
@@ -61,7 +61,7 @@ export interface Product {
   description: string | null;
   category: string;
   devStatus: number;
-  basePriceCents: number;
+  basePriceCents: number | null;
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;
@@ -104,7 +104,7 @@ export function mapDbProductToProduct(dbProduct: DbProduct): Product {
     throw new Error("Missing required product fields");
   }
 
-  if (dbProduct.devStatus === undefined || dbProduct.basePriceCents === undefined) {
+  if (dbProduct.devStatus === undefined) {
     throw new Error("Missing required numeric fields");
   }
 

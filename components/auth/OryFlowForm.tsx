@@ -1,6 +1,6 @@
 'use client';
 
-import { LoginFlow, RegistrationFlow, RecoveryFlow, SettingsFlow, VerificationFlow, UiNode } from '@ory/client';
+import { LoginFlow, RegistrationFlow, RecoveryFlow, SettingsFlow, VerificationFlow, UiNode, UiNodeTypeEnum } from '@ory/client';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -84,10 +84,10 @@ export function OryFlowForm({ flow, onSuccess }: OryFlowFormProps) {
       {/* Render form fields from Ory flow */}
       {flow.ui.nodes.map((node: UiNode) => {
         const attrs = node.attributes as any;
-        const isInput = node.type === 'input';
+        const isInput = node.type === UiNodeTypeEnum.Input;
         const isSubmit = isInput && attrs.type === 'submit';
         const isHidden = isInput && attrs.type === 'hidden';
-        const isButton = node.type === 'button';
+        const isButton = node.type === UiNodeTypeEnum.Input && attrs.type === 'button';
 
         // Hidden inputs (CSRF token, flow ID)
         if (isHidden) {

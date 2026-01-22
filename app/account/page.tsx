@@ -25,7 +25,7 @@ export default async function AccountPage() {
   return (
     <Container className="py-12">
       <Heading level={1} className="mb-8">
-        Welcome, {session.identity.traits.name}!
+        Welcome, {session.identity?.traits?.name || 'User'}!
       </Heading>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -35,11 +35,11 @@ export default async function AccountPage() {
           <div className="space-y-2">
             <div>
               <p className="text-sm text-gray-600">Name</p>
-              <p className="font-medium">{session.identity.traits.name}</p>
+              <p className="font-medium">{session.identity?.traits?.name || 'N/A'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Email</p>
-              <p className="font-medium">{session.identity.traits.email}</p>
+              <p className="font-medium">{session.identity?.traits?.email || 'N/A'}</p>
             </div>
             <div className="pt-4">
               <Link href="/auth/settings" className="text-sm text-blue-600 hover:underline">
@@ -70,12 +70,12 @@ export default async function AccountPage() {
                 >
                   <div className="flex justify-between">
                     <span className="font-medium">
-                      Order #{order.orderNumber || order.id.slice(0, 8)}
+                      Order #{order.id.slice(0, 8)}
                     </span>
                     <span className="text-sm capitalize">{order.status}</span>
                   </div>
                   <p className="text-sm text-gray-600">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
                   </p>
                 </Link>
               ))}

@@ -16,7 +16,7 @@ interface PriceDisplayProps {
   product: {
     id: string;
     sellStatus: string;
-    basePriceCents: number;
+    basePriceCents: number | null;
     wholesalePriceCents?: number;
     presaleDepositPriceCents?: number;
   };

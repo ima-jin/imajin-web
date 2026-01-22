@@ -6,7 +6,7 @@
  */
 
 // Force test environment
-process.env.NODE_ENV = 'test';
+(process.env as any).NODE_ENV = 'test';
 
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';

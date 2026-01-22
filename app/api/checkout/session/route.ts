@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         userId = await getLocalUserId();
       } catch (error) {
         // User not found in local DB (webhook race condition), continue as guest
-        console.warn('User session found but not in local database:', authSession.identity.id);
+        console.warn('User session found but not in local database:', authSession.identity?.id);
       }
     }
 

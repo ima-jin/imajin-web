@@ -69,7 +69,7 @@ export interface Product {
   description: string | null;
   category: string; // ProductCategory - stored as string in DB
   devStatus: number; // DevStatus - stored as number in DB
-  basePriceCents: number; // Price in cents
+  basePriceCents: number | null; // Price in cents
   isActive: boolean | null;
   requiresAssembly: boolean | null;
   hasVariants: boolean | null;

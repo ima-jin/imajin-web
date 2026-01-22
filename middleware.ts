@@ -20,8 +20,8 @@ export async function middleware(req: NextRequest) {
         cookie: `ory_session_imajinweb=${sessionCookie}`,
       });
       session = data;
-      isAuthenticated = session.active;
-      isAdmin = session.identity.traits.role === 'admin';
+      isAuthenticated = !!session.active;
+      isAdmin = session.identity?.traits?.role === 'admin';
       hasMFA = session.authenticator_assurance_level === 'aal2';
     } catch (error) {
       // Invalid or expired session

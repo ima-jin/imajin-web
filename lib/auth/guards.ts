@@ -51,7 +51,7 @@ export async function requireAuth(): Promise<Session> {
  */
 export async function requireAdmin(): Promise<Session> {
   const session = await getSession();
-  if (!session) {
+  if (!session || !session.identity) {
     redirect('/auth/signin');
   }
   if (session.identity.traits.role !== 'admin') {
@@ -88,7 +88,7 @@ export async function isAuthenticated(): Promise<boolean> {
  */
 export async function isAdmin(): Promise<boolean> {
   const session = await getSession();
-  return session?.identity.traits.role === 'admin';
+  return session?.identity?.traits?.role === 'admin';
 }
 
 /**
@@ -98,6 +98,9 @@ export async function isAdmin(): Promise<boolean> {
  */
 export async function getUserId(): Promise<string> {
   const session = await requireAuth();
+  if (!session.identity) {
+    throw new Error('Session has no identity');
+  }
   return session.identity.id;
 }
 
@@ -108,6 +111,9 @@ export async function getUserId(): Promise<string> {
  */
 export async function getLocalUser() {
   const session = await requireAuth();
+  if (!session.identity) {
+    throw new Error('Session has no identity');
+  }
   const { db } = await import('@/db');
   const { users } = await import('@/db/schema-auth');
   const { eq } = await import('drizzle-orm');
