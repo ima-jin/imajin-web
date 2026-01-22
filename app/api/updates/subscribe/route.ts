@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { contacts, mailingLists, contactSubscriptions } from "@/db/schema-auth";
 import { eq, and } from "drizzle-orm";
+import { logger } from "@/lib/utils/logger";
 
 /**
  * Simplified subscription endpoint for /updates page
@@ -122,7 +123,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Subscription error:", error);
+    logger.error(
+      "Subscription error",
+      error instanceof Error ? error : new Error(String(error))
+    );
     return NextResponse.json(
       { error: "Failed to subscribe. Please try again." },
       { status: 500 }

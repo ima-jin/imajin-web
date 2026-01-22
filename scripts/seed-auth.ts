@@ -129,8 +129,12 @@ async function main() {
       adminUserId = existingUser!.id;
       console.log('   ⚠️  Local user record already exists');
     }
-  } catch (error: any) {
-    if (error?.response?.status === 409) {
+  } catch (error: unknown) {
+    const isOryConflict = error && typeof error === 'object' && 'response' in error &&
+      error.response && typeof error.response === 'object' && 'status' in error.response &&
+      error.response.status === 409;
+
+    if (isOryConflict) {
       console.log('   ⚠️  Admin user already exists in Ory');
       // Fetch existing user from local DB
       const existingUser = await db.query.users.findFirst({
@@ -230,8 +234,12 @@ async function main() {
     } else {
       console.log('   ⚠️  Test customer already exists');
     }
-  } catch (error: any) {
-    if (error?.response?.status === 409) {
+  } catch (error: unknown) {
+    const isOryConflict = error && typeof error === 'object' && 'response' in error &&
+      error.response && typeof error.response === 'object' && 'status' in error.response &&
+      error.response.status === 409;
+
+    if (isOryConflict) {
       console.log('   ⚠️  Test customer already exists in Ory');
     } else {
       console.error('   ❌ Error creating test customer:', error);

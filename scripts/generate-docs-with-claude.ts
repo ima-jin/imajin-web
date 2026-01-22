@@ -182,9 +182,9 @@ function groupByModule(data: TypeDocOutput): Record<string, TypeDocFunction[]> {
 
   if (!data.children) return grouped;
 
-  for (const module of data.children) {
-    if (module.children && module.children.length > 0) {
-      grouped[module.name] = module.children;
+  for (const mod of data.children) {
+    if (mod.children && mod.children.length > 0) {
+      grouped[mod.name] = mod.children;
     }
   }
 
@@ -356,12 +356,12 @@ function generateIndex(allModules: string[]): void {
 
   // Group by category (top-level directory)
   const grouped: Record<string, string[]> = {};
-  for (const module of sortedModules) {
-    const category = module.split('/')[0];
+  for (const mod of sortedModules) {
+    const category = mod.split('/')[0];
     if (!grouped[category]) {
       grouped[category] = [];
     }
-    grouped[category].push(module);
+    grouped[category].push(mod);
   }
 
   // Generate index content
@@ -375,9 +375,9 @@ function generateIndex(allModules: string[]): void {
 
   for (const [category, modules] of Object.entries(grouped)) {
     indexContent += `\n### ${category.charAt(0).toUpperCase() + category.slice(1)}\n\n`;
-    for (const module of modules) {
-      const fileName = moduleToFilename(module);
-      indexContent += `- [${module}](./${fileName})\n`;
+    for (const mod of modules) {
+      const fileName = moduleToFilename(mod);
+      indexContent += `- [${mod}](./${fileName})\n`;
     }
   }
 

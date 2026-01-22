@@ -18,6 +18,7 @@ const eslintConfig = defineConfig([
     "node_modules/**",
     "coverage/**",
     "docker/**",
+    "docs/api/typedoc-output/**",
     "*.config.js",
     "*.config.mjs",
   ]),

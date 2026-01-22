@@ -100,9 +100,9 @@ async function seedProducts() {
     if (report.dbErrors.length > 0) {
       console.log('   ⚠️  Product sync had errors (this is expected if tables are missing)');
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log('   ⚠️  Product sync failed (this is expected if tables are missing)');
-    console.log(`   Error: ${error.message}`);
+    console.log(`   Error: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

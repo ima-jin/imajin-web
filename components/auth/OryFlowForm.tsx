@@ -83,7 +83,17 @@ export function OryFlowForm({ flow, onSuccess }: OryFlowFormProps) {
 
       {/* Render form fields from Ory flow */}
       {flow.ui.nodes.map((node: UiNode) => {
-        const attrs = node.attributes as any;
+        // Type assertion for common attributes used across different node types
+        // Using double assertion to safely access properties across different node types
+        const attrs = node.attributes as unknown as Record<string, unknown> & {
+          type?: string;
+          name?: string;
+          disabled?: boolean;
+          src?: string;
+          async?: boolean;
+          crossorigin?: '' | 'anonymous' | 'use-credentials';
+          id?: string;
+        };
         const isInput = node.type === UiNodeTypeEnum.Input;
         const isSubmit = isInput && attrs.type === 'submit';
         const isHidden = isInput && attrs.type === 'hidden';

@@ -460,7 +460,7 @@ export type UserMetadata = {
     issuer: string; // DID of issuer
     issuanceDate: string;
     expirationDate?: string;
-    credentialSubject: Record<string, any>;
+    credentialSubject: Record<string, unknown>;
     proof: {
       type: string;
       created: string;
@@ -471,7 +471,7 @@ export type UserMetadata = {
   }>;
 
   // Extensible for future features
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type CollectiveMetadata = {
@@ -505,7 +505,7 @@ export type CollectiveMetadata = {
   totalPortfolioItems?: number;
 
   // Extensible for future features
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type HubMetadata = {
@@ -523,7 +523,7 @@ export type HubMetadata = {
   // Private key (store securely in production!)
   privateKey?: string;
 
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type FederationMetadata = {
@@ -535,7 +535,7 @@ export type FederationMetadata = {
   allowedCategories?: string[];
   blockedTags?: string[];
 
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type MigrationHistoryEntry = {
@@ -555,7 +555,7 @@ export type ContactMetadata = {
   locale?: string;
   carrier?: string;
 
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type SubscriptionMetadata = {
@@ -567,5 +567,5 @@ export type SubscriptionMetadata = {
   campaignId?: string;
   referrer?: string;
 
-  [key: string]: any;
+  [key: string]: unknown;
 };

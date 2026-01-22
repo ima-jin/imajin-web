@@ -10,7 +10,7 @@ export interface CreateContactInput {
   userId?: string;
   isPrimary?: boolean;
   isVerified?: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**

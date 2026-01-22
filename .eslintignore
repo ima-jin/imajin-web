@@ -1,0 +1,16 @@
+# Generated documentation
+docs/api/typedoc-output/
+
+# Build output
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env
+.env.*
