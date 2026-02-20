@@ -133,7 +133,7 @@ describe('Full Checkout Flow Integration', () => {
     const mockWebhookEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockCheckoutSession as Stripe.Checkout.Session,
@@ -368,7 +368,7 @@ describe('Full Checkout Flow Integration', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockCheckoutSession as Stripe.Checkout.Session,

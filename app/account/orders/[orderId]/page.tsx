@@ -9,8 +9,9 @@ import { Heading } from '@/components/ui/Heading';
 export default async function OrderDetailPage({
   params,
 }: {
-  params: { orderId: string };
+  params: Promise<{ orderId: string }>;
 }) {
+  const { orderId } = await params;
   const session = await requireAuth();
   const localUser = await getLocalUser();
 
@@ -18,7 +19,7 @@ export default async function OrderDetailPage({
   const [order] = await db
     .select()
     .from(orders)
-    .where(and(eq(orders.id, params.orderId), eq(orders.userId, localUser.id)))
+    .where(and(eq(orders.id, orderId), eq(orders.userId, localUser.id)))
     .limit(1);
 
   if (!order) {

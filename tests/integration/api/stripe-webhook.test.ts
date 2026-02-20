@@ -91,7 +91,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockCheckoutSession as Stripe.Checkout.Session,
@@ -122,7 +122,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockCheckoutSession as Stripe.Checkout.Session,
@@ -171,7 +171,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockCheckoutSession as Stripe.Checkout.Session,
@@ -212,7 +212,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: sessionWithoutShipping as Stripe.Checkout.Session,
@@ -300,7 +300,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: sessionWithoutCart as Stripe.Checkout.Session,
@@ -342,7 +342,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockPaymentIntent as Stripe.PaymentIntent,
@@ -372,7 +372,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: {} as any,
@@ -404,7 +404,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: mockCheckoutSession as Stripe.Checkout.Session,
@@ -439,7 +439,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: sessionWithOnlyCustomerEmail as Stripe.Checkout.Session,
@@ -495,7 +495,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: sessionWithMultipleItems as Stripe.Checkout.Session,
@@ -540,7 +540,7 @@ describe('POST /api/webhooks/stripe', () => {
     const mockEvent: Stripe.Event = {
       id: 'evt_test_123',
       object: 'event',
-      api_version: '2025-09-30.clover',
+      api_version: '2025-10-29.clover',
       created: Date.now(),
       data: {
         object: sessionWithoutVariant as Stripe.Checkout.Session,
