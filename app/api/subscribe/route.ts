@@ -6,6 +6,7 @@ import { createOrUpdateContact } from '@/lib/contacts/create-contact';
 import { subscribeToList } from '@/lib/contacts/subscribe';
 import { createVerificationToken } from '@/lib/contacts/verify-email';
 import { validateEmail, normalizeContact } from '@/lib/contacts/validate-contact';
+import { sendVerificationEmail } from '@/lib/services/sendgrid';
 
 export async function POST(request: NextRequest) {
   try {
@@ -100,9 +101,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create verification token
-    await createVerificationToken(contact.id, mailingListId);
+    const tokenRecord = await createVerificationToken(contact.id, mailingListId);
 
-    // TODO: Send verification email via SendGrid (Step 9)
+    // Send verification email via SendGrid
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const verificationUrl = `${baseUrl}/api/verify-email?token=${tokenRecord.token}`;
+    const unsubscribeUrl = `${baseUrl}/api/unsubscribe?email=${encodeURIComponent(email)}`;
+    await sendVerificationEmail({ to: email, verificationUrl, unsubscribeUrl });
 
     return NextResponse.json(
       {
